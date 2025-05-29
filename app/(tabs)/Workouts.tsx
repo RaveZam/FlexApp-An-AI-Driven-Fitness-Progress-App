@@ -1,13 +1,10 @@
-import "react-native-reanimated";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 
-import "../../global.css";
-
-export default function Index() {
+export default function TabTwoScreen() {
   return (
     <ThemedView>
-      <ThemedText>Test</ThemedText>
+      <ThemedText>About</ThemedText>
     </ThemedView>
   );
 }

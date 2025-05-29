@@ -2,6 +2,8 @@ import { Button, ScrollView, Text, TextInput, View } from "react-native";
 import { useState } from "react";
 import axios from "axios";
 
+import "../../global.css";
+
 export default function chatbot() {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<{ role: string; content: string }[]>(
@@ -30,7 +32,7 @@ export default function chatbot() {
         },
       }
     );
-    console.log(response.data);
+    console.log(response);
     const reply = response.data.choices[0].message.content;
     setMessages([...newMessages, { role: "assistant", content: reply }]);
   }
@@ -39,11 +41,12 @@ export default function chatbot() {
     <View className="flex-1 items-center justify-center  p-4">
       <Text className="text-white text-2xl">Talk To Mistral</Text>
       <ScrollView>
-        {messages.map((message) => {
-          console.log(messages);
+        {messages.map((message, index) => {
           return (
-            <View>
-              <Text>{message.role === "user" ? "You: " : "Mistral: "}</Text>
+            <View className="text-white flex flex-row" key={index}>
+              <Text className="text-white">
+                {message.role === "user" ? "You: " : "Mistral: "}
+              </Text>
               <Text className="text-white">{message.content}</Text>
             </View>
           );
