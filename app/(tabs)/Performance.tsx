@@ -1,10 +1,10 @@
-import { Button, ScrollView, Text, TextInput, View } from "react-native";
-import { useState } from "react";
 import axios from "axios";
+import { useState } from "react";
+import { Button, ScrollView, Text, TextInput, View } from "react-native";
 
 import "../../global.css";
 
-export default function chatbot() {
+export default function Performance() {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<{ role: string; content: string }[]>(
     []

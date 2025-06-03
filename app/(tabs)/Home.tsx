@@ -1,6 +1,6 @@
-import "react-native-reanimated";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
+import "react-native-reanimated";
 
 import "../../global.css";
 
