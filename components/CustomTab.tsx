@@ -22,28 +22,38 @@ export function CustomTab({
   const icon = {
     Home: ({ color, iconAnimatedStyle }: any) => (
       <Animated.View style={iconAnimatedStyle}>
-        <IconSymbol size={28} name="house.fill" color={color} />
+        <IconSymbol size={32} name="house.fill" color={color} />
       </Animated.View>
     ),
     Workouts: ({ color, iconAnimatedStyle }: any) => (
       <Animated.View style={iconAnimatedStyle}>
-        <IconSymbol size={28} name="dumbbell.fill" color={color} />
+        <IconSymbol size={32} name="dumbbell.fill" color={color} />
       </Animated.View>
     ),
-    Performance: ({ color, iconAnimatedStyle }: any) => (
+    Overview: ({ color, iconAnimatedStyle }: any) => (
       <Animated.View style={iconAnimatedStyle}>
-        <IconSymbol size={28} name="chart.bar.fill" color={color} />
+        <IconSymbol size={32} name="chart.bar.fill" color={color} />
       </Animated.View>
     ),
     Settings: ({ color, iconAnimatedStyle }: any) => (
       <Animated.View style={iconAnimatedStyle}>
-        <IconSymbol size={28} name="gearshape.fill" color={color} />
+        <IconSymbol size={32} name="gearshape.fill" color={color} />
       </Animated.View>
     ),
   };
 
   return (
-    <View className="flex-row  justify-between p-4">
+    <View
+      style={{
+        backgroundColor: "#1E1E1E",
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        flexDirection: "row",
+        padding: 12,
+        paddingHorizontal: 20,
+      }}
+    >
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key];
         const isFocused = state.index === index;
@@ -69,10 +79,10 @@ export function CustomTab({
 
         const animatedStyle = useAnimatedStyle(() => {
           return {
-            opacity: withTiming(isFocused ? 1 : 0, { duration: 300 }),
+            opacity: withTiming(isFocused ? 1 : 0, { duration: 200 }),
             transform: [
               {
-                translateX: withTiming(isFocused ? 10 : 0, { duration: 300 }),
+                translateX: withTiming(isFocused ? 2 : 0, { duration: 200 }),
               },
             ],
           };
@@ -82,7 +92,10 @@ export function CustomTab({
           return {
             transform: [
               {
-                translateX: withTiming(isFocused ? 0 : 10, { duration: 300 }),
+                scale: withTiming(isFocused ? 0.9 : 1, { duration: 200 }),
+              },
+              {
+                translateX: withTiming(isFocused ? 0 : 10, { duration: 200 }),
               },
             ],
           };
@@ -98,27 +111,32 @@ export function CustomTab({
             onPress={onPress}
             onLongPress={onLongPress}
             style={{
-              alignItems: "center",
-              justifyContent: "center",
-              flexDirection: "row",
-
-              flex: 1,
+              backgroundColor: isFocused ? "#BFFA00" : "transparent",
+              paddingHorizontal: 18,
+              paddingRight: 24,
+              paddingVertical: 8,
+              borderRadius: 100,
             }}
           >
-            {icon[route.name as keyof typeof icon]?.({
-              color: isFocused ? colors.primary : colors.text,
-              iconAnimatedStyle,
-            })}
-
-            <AnimatedText
-              style={[
-                animatedStyle,
-                { color: isFocused ? colors.primary : colors.text },
-                { fontSize: 12, position: "absolute" },
-              ]}
-            >
-              {route.name === state.routes[state.index].name ? route.name : ""}
-            </AnimatedText>
+            <View className="flex-row items-center justify-center">
+              {icon[route.name as keyof typeof icon]?.({
+                color: isFocused ? "#000000" : colors.text,
+                iconAnimatedStyle,
+              })}
+              {isFocused && (
+                <AnimatedText
+                  style={[
+                    animatedStyle,
+                    {
+                      fontSize: 14,
+                      marginRight: 4,
+                    },
+                  ]}
+                >
+                  {route.name}
+                </AnimatedText>
+              )}
+            </View>
           </PlatformPressable>
         );
       })}

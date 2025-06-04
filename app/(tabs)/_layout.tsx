@@ -12,16 +12,17 @@ export default function TabLayout() {
     <Tabs
       tabBar={(props) => <CustomTab {...props} />}
       screenOptions={{
-        tabBarActiveTintColor: "#BFFA00",
+        // tabBarActiveTintColor: "#ffffff",
         headerShown: false,
         // tabBarButton: CustomTab,
-        tabBarBackground: undefined,
+        // tabBarBackground: ,
 
         tabBarStyle: Platform.select({
           ios: {
             // Use a transparent background on iOS to show the blur effect
             position: "absolute",
           },
+
           default: {},
         }),
       }}
@@ -39,9 +40,9 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="Performance"
+        name="Overview"
         options={{
-          title: "Performance",
+          title: "Overview",
         }}
       />
       <Tabs.Screen
