@@ -92,7 +92,7 @@ export function CustomTab({
           return {
             transform: [
               {
-                scale: withTiming(isFocused ? 0.9 : 1, { duration: 200 }),
+                scale: withTiming(isFocused ? 0.8 : 1, { duration: 200 }),
               },
               {
                 translateX: withTiming(isFocused ? 0 : 10, { duration: 200 }),
