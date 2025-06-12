@@ -51,12 +51,6 @@ export default function TabLayout() {
           title: "Settings",
         }}
       />
-      <Tabs.Screen
-        name="AddWorkoutTabs"
-        options={{
-          href: null,
-        }}
-      />
     </Tabs>
   );
 }

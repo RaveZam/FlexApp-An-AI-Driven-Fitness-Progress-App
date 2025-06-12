@@ -1,3 +1,4 @@
+import Fontisto from "@expo/vector-icons/Fontisto";
 import { Image, View } from "react-native";
 import { ThemedText } from "./ThemedText";
 import { ThemedView } from "./ThemedView";
@@ -5,7 +6,7 @@ import { ThemedView } from "./ThemedView";
 export default function UserInfoCard() {
   const sampleUsername = "Runielle Raven";
   return (
-    <ThemedView className="flex-row items-center p-4 pt-8">
+    <ThemedView className="flex-row  p-4 pt-8">
       <View>
         <Image
           style={{ width: 48, height: 48 }}
@@ -21,6 +22,9 @@ export default function UserInfoCard() {
           {sampleUsername}!
         </ThemedText>
       </ThemedView>
+      <View className="ml-auto m-4">
+        <Fontisto name="bell" size={24} color="white" />
+      </View>
     </ThemedView>
   );
 }

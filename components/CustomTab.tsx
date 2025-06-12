@@ -7,6 +7,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { IconSymbol } from "./ui/IconSymbol";
 
 const AnimatedText = Animated.createAnimatedComponent(Text);
@@ -27,7 +28,7 @@ export function CustomTab({
     ),
     Workouts: ({ color, iconAnimatedStyle }: any) => (
       <Animated.View style={iconAnimatedStyle}>
-        <IconSymbol size={32} name="dumbbell.fill" color={color} />
+        <Ionicons name="barbell" size={32} color="white" />
       </Animated.View>
     ),
     Overview: ({ color, iconAnimatedStyle }: any) => (

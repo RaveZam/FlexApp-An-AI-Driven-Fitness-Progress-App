@@ -3,7 +3,7 @@ import { ThemedView } from "@/components/ThemedView";
 import Button from "@/components/ui/Button";
 import { useRouter } from "expo-router";
 
-export default function TabTwoScreen() {
+export default function index() {
   const router = useRouter();
   return (
     <ThemedView className="flex-1 justify-center">
@@ -12,11 +12,10 @@ export default function TabTwoScreen() {
           You Have No Workout Plans...
         </ThemedText>
       </ThemedView>
+
       <Button
         buttonText="Create Workout"
-        onPress={() =>
-          router.push("/AddWorkoutTabs/SelectWorkoutPlan" as never)
-        }
+        onPress={() => router.push("/Workouts/CreatePlanScreen" as never)}
       />
     </ThemedView>
   );
