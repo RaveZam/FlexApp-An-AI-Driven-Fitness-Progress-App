@@ -82,7 +82,7 @@ export function CustomTab({
             opacity: withTiming(isFocused ? 1 : 0, { duration: 200 }),
             transform: [
               {
-                translateX: withTiming(isFocused ? 2 : 0, { duration: 200 }),
+                translateX: withTiming(isFocused ? 2 : 0, { duration: 300 }),
               },
             ],
           };
@@ -92,10 +92,10 @@ export function CustomTab({
           return {
             transform: [
               {
-                scale: withTiming(isFocused ? 0.8 : 1, { duration: 200 }),
+                scale: withTiming(isFocused ? 0.8 : 1, { duration: 300 }),
               },
               {
-                translateX: withTiming(isFocused ? 0 : 10, { duration: 200 }),
+                translateX: withTiming(isFocused ? 0 : 10, { duration: 300 }),
               },
             ],
           };

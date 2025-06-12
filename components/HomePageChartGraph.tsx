@@ -4,11 +4,11 @@ import MyChart from "./ui/AreaChart";
 
 export default function HomePageChartGraph() {
   return (
-    <View className="m-8 ">
+    <View className="mx-8 mt-4">
       <ThemedText className="text-lg font-medium">
         Your Workout Progress This Month
       </ThemedText>
-      <ThemedText className="text-lg font-medium opacity-50">
+      <ThemedText className="text-md font-medium opacity-50 italic">
         (Based on your Activity)
       </ThemedText>
 
