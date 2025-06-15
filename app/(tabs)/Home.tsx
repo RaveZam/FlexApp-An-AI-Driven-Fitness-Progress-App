@@ -6,6 +6,7 @@ import Button from "@/components/ui/Button";
 import ScheduleBar from "@/components/ui/ScheduleBar";
 import UserInfoCard from "@/components/UserInfoCard";
 import Workoutlist from "@/components/Workout/Workoutlist";
+
 import "../../global.css";
 
 export default function Index() {

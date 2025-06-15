@@ -28,7 +28,7 @@ export function CustomTab({
     ),
     Workouts: ({ color, iconAnimatedStyle }: any) => (
       <Animated.View style={iconAnimatedStyle}>
-        <Ionicons name="barbell" size={32} color="white" />
+        <Ionicons name="barbell" size={32} color={color} />
       </Animated.View>
     ),
     Overview: ({ color, iconAnimatedStyle }: any) => (

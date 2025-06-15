@@ -10,7 +10,7 @@ export default function Button({
   return (
     <TouchableOpacity
       onPress={onPress}
-      className="bg-[#BFFA00] m-4 p-4 rounded-full mt-auto box-shadow"
+      className="bg-[#BFFA00] p-4 rounded-full  box-shadow"
     >
       <Text className="text-center text-black text-lg font-semibold">
         {buttonText}
