@@ -23,7 +23,10 @@ export default function SelectWorkoutPlan() {
           />
           <Button
             buttonText="Upper Lower"
-            onPress={() => setSelectedPlan("Upper Lower")}
+            onPress={() => {
+              setSelectedPlan("Upper Lower");
+              router.push("/Workouts/WorkoutSelector");
+            }}
           />
           <Button
             buttonText="Custom"

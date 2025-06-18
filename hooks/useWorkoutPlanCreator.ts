@@ -8,13 +8,16 @@ export const useWorkoutPlanCreator = () => {
   const [selectedWorkouts, setSelectedWorkouts] = useState<any[]>([]);
   const [repsPerSet, setRepsPerSet] = useState<any[]>([]);
 
+  const [step, setStep] = useState(0);
+  const [currentStep, setCurrentStep] = useState<any>(0);
+
   const getStepsFromPlan = (selectedPlan: string) => {
     switch (selectedPlan) {
       case "Push Pull Legs":
         return [
-          { day: "Push Day", key: "push" },
-          { day: "Pull Day", key: "pull" },
-          { day: "Leg Day", key: "legs" },
+          { day: "Push", key: "push" },
+          { day: "Pull", key: "pull" },
+          { day: "Leg", key: "legs" },
         ];
       case "Upper Lower":
         return [
@@ -30,26 +33,50 @@ export const useWorkoutPlanCreator = () => {
         return [];
     }
   };
-
-  const [step, setStep] = useState(0);
   const steps = getStepsFromPlan(selectedPlan);
-  const currentStep = steps[step];
 
-  // function addWorkout(workout_name: string, id: number, workout_image: string) {
-  //   if (selectedWorkouts.some((selectedWorkout) => selectedWorkout.id === id)) {
-  //     setSelectedWorkouts(
-  //       selectedWorkouts.filter((selectedWorkout) => selectedWorkout.id !== id)
-  //     );
-  //     return;
-  //   }
+  const getInitialWorkoutPlan = (selectedPlan: string) => {
+    const steps = getStepsFromPlan(selectedPlan);
+    const emptyPlan: Record<string, any[]> = {};
 
-  //   const workoutObject = {
-  //     id,
-  //     workout_name,
-  //     workout_image,
-  //   };
-  //   setSelectedWorkouts([...selectedWorkouts, workoutObject]);
-  // }
+    steps.forEach((step) => {
+      emptyPlan[step.key] = [];
+    });
+
+    return emptyPlan;
+  };
+
+  const initialWorkoutPlan = getInitialWorkoutPlan(selectedPlan);
+
+  function nextStep() {
+    setStep(step + 1);
+    setCurrentStep(steps[step]);
+    console.log("Next Step");
+  }
+
+  function prevStep() {
+    setStep(step - 1);
+    setCurrentStep(steps[step]);
+    console.log("Prev Step");
+  }
+
+  function addWorkout(workout_name: string, id: number, workout_image: string) {
+    const key = steps[step]?.key;
+    if (!key) return;
+
+    const workoutObject = {
+      id,
+      workout_name,
+      workout_image,
+      sets: 3,
+      reps: "8-10",
+    };
+
+    setWorkoutPlan((prev) => ({
+      ...prev,
+      [key]: [...prev[key], workoutObject],
+    }));
+  }
 
   useEffect(() => {
     setRepsPerSet((prev) => {
@@ -69,11 +96,33 @@ export const useWorkoutPlanCreator = () => {
     workoutPlan,
     setWorkoutPlan,
     selectedWorkouts,
-    // addWorkout,
-    // repsPerSet,
-    // setRepsPerSet,
+    addWorkout,
+    nextStep,
+    prevStep,
     step,
     setStep,
-    // currentStep,
+    currentStep,
+    initialWorkoutPlan,
   };
 };
+
+// addWorkout,
+// repsPerSet,
+// setRepsPerSet,
+
+// function addWorkout(workout_name: string, id: number, workout_image: string) {
+//   const key = steps[step]?.key;
+//   if (selectedWorkouts.some((selectedWorkout) => selectedWorkout.id === id)) {
+//     setSelectedWorkouts(
+//       selectedWorkouts.filter((selectedWorkout) => selectedWorkout.id !== id)
+//     );
+//     return;
+//   }
+
+//   const workoutObject = {
+//     id,
+//     workout_name,
+//     workout_image,
+//   };
+//   setSelectedWorkouts([...selectedWorkouts, workoutObject]);
+// }

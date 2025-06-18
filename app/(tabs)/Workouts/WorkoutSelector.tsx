@@ -1,17 +1,17 @@
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import useWorkouts from "@/hooks/useFetchWorkouts";
 import { useWorkoutContext } from "@/hooks/useWorkoutPlanContext";
 import SearchComponent from "./components/SearchComponent";
 
-import { router } from "expo-router";
 import { useState } from "react";
-import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 
 export default function WorkoutSelector() {
   const [searchQuery, setSearchQuery] = useState("");
-  const { workouts } = useWorkouts();
-  const { selectedWorkouts } = useWorkoutContext();
+  const { selectedWorkouts, currentStep, initialWorkoutPlan, nextStep } =
+    useWorkoutContext();
+
+  console.log(initialWorkoutPlan);
 
   return (
     <ThemedView className="flex-1">
@@ -19,8 +19,10 @@ export default function WorkoutSelector() {
         setSearchQuery={setSearchQuery}
         searchQuery={searchQuery}
       />
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <ThemedText>{step.day}</ThemedText>
+      <ThemedText className="text-2xl text-center">
+        Customize {currentStep.day} Day
+      </ThemedText>
+      {/* <ScrollView showsVerticalScrollIndicator={false}>
         {workouts.map((workout) => (
           <TouchableOpacity
             key={workout.id}
@@ -31,14 +33,7 @@ export default function WorkoutSelector() {
                 ? "border-2  border-[#BFFA00] opacity-80 duration-300"
                 : ""
             }`}
-            onPress={
-              () => {}
-              // addWorkout(
-              //   workout.workout_name,
-              //   workout.id,
-              //   workout.workout_image
-              // )
-            }
+            onPress={() => {}}
           >
             <Image
               source={{ uri: workout.workout_image }}
@@ -57,7 +52,7 @@ export default function WorkoutSelector() {
             <ThemedText>{workout.description}</ThemedText>
           </TouchableOpacity>
         ))}
-      </ScrollView>
+      </ScrollView> */}
       <View className="flex-row m-4 p-4 px-8 rounded-full mt-auto bg-[#202020] items-center ">
         <ThemedText className="text-lg font-medium">
           Selected Workouts:
@@ -69,7 +64,8 @@ export default function WorkoutSelector() {
           <TouchableOpacity className="bg-[#BFFA00] px-4  justify-center items-center rounded-full p-2">
             <Text
               onPress={() => {
-                router.push("/Workouts/Summary");
+                nextStep();
+                // router.push("/Workouts/Summary");
               }}
               className="font-semibold"
             >

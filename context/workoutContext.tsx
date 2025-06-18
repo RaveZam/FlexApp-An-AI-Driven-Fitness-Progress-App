@@ -7,11 +7,13 @@ type WorkoutContextType = {
   selectedDay: string;
   setSelectedDay: React.Dispatch<React.SetStateAction<string>>;
   selectedWorkouts: any[];
-  // addWorkout: (workout_name: string, id: number, workout_image: string) => void;
-  // repsPerSet: any[];
-  // setRepsPerSet: React.Dispatch<React.SetStateAction<any[]>>;
   step: number;
   setStep: React.Dispatch<React.SetStateAction<any>>;
+  currentStep: any;
+  initialWorkoutPlan: any;
+  addWorkout: (workout_name: string, id: number, workout_image: string) => void;
+  nextStep: () => void;
+  prevStep: () => void;
 };
 
 export const WorkoutContext = createContext<WorkoutContextType | undefined>(
@@ -31,9 +33,11 @@ export default function workoutContextProvider({
     selectedWorkouts,
     step,
     setStep,
-    // addWorkout,
-    // repsPerSet,
-    // setRepsPerSet,
+    addWorkout,
+    nextStep,
+    prevStep,
+    currentStep,
+    initialWorkoutPlan,
   } = useWorkoutPlanCreator();
 
   return (
@@ -46,9 +50,11 @@ export default function workoutContextProvider({
         selectedWorkouts,
         step,
         setStep,
-        // addWorkout,
-        // repsPerSet,
-        // setRepsPerSet,
+        currentStep,
+        initialWorkoutPlan,
+        addWorkout,
+        nextStep,
+        prevStep,
       }}
     >
       {children}
