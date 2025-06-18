@@ -9,18 +9,18 @@ import { useState } from "react";
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 export default function WorkoutSelector() {
-  // const { selectedDay, selectedPlan } = useWorkoutContext();
   const [searchQuery, setSearchQuery] = useState("");
   const { workouts } = useWorkouts();
-  const { selectedWorkouts, addWorkout } = useWorkoutContext();
+  const { selectedWorkouts } = useWorkoutContext();
 
   return (
-    <ThemedView className="flex-1 ">
+    <ThemedView className="flex-1">
       <SearchComponent
         setSearchQuery={setSearchQuery}
         searchQuery={searchQuery}
       />
       <ScrollView showsVerticalScrollIndicator={false}>
+        <ThemedText>{step.day}</ThemedText>
         {workouts.map((workout) => (
           <TouchableOpacity
             key={workout.id}
@@ -31,12 +31,13 @@ export default function WorkoutSelector() {
                 ? "border-2  border-[#BFFA00] opacity-80 duration-300"
                 : ""
             }`}
-            onPress={() =>
-              addWorkout(
-                workout.workout_name,
-                workout.id,
-                workout.workout_image
-              )
+            onPress={
+              () => {}
+              // addWorkout(
+              //   workout.workout_name,
+              //   workout.id,
+              //   workout.workout_image
+              // )
             }
           >
             <Image

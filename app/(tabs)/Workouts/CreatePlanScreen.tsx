@@ -1,14 +1,13 @@
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import Button from "@/components/ui/Button";
-import { useWorkoutPlanCreator } from "@/hooks/useWorkoutPlanCreator";
+import { useWorkoutContext } from "@/hooks/useWorkoutPlanContext";
 import { router } from "expo-router";
 import { View } from "react-native";
 import SelectDayComponent from "./components/SelectDayComponent";
-import { useWorkoutContext } from "@/hooks/useWorkoutPlanContext";
 
 export default function SelectWorkoutPlan() {
-  const { setSelectedPlan, selectedPlan } = useWorkoutContext();
+  const { setSelectedPlan } = useWorkoutContext();
 
   return (
     <ThemedView className="flex-1 items-center justify-center">
