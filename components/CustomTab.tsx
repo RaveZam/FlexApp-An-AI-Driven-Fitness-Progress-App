@@ -112,7 +112,7 @@ export function CustomTab({
             onPress={onPress}
             onLongPress={onLongPress}
             style={{
-              backgroundColor: isFocused ? "#BFFA00" : "transparent",
+              backgroundColor: isFocused ? "#10b981" : "transparent",
               paddingHorizontal: 18,
               paddingRight: 24,
               paddingVertical: 8,

@@ -26,7 +26,7 @@ export default function MyChart() {
       >
         <VictoryAxis
           style={{
-            axis: { stroke: "#BFFA00" }, // axis line
+            axis: { stroke: "#10b981" }, // axis line
             tickLabels: {
               fill: "white", // tick text color
               fontSize: 16,
@@ -38,8 +38,8 @@ export default function MyChart() {
         <VictoryArea
           style={{
             data: {
-              fill: "#BFFA00",
-              stroke: "#BFFA00",
+              fill: "#1a472a",
+              stroke: "#10b981",
             },
           }}
           data={DATA}

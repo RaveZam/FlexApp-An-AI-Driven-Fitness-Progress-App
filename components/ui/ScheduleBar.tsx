@@ -69,10 +69,9 @@ export default function ScheduleBar() {
           </ThemedView>
           <View
             style={{
-              borderColor: "#BFFA00",
               borderWidth: 2,
             }}
-            className="rounded-full items-center justify-center w-12 h-12 "
+            className="rounded-full items-center justify-center w-12 h-12 border-2 border-[#10b981] "
           >
             <ThemedText>{day.date}</ThemedText>
           </View>
