@@ -1,19 +1,14 @@
 import { useWorkoutPlanCreator } from "@/hooks/useWorkoutPlanCreator";
-import { createContext } from "react";
+import { createContext, Dispatch, SetStateAction } from "react";
 
 type WorkoutContextType = {
-  selectedPlan: string;
-  setSelectedPlan: React.Dispatch<React.SetStateAction<string>>;
-  selectedDay: string;
-  setSelectedDay: React.Dispatch<React.SetStateAction<string>>;
-  selectedWorkouts: any[];
-  step: number;
-  setStep: React.Dispatch<React.SetStateAction<any>>;
-  currentStep: any;
-  initialWorkoutPlan: any;
+  handleStartPlan: (plan: string) => void;
+  getCurrentIndexDay: () => string;
   addWorkout: (workout_name: string, id: number, workout_image: string) => void;
-  nextStep: () => void;
-  prevStep: () => void;
+  selectedWorkouts: any[];
+  repsPerSet: any[];
+  setRepsPerSet: Dispatch<SetStateAction<any[]>>;
+  handleNextDay: () => void;
 };
 
 export const WorkoutContext = createContext<WorkoutContextType | undefined>(
@@ -26,35 +21,25 @@ export default function workoutContextProvider({
   children: React.ReactNode;
 }) {
   const {
-    selectedPlan,
-    setSelectedPlan,
-    selectedDay,
-    setSelectedDay,
-    selectedWorkouts,
-    step,
-    setStep,
+    handleStartPlan,
+    getCurrentIndexDay,
     addWorkout,
-    nextStep,
-    prevStep,
-    currentStep,
-    initialWorkoutPlan,
+    selectedWorkouts,
+    repsPerSet,
+    setRepsPerSet,
+    handleNextDay,
   } = useWorkoutPlanCreator();
 
   return (
     <WorkoutContext.Provider
       value={{
-        selectedDay,
-        setSelectedDay,
-        selectedPlan,
-        setSelectedPlan,
-        selectedWorkouts,
-        step,
-        setStep,
-        currentStep,
-        initialWorkoutPlan,
+        handleStartPlan,
+        getCurrentIndexDay,
         addWorkout,
-        nextStep,
-        prevStep,
+        selectedWorkouts,
+        repsPerSet,
+        setRepsPerSet,
+        handleNextDay,
       }}
     >
       {children}

@@ -1,15 +1,19 @@
+import { router } from "expo-router";
 import { useEffect, useState } from "react";
 
 export const useWorkoutPlanCreator = () => {
-  const [selectedPlan, setSelectedPlan] = useState<string>("");
-  const [selectedDay, setSelectedDay] = useState<string>("");
-  const [workoutPlan, setWorkoutPlan] = useState<Record<string, any[]>>({});
-
+  const [selectedPlan, setSelectedPlan] = useState<any>([]);
+  const [initialWorkoutPlan, setInitialWorkoutPlan] = useState<any>([]);
+  const [currentStepIndex, setCurrentStepIndex] = useState<number>(0);
   const [selectedWorkouts, setSelectedWorkouts] = useState<any[]>([]);
   const [repsPerSet, setRepsPerSet] = useState<any[]>([]);
 
-  const [step, setStep] = useState(0);
-  const [currentStep, setCurrentStep] = useState<any>(0);
+  const handleStartPlan = (plan: string) => {
+    const steps = getStepsFromPlan(plan);
+    setSelectedPlan(steps);
+    setInitialWorkoutPlan(getInitialWorkoutPlan(steps));
+    router.push("/Workouts/WorkoutSelector");
+  };
 
   const getStepsFromPlan = (selectedPlan: string) => {
     switch (selectedPlan) {
@@ -33,35 +37,30 @@ export const useWorkoutPlanCreator = () => {
         return [];
     }
   };
-  const steps = getStepsFromPlan(selectedPlan);
 
-  const getInitialWorkoutPlan = (selectedPlan: string) => {
-    const steps = getStepsFromPlan(selectedPlan);
-    const emptyPlan: Record<string, any[]> = {};
-
-    steps.forEach((step) => {
-      emptyPlan[step.key] = [];
-    });
-
-    return emptyPlan;
+  const getInitialWorkoutPlan = (steps: any[]) => {
+    return {
+      workoutPlan: steps.map((step) => ({
+        key: step.day,
+        workouts: [],
+      })),
+    };
   };
 
-  const initialWorkoutPlan = getInitialWorkoutPlan(selectedPlan);
-
-  function nextStep() {
-    setStep(step + 1);
-    setCurrentStep(steps[step]);
-    console.log("Next Step");
-  }
-
-  function prevStep() {
-    setStep(step - 1);
-    setCurrentStep(steps[step]);
-    console.log("Prev Step");
-  }
+  const getCurrentIndexDay = () => {
+    return initialWorkoutPlan.workoutPlan?.[currentStepIndex].key;
+  };
 
   function addWorkout(workout_name: string, id: number, workout_image: string) {
-    const key = steps[step]?.key;
+    if (selectedWorkouts.some((workout) => workout.id === id)) {
+      setSelectedWorkouts((prev) =>
+        prev.filter((workout) => workout.id !== id)
+      );
+      return;
+    }
+
+    const key = selectedPlan[currentStepIndex]?.key;
+    console.log(selectedWorkouts);
     if (!key) return;
 
     const workoutObject = {
@@ -72,57 +71,53 @@ export const useWorkoutPlanCreator = () => {
       reps: "8-10",
     };
 
-    setWorkoutPlan((prev) => ({
-      ...prev,
-      [key]: [...prev[key], workoutObject],
-    }));
+    setSelectedWorkouts((prev) => [...prev, workoutObject]);
+  }
+
+  function handleNextDay() {
+    const key = selectedPlan[currentStepIndex]?.key;
+    if (!key) return;
+    setInitialWorkoutPlan((prev: any) => {
+      const updatedWorkoutPlan = [...prev.workoutPlan];
+      updatedWorkoutPlan[currentStepIndex] = {
+        ...updatedWorkoutPlan[currentStepIndex],
+        workouts: repsPerSet,
+      };
+      return { ...prev, workoutPlan: updatedWorkoutPlan };
+    });
+
+    setSelectedWorkouts([]);
+    setRepsPerSet([]);
+    if (currentStepIndex < selectedPlan.length - 1) {
+      setCurrentStepIndex(currentStepIndex + 1);
+      router.push("/Workouts/WorkoutSelector");
+    } else {
+      return;
+    }
   }
 
   useEffect(() => {
     setRepsPerSet((prev) => {
       const updated = selectedWorkouts.map((workout) => {
         const existing = prev.find((w) => w.id === workout.id);
-        return existing ?? { ...workout, sets: 3, reps: "8-10" };
+        return existing ?? { ...workout, sets: 2, reps: "8-10" };
       });
       return updated;
     });
   }, [selectedWorkouts]);
 
+  useEffect(() => {
+    console.log("initialWorkoutPlan", initialWorkoutPlan);
+    console.log("repsPerSet", repsPerSet);
+  }, [selectedPlan, initialWorkoutPlan, selectedWorkouts, repsPerSet]);
+
   return {
-    selectedPlan,
-    setSelectedPlan,
-    selectedDay,
-    setSelectedDay,
-    workoutPlan,
-    setWorkoutPlan,
-    selectedWorkouts,
+    getCurrentIndexDay,
+    handleStartPlan,
     addWorkout,
-    nextStep,
-    prevStep,
-    step,
-    setStep,
-    currentStep,
-    initialWorkoutPlan,
+    selectedWorkouts,
+    repsPerSet,
+    setRepsPerSet,
+    handleNextDay,
   };
 };
-
-// addWorkout,
-// repsPerSet,
-// setRepsPerSet,
-
-// function addWorkout(workout_name: string, id: number, workout_image: string) {
-//   const key = steps[step]?.key;
-//   if (selectedWorkouts.some((selectedWorkout) => selectedWorkout.id === id)) {
-//     setSelectedWorkouts(
-//       selectedWorkouts.filter((selectedWorkout) => selectedWorkout.id !== id)
-//     );
-//     return;
-//   }
-
-//   const workoutObject = {
-//     id,
-//     workout_name,
-//     workout_image,
-//   };
-//   setSelectedWorkouts([...selectedWorkouts, workoutObject]);
-// }

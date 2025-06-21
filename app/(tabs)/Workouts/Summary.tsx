@@ -5,7 +5,8 @@ import { ScrollView, View } from "react-native";
 import EditWorkoutCard from "./components/EditWorkoutCard";
 
 export default function Summary() {
-  const { repsPerSet, setRepsPerSet, selectedPlan } = useWorkoutContext();
+  const { getCurrentIndexDay, setRepsPerSet, repsPerSet, handleNextDay } =
+    useWorkoutContext();
 
   const handleUpdate = (id: number, field: string, value: any) => {
     setRepsPerSet((prev) =>
@@ -14,10 +15,11 @@ export default function Summary() {
       )
     );
   };
-
   return (
     <View className="flex-1 mt-16">
-      <ThemedText className="text-2xl text-center">Push Day Summary</ThemedText>
+      <ThemedText className="text-2xl text-center">
+        {getCurrentIndexDay()} Day Summary
+      </ThemedText>
       <ScrollView className="mt-4" showsVerticalScrollIndicator={false}>
         {repsPerSet.map((workout) => (
           <EditWorkoutCard
@@ -27,7 +29,12 @@ export default function Summary() {
           />
         ))}
       </ScrollView>
-      <Button buttonText={selectedPlan} onPress={() => {}} />
+      <Button
+        buttonText={"Next Day"}
+        onPress={() => {
+          handleNextDay();
+        }}
+      />
     </View>
   );
 }
