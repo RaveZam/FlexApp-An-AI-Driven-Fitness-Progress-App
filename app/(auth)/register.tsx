@@ -1,15 +1,28 @@
-import React, { useState } from "react";
-import { Text, TextInput, TouchableOpacity, View } from "react-native";
+import { useAuth } from "@/auth/useAuth";
+import LoadingOverlay from "@/components/ui/LoadingOverlay";
+import { router } from "expo-router";
+import React, { useEffect, useState } from "react";
+import { Alert, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 export default function RegisterScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { signUp, session } = useAuth();
 
-  //   const handleRegister = async () => {
-  //     const { error } = await signUp(email.trim(), password.trim());
-  //     if (error) Alert.alert('Signup Failed', error.message);
-  //     else Alert.alert('Success', 'Please check your email to confirm');
-  //   };
+  useEffect(() => {
+    if (session) {
+      router.replace("/Home");
+    }
+  }, [session]);
+
+  const handleRegister = async () => {
+    setLoading(true);
+    const { error } = await signUp(email.trim(), password.trim());
+    setLoading(false);
+    if (error) Alert.alert("Signup Failed", error.message);
+    else Alert.alert("Success", "Please check your email to confirm");
+  };
 
   return (
     <View className="flex-1 bg-[#0f0f0f] px-6 justify-center">
@@ -34,15 +47,26 @@ export default function RegisterScreen() {
         className="bg-[#1c1c1c] text-white rounded-xl px-4 py-3 mb-6 border border-transparent focus:border-emerald-500"
       />
 
-      <TouchableOpacity className="bg-emerald-500 rounded-xl py-3">
+      <TouchableOpacity
+        onPress={handleRegister}
+        className="bg-emerald-500 rounded-xl py-3"
+      >
         <Text className="text-center text-black font-semibold text-base">
           Register
         </Text>
       </TouchableOpacity>
 
       <Text className="text-center text-gray-400 mt-6">
-        Already have an account? <Text className="text-emerald-400">Login</Text>
+        Already have an account?{" "}
+        <Text
+          onPress={() => router.replace("/login")}
+          className="text-emerald-400"
+        >
+          Login
+        </Text>
       </Text>
+      <LoadingOverlay isVisible={loading} />
     </View>
   );
 }
+

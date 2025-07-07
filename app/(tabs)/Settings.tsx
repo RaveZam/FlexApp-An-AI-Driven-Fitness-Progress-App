@@ -1,9 +1,41 @@
-import React from "react";
-import { Image, Switch, Text, TouchableOpacity, View } from "react-native";
+import { useAuth } from "@/auth/useAuth";
+import LoadingOverlay from "@/components/ui/LoadingOverlay";
+import Popup from "@/components/ui/Popup";
+import { router } from "expo-router";
+import React, { useEffect, useState } from "react";
+import { Alert, Image, Switch, Text, TouchableOpacity, View } from "react-native";
 
 export default function Settings() {
-  const sampleUsername = "Runielle Raven";
-  const userEmail = "runielle@example.com";
+  const { signOut, session, user } = useAuth();
+  const [userName, setUserName] = useState("");
+  const [userEmail, setUserEmail] = useState("");
+  const [isLogoutPopupVisible, setLogoutPopupVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!session) {
+      router.replace("/login");
+    } else if (user) {
+      setUserEmail(user.email || "");
+      setUserName(user.user_metadata?.username || user.email?.split('@')[0] || "");
+    }
+  }, [session, user]);
+
+  const handleLogout = () => {
+    setLogoutPopupVisible(true);
+  };
+
+  const confirmLogout = async () => {
+    setLoading(true);
+    const { error } = await signOut();
+    setLoading(false);
+    if (error) {
+      Alert.alert("Logout Failed", error.message);
+    } else {
+      router.replace("/login");
+    }
+    setLogoutPopupVisible(false);
+  };
 
   return (
     <View className="flex-1 bg-[#0f0f0f] px-5 pt-10">
@@ -20,7 +52,7 @@ export default function Settings() {
           />
           <View className="ml-4 flex-1">
             <Text className="text-white text-lg font-semibold">
-              {sampleUsername}
+              {userName}
             </Text>
             <Text className="text-gray-400 text-sm">{userEmail}</Text>
           </View>
@@ -51,7 +83,7 @@ export default function Settings() {
         </TouchableOpacity>
         <TouchableOpacity
           className="bg-[#191919]/60 p-4 rounded-xl border border-red-500/30 backdrop-blur-sm"
-          onPress={() => {}}
+          onPress={handleLogout}
         >
           <Text className="text-red-400 text-base font-semibold">Log Out</Text>
         </TouchableOpacity>
@@ -80,7 +112,7 @@ export default function Settings() {
 
       <View className="mb-6">
         <Text className="text-gray-400 uppercase text-xs mb-2">App</Text>
-        <TouchableOpacity className="bg-[#191919]/60 p-4 rounded-xl mb-3 border border-[#1a472a]/30 backdrop-blur-sm">
+        <TouchableOpacity className="bg-[#191919}/60 p-4 rounded-xl mb-3 border border-[#1a472a]/30 backdrop-blur-sm">
           <Text className="text-white">About</Text>
         </TouchableOpacity>
         <TouchableOpacity className="bg-[#191919]/60 p-4 rounded-xl border border-[#1a472a]/30 backdrop-blur-sm">
@@ -92,6 +124,18 @@ export default function Settings() {
       <View className="mt-auto pb-6">
         <Text className="text-gray-500 text-center text-xs">Version 1.0.0</Text>
       </View>
+
+      <Popup
+        isVisible={isLogoutPopupVisible}
+        onClose={() => setLogoutPopupVisible(false)}
+        iconName="questioncircleo"
+        message="Are you sure you want to log out?"
+        buttons={[
+          { text: "Cancel", onPress: () => setLogoutPopupVisible(false) },
+          { text: "Log Out", onPress: confirmLogout, style: "destructive" },
+        ]}
+      />
+      <LoadingOverlay isVisible={loading} />
     </View>
   );
 }

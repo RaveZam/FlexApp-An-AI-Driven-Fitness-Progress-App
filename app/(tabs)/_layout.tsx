@@ -51,6 +51,8 @@ export default function TabLayout() {
           title: "Settings",
         }}
       />
+      <Tabs.Screen name="LoginModule" options={{ href: null }} />
+      <Tabs.Screen name="RegisterModule" options={{ href: null }} />
     </Tabs>
   );
 }

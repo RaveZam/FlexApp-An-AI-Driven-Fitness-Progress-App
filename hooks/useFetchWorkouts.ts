@@ -1,4 +1,4 @@
-import supabase from "@/scripts/SupabaseClient";
+import { supabase } from "@/scripts/SupabaseClient";
 import { useEffect, useState } from "react";
 
 const useWorkouts = () => {

@@ -1,5 +1,5 @@
 import { useWorkoutPlanCreator } from "@/hooks/useWorkoutPlanCreator";
-import { createContext, Dispatch, SetStateAction } from "react";
+import React, { createContext, Dispatch, SetStateAction } from "react";
 
 type WorkoutContextType = {
   handleStartPlan: (plan: string) => void;
@@ -9,6 +9,8 @@ type WorkoutContextType = {
   repsPerSet: any[];
   setRepsPerSet: Dispatch<SetStateAction<any[]>>;
   handleNextDay: () => void;
+  selectedDay: string;
+  setSelectedDay: Dispatch<SetStateAction<string>>;
 };
 
 export const WorkoutContext = createContext<WorkoutContextType | undefined>(
@@ -29,6 +31,7 @@ export default function workoutContextProvider({
     setRepsPerSet,
     handleNextDay,
   } = useWorkoutPlanCreator();
+  const [selectedDay, setSelectedDay] = React.useState<string>("Mon");
 
   return (
     <WorkoutContext.Provider
@@ -40,6 +43,8 @@ export default function workoutContextProvider({
         repsPerSet,
         setRepsPerSet,
         handleNextDay,
+        selectedDay,
+        setSelectedDay,
       }}
     >
       {children}

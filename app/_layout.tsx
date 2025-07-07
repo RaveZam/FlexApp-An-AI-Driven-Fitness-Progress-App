@@ -1,3 +1,4 @@
+import { AuthProvider } from "@/auth/useAuth";
 import {
   DarkTheme,
   DefaultTheme,
@@ -8,8 +9,8 @@ import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 
-import { useColorScheme } from "@/hooks/useColorScheme";
 import WorkoutContextProvider from "@/context/workoutContext"; // ✅ use the default export (which is the provider)
+import { useColorScheme } from "@/hooks/useColorScheme";
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -23,14 +24,19 @@ export default function RootLayout() {
   }
 
   return (
-    <WorkoutContextProvider>
-      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="+not-found" />
-        </Stack>
-        <StatusBar style="auto" />
-      </ThemeProvider>
-    </WorkoutContextProvider>
+    <AuthProvider>
+      <WorkoutContextProvider>
+        <ThemeProvider
+          value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+        >
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="+not-found" />
+            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+          </Stack>
+          <StatusBar style="auto" />
+        </ThemeProvider>
+      </WorkoutContextProvider>
+    </AuthProvider>
   );
 }
