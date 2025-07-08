@@ -2,10 +2,10 @@ import { supabase } from "@/scripts/SupabaseClient";
 import { Session, User } from "@supabase/supabase-js";
 import {
   createContext,
-  useContext,
-  useState,
-  useEffect,
   PropsWithChildren,
+  useContext,
+  useEffect,
+  useState,
 } from "react";
 
 type AuthContextType = {
@@ -35,9 +35,9 @@ export function AuthProvider({ children }: PropsWithChildren) {
     };
   }, []);
 
-  const signIn = (email, password) =>
+  const signIn = (email: string, password: string) =>
     supabase.auth.signInWithPassword({ email, password });
-  const signUp = (email, password) =>
+  const signUp = (email: string, password: string) =>
     supabase.auth.signUp({ email, password });
   const signOut = async () => {
     try {
@@ -49,7 +49,9 @@ export function AuthProvider({ children }: PropsWithChildren) {
       return { error: null };
     } catch (error) {
       console.error("Unexpected error during sign out:", error);
-      return { error: new Error("An unexpected error occurred during logout.") };
+      return {
+        error: new Error("An unexpected error occurred during logout."),
+      };
     }
   };
 
@@ -67,4 +69,3 @@ export const useAuth = () => {
   }
   return context;
 };
-

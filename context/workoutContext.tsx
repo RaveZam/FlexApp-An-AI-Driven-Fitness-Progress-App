@@ -11,6 +11,7 @@ type WorkoutContextType = {
   handleNextDay: () => void;
   selectedDay: string;
   setSelectedDay: Dispatch<SetStateAction<string>>;
+  saveToSupaBase: () => Promise<void>;
 };
 
 export const WorkoutContext = createContext<WorkoutContextType | undefined>(
@@ -30,6 +31,7 @@ export default function workoutContextProvider({
     repsPerSet,
     setRepsPerSet,
     handleNextDay,
+    saveToSupaBase,
   } = useWorkoutPlanCreator();
   const [selectedDay, setSelectedDay] = React.useState<string>("Mon");
 
@@ -45,6 +47,7 @@ export default function workoutContextProvider({
         handleNextDay,
         selectedDay,
         setSelectedDay,
+        saveToSupaBase,
       }}
     >
       {children}

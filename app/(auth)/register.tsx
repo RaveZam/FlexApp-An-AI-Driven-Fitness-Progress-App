@@ -45,6 +45,8 @@ export default function RegisterScreen() {
         placeholderTextColor="#9CA3AF"
         secureTextEntry
         className="bg-[#1c1c1c] text-white rounded-xl px-4 py-3 mb-6 border border-transparent focus:border-emerald-500"
+        returnKeyType="done"
+        onSubmitEditing={handleRegister}
       />
 
       <TouchableOpacity

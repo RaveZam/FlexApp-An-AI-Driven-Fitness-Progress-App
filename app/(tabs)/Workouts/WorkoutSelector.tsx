@@ -4,7 +4,7 @@ import SearchComponent from "./components/SearchComponent";
 
 import useWorkouts from "@/hooks/useFetchWorkouts";
 import { useWorkoutContext } from "@/hooks/useWorkoutPlanContext";
-import { router } from "expo-router";
+import { useWorkoutPlanCreator } from "@/hooks/useWorkoutPlanCreator";
 import { useState } from "react";
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 
@@ -13,6 +13,7 @@ export default function WorkoutSelector() {
   const { workouts } = useWorkouts();
   const { getCurrentIndexDay, addWorkout, selectedWorkouts } =
     useWorkoutContext();
+  const { navigateToSummary } = useWorkoutPlanCreator();
 
   return (
     <ThemedView className="flex-1">
@@ -68,15 +69,11 @@ export default function WorkoutSelector() {
           {selectedWorkouts.length}
         </Text>
         <View className="w-1/3 ml-auto">
-          <TouchableOpacity className="bg-[#BFFA00] px-4  justify-center items-center rounded-full p-2">
-            <Text
-              onPress={() => {
-                router.push("/Workouts/Summary");
-              }}
-              className="font-semibold"
-            >
-              Next
-            </Text>
+          <TouchableOpacity
+            className="bg-[#BFFA00] px-4 justify-center items-center rounded-full p-2"
+            onPress={navigateToSummary}
+          >
+            <Text className="font-semibold">Next</Text>
           </TouchableOpacity>
         </View>
       </View>
