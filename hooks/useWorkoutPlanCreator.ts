@@ -11,6 +11,7 @@ export const useWorkoutPlanCreator = () => {
   const [selectedWorkouts, setSelectedWorkouts] = useState<any[]>([]);
   const [repsPerSet, setRepsPerSet] = useState<any[]>([]);
   const [shouldSave, setShouldSave] = useState<boolean>(false);
+  const [showSuccessPopup, setShowSuccessPopup] = useState<boolean>(false);
 
   const handleStartPlan = (plan: string) => {
     const steps = getStepsFromPlan(plan);
@@ -93,15 +94,20 @@ export const useWorkoutPlanCreator = () => {
       return { ...prev, workoutPlan: updatedWorkoutPlan };
     });
 
-    setSelectedWorkouts([]);
-    setRepsPerSet([]);
     if (currentStepIndex < selectedPlan.length - 1) {
       setCurrentStepIndex(currentStepIndex + 1);
+      clearWorkouts();
       router.push("/Workouts/WorkoutSelector");
     } else {
-      saveToSupaBase();
+      // On the last step, just show popup, don't navigate
       setShouldSave(true);
+      return; // Exit early to prevent any further navigation
     }
+  }
+
+  function clearWorkouts() {
+    setSelectedWorkouts([]);
+    setRepsPerSet([]);
   }
 
   function navigateToSummary() {
@@ -190,11 +196,18 @@ export const useWorkoutPlanCreator = () => {
       }
 
       console.log("Success", "Workout plan saved to your account!");
+      setShowSuccessPopup(true);
     } catch (err) {
       console.error("Unexpected error saving workout plan:", err);
       console.log("Unexpected Error", "Something went wrong.");
     }
   }
+
+  const handleSuccessPopupClose = () => {
+    setShowSuccessPopup(false);
+    clearWorkouts();
+    router.push("/Workouts");
+  };
 
   return {
     getCurrentIndexDay,
@@ -206,5 +219,7 @@ export const useWorkoutPlanCreator = () => {
     handleNextDay,
     saveToSupaBase,
     navigateToSummary,
+    showSuccessPopup,
+    handleSuccessPopupClose,
   };
 };
