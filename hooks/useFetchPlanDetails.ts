@@ -14,35 +14,30 @@ export const useFetchPlanDetails = () => {
       setLoading(true);
       setError(null);
 
-      // Fetch plan details
+      // Fetch plan days with their workouts and workout details in one query
       const { data: planData, error: planError } = await supabase
         .from("plan_per_day")
-        .select("*")
+        .select(
+          `*,
+          workouts_per_day (
+            *,
+            workout_id (
+              workout_name,
+              workout_description,
+              muscle_group,
+              workout_image
+            )
+          )
+        `
+        )
         .eq("workout_plan_id", planId);
 
       if (planError) {
         throw planError;
       }
-
-      console.log(planData);
-      setPlanDetails(planData);
-
-      const workoutPerDay = await Promise.all(
-        planData.map(async (day: any) => {
-          const { data: workoutsData, error: workoutsError } = await supabase
-            .from("workouts_per_day")
-            .select("*")
-            .eq("plan_per_day_id", day.id);
-
-          if (workoutsError) {
-            throw workoutsError;
-          }
-
-          return workoutsData;
-        })
-      );
-      console.log("Workouts Per Day", workoutPerDay);
-      setWorkouts(workoutPerDay);
+      console.log("Plan Data with Workouts", planData);
+      setPlanDetails(planData?.[0] || null); // Optionally set the first plan day as details
+      setWorkouts(planData || []); // Set all plan days with their workouts
     } catch (err) {
       setError(err as Error);
     } finally {

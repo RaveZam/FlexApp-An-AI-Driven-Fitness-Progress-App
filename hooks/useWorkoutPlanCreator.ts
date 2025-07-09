@@ -12,8 +12,10 @@ export const useWorkoutPlanCreator = () => {
   const [repsPerSet, setRepsPerSet] = useState<any[]>([]);
   const [shouldSave, setShouldSave] = useState<boolean>(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState<boolean>(false);
+  const [planName, setPlanName] = useState<string>("");
 
   const handleStartPlan = (plan: string) => {
+    setPlanName(plan); // Store the selected plan name
     const steps = getStepsFromPlan(plan);
     setSelectedPlan(steps);
     setInitialWorkoutPlan(getInitialWorkoutPlan(steps));
@@ -143,7 +145,7 @@ export const useWorkoutPlanCreator = () => {
         .from("workout_plans")
         .insert({
           user_id: user?.id,
-          name: "Test",
+          name: planName || "Custom",
           is_active: false,
           created_at: new Date(),
         })

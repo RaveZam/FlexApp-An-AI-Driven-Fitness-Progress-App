@@ -4,23 +4,54 @@ import { ThemedText } from "../ThemedText";
 export default function WorkoutCard({
   workout,
   reps,
+  sets,
+  rest_time,
+  muscle_group,
+  description,
+  workout_image,
 }: {
   workout: string;
   reps: string;
+  sets: string;
+  rest_time: string;
+  muscle_group: string;
+  description: string;
+  workout_image?: string;
 }) {
   return (
-    <View className="flex-row rounded-[28px] bg-[#191818] overflow-hidden mt-4">
+    <View className="flex-row items-center rounded-2xl bg-[#18181b] shadow-sm overflow-hidden my-3 p-3">
       <Image
-        source={require("../../assets/images/WorkoutImages/latpulldownimage.webp")}
+        source={
+          workout_image
+            ? { uri: workout_image }
+            : require("../../assets/images/WorkoutImages/latpulldownimage.webp")
+        }
         style={{
-          width: 150,
-          height: "auto",
-          objectFit: "contain",
+          width: 72,
+          height: 72,
+          borderRadius: 16,
+          backgroundColor: "#232323",
+          marginRight: 16,
         }}
+        resizeMode="cover"
       />
-      <View className="flex-1 justify-center items-center py-4">
-        <ThemedText className=" font-medium opacity-90">{workout}</ThemedText>
-        <ThemedText className="text-[0.8rem] opacity-50">{reps}</ThemedText>
+      <View className="flex-1 justify-center">
+        <ThemedText className="text-base font-semibold mb-1 opacity-90">
+          {workout}
+        </ThemedText>
+        <ThemedText className="text-xs opacity-60 mb-1">
+          {muscle_group}
+        </ThemedText>
+        <ThemedText className="text-xs opacity-50 mb-1">
+          {description}
+        </ThemedText>
+        <View className="flex-row gap-3 mt-1">
+          <ThemedText className="text-xs opacity-70">Reps: {reps}</ThemedText>
+          <ThemedText className="text-xs opacity-70">Sets: {sets}</ThemedText>
+          <ThemedText className="text-xs opacity-70">
+            Rest: {rest_time}s
+          </ThemedText>
+        </View>
       </View>
     </View>
   );

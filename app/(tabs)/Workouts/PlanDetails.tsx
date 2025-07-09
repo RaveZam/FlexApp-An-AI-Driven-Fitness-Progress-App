@@ -1,6 +1,5 @@
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import Button from "@/components/ui/Button";
 import WorkoutCard from "@/components/Workout/WorkoutCard";
 import { useFetchPlanDetails } from "@/hooks/useFetchPlanDetails";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -17,11 +16,7 @@ export default function PlanDetails() {
   const { planDetails, workouts, loading, error, fetchPlanAndWorkouts } =
     useFetchPlanDetails();
 
-  // Fetch plan details and workouts when component mounts
   useEffect(() => {
-    console.log("Plan ID", planId);
-    console.log("Plan Name", planName);
-    console.log("Workouts", workouts);
     if (planId) {
       fetchPlanAndWorkouts(planId);
     }
@@ -61,37 +56,39 @@ export default function PlanDetails() {
         {workouts && workouts.length > 0 ? (
           <ScrollView
             showsVerticalScrollIndicator={false}
-            alwaysBounceVertical={true}
-            className="flex-1"
+            className="flex-1 px-2"
           >
-            {workouts.map((workout: any) => (
-              <WorkoutCard
-                key={workout.id}
-                workout={workout.name}
-                reps={workout.reps || workout.sets}
-              />
+            {workouts.map((day: any) => (
+              <View key={day.id} className="mb-8">
+                <ThemedText className="text-lg font-bold mb-3 tracking-wide opacity-80">
+                  {day.day_name}
+                </ThemedText>
+                {day.workouts_per_day && day.workouts_per_day.length > 0 ? (
+                  day.workouts_per_day.map((workout: any) => (
+                    <WorkoutCard
+                      key={workout.id}
+                      workout={workout.workout_id.workout_name}
+                      reps={workout.reps}
+                      sets={workout.sets}
+                      rest_time={workout.rest_time}
+                      muscle_group={workout.workout_id.muscle_group}
+                      description={workout.workout_id.workout_description}
+                      workout_image={workout.workout_id.workout_image}
+                    />
+                  ))
+                ) : (
+                  <ThemedText className="text-xs opacity-60 mb-2 ml-2">
+                    No workouts for this day.
+                  </ThemedText>
+                )}
+              </View>
             ))}
           </ScrollView>
         ) : (
-          <View className="flex-1 justify-center items-center">
-            <ThemedText className="text-center text-lg font-medium opacity-60 mb-4">
-              No Workouts Found...
-            </ThemedText>
-            <ThemedText className="text-center text-sm opacity-50">
-              This plan doesn't have any workouts yet.
-            </ThemedText>
-          </View>
+          <ThemedText className="text-center mt-8 opacity-60">
+            No plan days found.
+          </ThemedText>
         )}
-      </View>
-
-      <View className="p-4">
-        <Button
-          buttonText="Add Workout"
-          onPress={() => {
-            // TODO: Navigate to add workout screen
-            console.log("Add workout to plan:", planId);
-          }}
-        />
       </View>
     </ThemedView>
   );
