@@ -3,8 +3,11 @@ import { ThemedView } from "@/components/ThemedView";
 import WorkoutCard from "@/components/Workout/WorkoutCard";
 import { useFetchPlanDetails } from "@/hooks/useFetchPlanDetails";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { ActivityIndicator, ScrollView, View } from "react-native";
+import Button from "@/components/ui/Button";
+import NavigateBack from "@/components/ui/NavigateBack";
+import Popup from "@/components/ui/Popup";
 
 export default function PlanDetails() {
   const router = useRouter();
@@ -13,9 +16,16 @@ export default function PlanDetails() {
     planName: string;
   }>();
 
-  const { planDetails, workouts, loading, error, fetchPlanAndWorkouts } =
-    useFetchPlanDetails();
-
+  const {
+    planDetails,
+    workouts,
+    loading,
+    error,
+    fetchPlanAndWorkouts,
+    selectActiveWorkout,
+  } = useFetchPlanDetails();
+  const [showPopup, setShowPopup] = useState<boolean>(false);
+  const [showLogoutPopup, setShowLogoutPopup] = useState<boolean>(false);
   useEffect(() => {
     if (planId) {
       fetchPlanAndWorkouts(planId);
@@ -50,7 +60,14 @@ export default function PlanDetails() {
           {planDetails?.name || planName || "Workout Plan"}
         </ThemedText>
         <ThemedText className="text-sm opacity-60 mb-4">
-          {workouts?.length || 0} workouts in this plan
+          {workouts
+            ? workouts.reduce(
+                (total: number, day: any) =>
+                  total + (day.workouts_per_day?.length || 0),
+                0
+              )
+            : 0}{" "}
+          workouts in this plan
         </ThemedText>
 
         {workouts && workouts.length > 0 ? (
@@ -83,6 +100,32 @@ export default function PlanDetails() {
                 )}
               </View>
             ))}
+            <Button
+              buttonText="Set Active Workout"
+              onPress={() => {
+                selectActiveWorkout(Number(planId)).then((status) => {
+                  if (status === 200) {
+                    setShowPopup(true);
+                  }
+                });
+              }}
+            />
+            <Popup
+              isVisible={showPopup}
+              onClose={() => {}}
+              iconName="checkcircle"
+              iconColor="#FFFFFF"
+              message="Workout plan activated successfully!"
+              buttons={[
+                {
+                  text: "OK",
+                  onPress: () => {
+                    setShowPopup(false);
+                    router.push("/Workouts");
+                  },
+                },
+              ]}
+            />
           </ScrollView>
         ) : (
           <ThemedText className="text-center mt-8 opacity-60">

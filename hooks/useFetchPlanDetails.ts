@@ -1,5 +1,6 @@
 import { supabase } from "@/scripts/SupabaseClient";
 import { useState } from "react";
+import Popup from "@/components/ui/Popup";
 
 export const useFetchPlanDetails = () => {
   const [planDetails, setPlanDetails] = useState<any | null>(null);
@@ -51,6 +52,15 @@ export const useFetchPlanDetails = () => {
     setError(null);
   };
 
+  const selectActiveWorkout = async (planID: number) => {
+    const { status } = await supabase
+      .from("workout_plans")
+      .update({ is_active: true })
+      .eq("id", planID)
+      .select();
+
+    return status;
+  };
   return {
     planDetails,
     workouts,
@@ -58,5 +68,6 @@ export const useFetchPlanDetails = () => {
     error,
     fetchPlanAndWorkouts,
     clearData,
+    selectActiveWorkout,
   };
 };

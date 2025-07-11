@@ -5,8 +5,8 @@ import { useEffect, useState } from "react";
 export const useFetchWorkoutPlans = () => {
   const { user } = useAuth();
   const [workoutPlans, setWorkoutPlans] = useState<any[] | null>(null);
-  const [workoutPlan, setWorkoutPlan] = useState<any[] | null>(null);
-  const [workoutPerDays, setWorkoutPerDays] = useState<any[] | null>(null);
+  // const [workoutPlan, setWorkoutPlan] = useState<any[] | null>(null);
+  // const [workoutPerDays, setWorkoutPerDays] = useState<any[] | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);
 
