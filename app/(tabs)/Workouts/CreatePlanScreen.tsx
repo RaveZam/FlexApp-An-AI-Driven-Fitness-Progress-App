@@ -2,6 +2,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import Button from "@/components/ui/Button";
 import { useWorkoutContext } from "@/hooks/useWorkoutPlanContext";
+import { router } from "expo-router";
 import { View } from "react-native";
 import SelectDayComponent from "./components/SelectDayComponent";
 
@@ -27,7 +28,7 @@ export default function SelectWorkoutPlan() {
           <Button
             buttonText="Custom"
             onPress={() => {
-              handleStartPlan("Custom");
+              router.push("/Workouts/CustomWorkoutCreator" as never);
             }}
           />
         </View>

@@ -7,6 +7,12 @@ export default function Workouts() {
       <Stack.Screen name="CreatePlanScreen" options={{ headerShown: false }} />
       <Stack.Screen name="WorkoutSelector" options={{ headerShown: false }} />
       <Stack.Screen name="Summary" options={{ headerShown: false }} />
+      <Stack.Screen
+        name="CustomWorkoutCreator"
+        options={{
+          headerShown: false,
+        }}
+      />
     </Stack>
   );
 }

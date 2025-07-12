@@ -4,14 +4,16 @@ import Svg, { Defs, LinearGradient, Rect } from "react-native-svg";
 export default function Button({
   buttonText,
   onPress,
+  className,
 }: {
   buttonText: string;
   onPress: () => void;
+  className: string;
 }) {
   return (
     <TouchableOpacity
       onPress={onPress}
-      className="px-6 py-4 rounded-md m-4 shadow-md m-1 overflow-hidden"
+      className={`px-6 py-4 rounded-md m-4 shadow-md m-1 overflow-hidden ${className}`}
     >
       <Svg
         width="100%"

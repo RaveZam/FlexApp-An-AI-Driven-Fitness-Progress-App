@@ -14,6 +14,8 @@ export const useWorkoutPlanCreator = () => {
   const [showSuccessPopup, setShowSuccessPopup] = useState<boolean>(false);
   const [planName, setPlanName] = useState<string>("");
 
+  const [workoutNumberOfDays, setWorkoutNumberOfDays] = useState(0);
+
   const handleStartPlan = (plan: string) => {
     setPlanName(plan); // Store the selected plan name
     const steps = getStepsFromPlan(plan);
@@ -35,7 +37,7 @@ export const useWorkoutPlanCreator = () => {
           { day: "Upper Body", key: "upper" },
           { day: "Lower Body", key: "lower" },
         ];
-      case "Full Body":
+      case "Custom":
         return [
           { day: "Full Body Day 1", key: "full1" },
           { day: "Full Body Day 2", key: "full2" },
@@ -158,8 +160,6 @@ export const useWorkoutPlanCreator = () => {
         return;
       }
 
-      // 2. Loop through each workout day
-
       for (let i = 0; i < initialWorkoutPlan.workoutPlan.length; i++) {
         const day = initialWorkoutPlan.workoutPlan[i];
 
@@ -223,5 +223,6 @@ export const useWorkoutPlanCreator = () => {
     navigateToSummary,
     showSuccessPopup,
     handleSuccessPopupClose,
+    setWorkoutNumberOfDays,
   };
 };

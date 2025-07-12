@@ -59,6 +59,7 @@ export default function index() {
 
       <View className="p-4">
         <Button
+          className=""
           buttonText="Create Workout"
           onPress={() => router.push("/Workouts/CreatePlanScreen" as never)}
         />

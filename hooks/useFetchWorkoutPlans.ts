@@ -23,11 +23,16 @@ export const useFetchWorkoutPlans = () => {
           .from("workout_plans")
           .select("*")
           .eq("user_id", user.id);
-
         if (supabaseError) {
           throw supabaseError;
         }
-        setWorkoutPlans(data);
+
+        const activeWorkoutFirst = [
+          ...data.filter((plan: any) => plan.is_active === true),
+          ...data.filter((plan: any) => plan.is_active !== true),
+        ];
+
+        setWorkoutPlans(activeWorkoutFirst);
       } catch (err) {
         setError(err as Error);
       } finally {

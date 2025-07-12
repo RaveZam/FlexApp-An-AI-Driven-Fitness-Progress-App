@@ -14,6 +14,7 @@ type WorkoutContextType = {
   saveToSupaBase: () => Promise<void>;
   showSuccessPopup: boolean;
   handleSuccessPopupClose: () => void;
+  setWorkoutNumberOfDays: Dispatch<SetStateAction<number>>;
 };
 
 export const WorkoutContext = createContext<WorkoutContextType | undefined>(
@@ -36,6 +37,7 @@ export default function workoutContextProvider({
     saveToSupaBase,
     showSuccessPopup,
     handleSuccessPopupClose,
+    setWorkoutNumberOfDays,
   } = useWorkoutPlanCreator();
   const [selectedDay, setSelectedDay] = React.useState<string>("Mon");
 
@@ -54,6 +56,7 @@ export default function workoutContextProvider({
         saveToSupaBase,
         showSuccessPopup,
         handleSuccessPopupClose,
+        setWorkoutNumberOfDays,
       }}
     >
       {children}

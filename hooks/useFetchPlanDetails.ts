@@ -1,6 +1,5 @@
 import { supabase } from "@/scripts/SupabaseClient";
 import { useState } from "react";
-import Popup from "@/components/ui/Popup";
 
 export const useFetchPlanDetails = () => {
   const [planDetails, setPlanDetails] = useState<any | null>(null);
@@ -58,9 +57,9 @@ export const useFetchPlanDetails = () => {
       .update({ is_active: true })
       .eq("id", planID)
       .select();
-
     return status;
   };
+
   return {
     planDetails,
     workouts,

@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, ActivityIndicator, StyleSheet, Modal } from 'react-native';
+import React from "react";
+import { View, ActivityIndicator, StyleSheet, Modal } from "react-native";
 
 interface LoadingOverlayProps {
   isVisible: boolean;
@@ -13,7 +13,7 @@ const LoadingOverlay: React.FC<LoadingOverlayProps> = ({ isVisible }) => {
   return (
     <Modal transparent={true} animationType="fade" visible={isVisible}>
       <View style={styles.overlay}>
-        <ActivityIndicator size="large" color="#BFFA00" />
+        <ActivityIndicator size="large" color="#10b981" />
       </View>
     </Modal>
   );
@@ -22,9 +22,9 @@ const LoadingOverlay: React.FC<LoadingOverlayProps> = ({ isVisible }) => {
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
   },
 });
 
