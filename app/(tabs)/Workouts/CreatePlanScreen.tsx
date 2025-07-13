@@ -14,18 +14,21 @@ export default function SelectWorkoutPlan() {
         <ThemedText className="text-xl mb-8">Select A Plan</ThemedText>
         <View className="gap-1 w-full">
           <Button
+            className=""
             buttonText="Push Pull Legs"
             onPress={() => {
               handleStartPlan("Push Pull Legs");
             }}
           />
           <Button
+            className=""
             buttonText="Upper Lower"
             onPress={() => {
               handleStartPlan("Upper Lower");
             }}
           />
           <Button
+            className=""
             buttonText="Custom"
             onPress={() => {
               router.push("/Workouts/CustomWorkoutCreator" as never);

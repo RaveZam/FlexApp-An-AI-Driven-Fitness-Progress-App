@@ -14,10 +14,11 @@ export const useWorkoutPlanCreator = () => {
   const [showSuccessPopup, setShowSuccessPopup] = useState<boolean>(false);
   const [planName, setPlanName] = useState<string>("");
 
-  const [workoutNumberOfDays, setWorkoutNumberOfDays] = useState(0);
+  const [workoutNumberOfDays, setWorkoutNumberOfDays] = useState<number>(0);
+  const [restDays, setRestDays] = useState<string[]>([]);
 
   const handleStartPlan = (plan: string) => {
-    setPlanName(plan); // Store the selected plan name
+    setPlanName(plan);
     const steps = getStepsFromPlan(plan);
     setSelectedPlan(steps);
     setInitialWorkoutPlan(getInitialWorkoutPlan(steps));
@@ -224,5 +225,8 @@ export const useWorkoutPlanCreator = () => {
     showSuccessPopup,
     handleSuccessPopupClose,
     setWorkoutNumberOfDays,
+    setRestDays,
+    restDays,
+    workoutNumberOfDays,
   };
 };

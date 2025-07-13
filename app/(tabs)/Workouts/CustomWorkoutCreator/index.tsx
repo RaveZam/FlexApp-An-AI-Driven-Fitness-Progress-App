@@ -1,15 +1,13 @@
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import WheelPickerExpo from "react-native-wheel-picker-expo";
-import Checkbox from "expo-checkbox";
 
-import { useWorkoutPlanCreator } from "@/hooks/useWorkoutPlanCreator";
 import Button from "@/components/ui/Button";
-import { router } from "expo-router";
-import { useEffect, useState } from "react";
-import { TouchableOpacity, View } from "react-native";
 import CheckBox from "@/components/ui/CheckBox";
 import LoadingOverlay from "@/components/ui/LoadingOverlay";
+import { useWorkoutPlanCreator } from "@/hooks/useWorkoutPlanCreator";
+import { useEffect, useState } from "react";
+import { Text, TextInput, View } from "react-native";
 export default function index() {
   const Days = "1,2,3,4,5,6,7".split(",");
   const DaysOfTheWeek = [
@@ -22,11 +20,30 @@ export default function index() {
     "Sunday",
   ];
 
-  const [step, setStep] = useState(0);
-  const [selectedRestDays, setSelectedRestDays] = useState<string[]>([]);
-  const [index, setIndex] = useState(0);
+  const [step, setStep] = useState(2);
 
-  const { setWorkoutNumberOfDays } = useWorkoutPlanCreator();
+  const { setWorkoutNumberOfDays, restDays, setRestDays, workoutNumberOfDays } =
+    useWorkoutPlanCreator();
+
+  // const workoutDays = DaysOfTheWeek.filter((day) => !restDays.includes(day));
+  const workoutDays = ["Monday", "Tuesday", "Wednesday"];
+
+  const [workoutDaysIndex, setWorkoutDaysIndex] = useState(0);
+
+  const [workoutDayNames, setworkoutDayNames] = useState<string[]>([]);
+  const [dayInput, setdayInput] = useState("");
+
+  useEffect(() => {
+    console.log(workoutDayNames);
+  }, [workoutDayNames, dayInput]);
+
+  const handleNext = () => {
+    if (workoutDays.length >= 0) {
+      setworkoutDayNames((prev) => [...prev, dayInput]);
+      setdayInput("");
+      setWorkoutDaysIndex((prev) => prev + 1);
+    }
+  };
 
   return (
     <ThemedView className="flex-1 items-center justify-center">
@@ -37,7 +54,7 @@ export default function index() {
             height={300}
             width={150}
             initialSelectedIndex={3}
-            items={Days.map((name) => ({ label: name, value: "" }))}
+            items={Days.map((name) => ({ label: name, value: Number(name) }))}
             onChange={({ item }) => setWorkoutNumberOfDays(item.value)}
             backgroundColor="#0F0F0F"
             haptics={true}
@@ -48,19 +65,22 @@ export default function index() {
           <ThemedText className="text-2xl font-medium text-nowrap">
             What Days Do You Want To Rest?
           </ThemedText>
+          <Text className="text-gray-300 text-lg opacity-80  mt-4">
+            You Have {7 - workoutNumberOfDays} Rest Days
+          </Text>
           <View className="my-4 flex-col">
             {DaysOfTheWeek.map((day) => (
               <View className="m-4 flex-row items-center" key={day}>
                 <CheckBox
                   label={day}
-                  checked={selectedRestDays.includes(day)}
+                  checked={restDays.includes(day)}
                   onToggle={() => {
-                    if (selectedRestDays.includes(day)) {
-                      setSelectedRestDays((prev) =>
-                        prev.filter((d) => d !== day)
-                      );
-                    } else {
-                      setSelectedRestDays((prev) => [...prev, day]);
+                    if (7 - workoutNumberOfDays > restDays.length) {
+                      setRestDays((prev) => [...prev, day]);
+                    }
+
+                    if (restDays.includes(day)) {
+                      setRestDays((prev) => prev.filter((d) => d !== day));
                     }
                   }}
                 />
@@ -68,17 +88,49 @@ export default function index() {
             ))}
           </View>
         </>
+      ) : step === 2 ? (
+        <View className="flex-1 justify-center items-center">
+          <ThemedText className="text-[1.2rem]">
+            Name {workoutDays[workoutDaysIndex]}'s Workout
+          </ThemedText>
+
+          <TextInput
+            value={dayInput}
+            onChangeText={(text) => setdayInput(text)}
+            className="border-b border-[#464646] text-white text-[1.2rem] px-4 py-3 mt-4 mb-4 focus:outline-none focus:ring-0"
+          />
+          <Button
+            className="w-3/4 mt-12"
+            buttonText="Next Day"
+            onPress={() => handleNext()}
+          />
+        </View>
       ) : null}
 
       <LoadingOverlay isVisible={false} />
-      <Button
-        className="w-[80%]"
-        buttonText="Next"
-        onPress={() => {
-          setStep(step + 1);
-          console.log(step);
-        }}
-      />
+      {step !== 2 ? (
+        <Button
+          className="w-[80%]"
+          buttonText="Next"
+          onPress={() => {
+            setStep(step + 1);
+            console.log(step);
+          }}
+        />
+      ) : null}
     </ThemedView>
   );
 }
+
+//  make it inrement per day of the index on working day
+//  save the names of each day
+//  so we will create a new array with the structure of
+
+//  [
+//     push : [],
+//     pull: [],
+//     legs: [],
+//     arms: []''
+//  ]
+
+//  or something like that, and the we need to pass that in the creator in the workout plan so it can run to the workout plan creator screen and then be able to save in supabase
