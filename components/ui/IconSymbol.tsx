@@ -25,6 +25,7 @@ const MAPPING = {
   "chart.bar.fill": "bar-chart",
   "dumbbell.fill": "fitness-center",
   "gearshape.fill": "settings",
+  "arrow.right": "arrow-forward",
 } as IconMapping;
 
 /**
