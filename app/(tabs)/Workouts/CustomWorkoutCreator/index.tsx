@@ -9,6 +9,7 @@ import { useWorkoutPlanCreator } from "@/hooks/useWorkoutPlanCreator";
 import { useEffect, useState } from "react";
 import { Text, TextInput, View } from "react-native";
 export default function index() {
+  const [isVisible, setisVisible] = useState(false);
   const Days = "1,2,3,4,5,6,7".split(",");
   const DaysOfTheWeek = [
     "Monday",
@@ -33,15 +34,43 @@ export default function index() {
   const [workoutDayNames, setworkoutDayNames] = useState<string[]>([]);
   const [dayInput, setdayInput] = useState("");
 
+  const [workoutPlan, setWorkoutPlan] = useState<any>([]);
+
   useEffect(() => {
-    console.log(workoutDayNames);
-  }, [workoutDayNames, dayInput]);
+    console.log(workoutPlan);
+  }, [workoutPlan]);
+
+  const getInitialWorkoutPlan = (steps: any[]) => {
+    return {
+      workoutPlan: steps.map((step) => ({
+        key: step.day,
+        workouts: [],
+      })),
+    };
+  };
+
+  useEffect(() => {
+    const customWorkoutPlan = workoutDayNames.map((day) => ({
+      day: day,
+      key: day.toLowerCase().replace(/\s+/g, "-"),
+    }));
+
+    setWorkoutPlan(getInitialWorkoutPlan(customWorkoutPlan));
+  }, [workoutDayNames]);
 
   const handleNext = () => {
-    if (workoutDays.length >= 0) {
+    if (!dayInput) {
+      return;
+    }
+
+    if (workoutDays.length - 1 >= workoutDaysIndex) {
       setworkoutDayNames((prev) => [...prev, dayInput]);
       setdayInput("");
       setWorkoutDaysIndex((prev) => prev + 1);
+      return;
+    } else {
+      setdayInput("");
+      // setisVisible(true);
     }
   };
 
@@ -91,11 +120,12 @@ export default function index() {
       ) : step === 2 ? (
         <View className="flex-1 justify-center items-center">
           <ThemedText className="text-[1.2rem]">
-            Name {workoutDays[workoutDaysIndex]}'s Workout
+            What Do You Wanna Call {workoutDays[workoutDaysIndex]}'s Workout?
           </ThemedText>
 
           <TextInput
             value={dayInput}
+            onSubmitEditing={() => handleNext()}
             onChangeText={(text) => setdayInput(text)}
             className="border-b border-[#464646] text-white text-[1.2rem] px-4 py-3 mt-4 mb-4 focus:outline-none focus:ring-0"
           />
@@ -104,19 +134,28 @@ export default function index() {
             buttonText="Next Day"
             onPress={() => handleNext()}
           />
+          <Button
+            className="w-[80%]"
+            buttonText="Next"
+            onPress={() => {
+              console.log(workoutPlan);
+            }}
+          />
         </View>
       ) : null}
 
-      <LoadingOverlay isVisible={false} />
+      <LoadingOverlay isVisible={isVisible} />
       {step !== 2 ? (
-        <Button
-          className="w-[80%]"
-          buttonText="Next"
-          onPress={() => {
-            setStep(step + 1);
-            console.log(step);
-          }}
-        />
+        <>
+          <Button
+            className="w-[80%]"
+            buttonText="Next"
+            onPress={() => {
+              setStep(step + 1);
+              console.log(step);
+            }}
+          />
+        </>
       ) : null}
     </ThemedView>
   );
