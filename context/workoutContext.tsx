@@ -18,6 +18,8 @@ type WorkoutContextType = {
   setRestDays: Dispatch<SetStateAction<string[]>>;
   restDays: any[];
   workoutNumberOfDays: number;
+  setInitialWorkoutPlan: Dispatch<SetStateAction<any[]>>;
+  initialWorkoutPlan: any[];
 };
 
 export const WorkoutContext = createContext<WorkoutContextType | undefined>(
@@ -44,6 +46,8 @@ export default function workoutContextProvider({
     setRestDays,
     restDays,
     workoutNumberOfDays,
+    setInitialWorkoutPlan,
+    initialWorkoutPlan,
   } = useWorkoutPlanCreator();
   const [selectedDay, setSelectedDay] = React.useState<string>("Mon");
 
@@ -66,6 +70,8 @@ export default function workoutContextProvider({
         showSuccessPopup,
         handleSuccessPopupClose,
         setWorkoutNumberOfDays,
+        setInitialWorkoutPlan,
+        initialWorkoutPlan,
       }}
     >
       {children}

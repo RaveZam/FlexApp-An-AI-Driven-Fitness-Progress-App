@@ -4,18 +4,12 @@ import WheelPickerExpo from "react-native-wheel-picker-expo";
 
 import Button from "@/components/ui/Button";
 import CheckBox from "@/components/ui/CheckBox";
+import { IconSymbol } from "@/components/ui/IconSymbol";
 import LoadingOverlay from "@/components/ui/LoadingOverlay";
 import { useWorkoutPlanCreator } from "@/hooks/useWorkoutPlanCreator";
 import { useEffect, useState } from "react";
-import {
-  Text,
-  TextInput,
-  View,
-  TouchableOpacity,
-  StyleSheet,
-} from "react-native";
-import { IconSymbol } from "@/components/ui/IconSymbol";
-import { BlurView } from "expo-blur";
+import { Text, TextInput, View } from "react-native";
+
 import GlassButton from "@/components/ui/GlassButton";
 export default function index() {
   const [isVisible, setisVisible] = useState(false);
@@ -32,8 +26,14 @@ export default function index() {
 
   const [step, setStep] = useState(0);
 
-  const { setWorkoutNumberOfDays, restDays, setRestDays, workoutNumberOfDays } =
-    useWorkoutPlanCreator();
+  const {
+    setWorkoutNumberOfDays,
+    restDays,
+    setRestDays,
+    workoutNumberOfDays,
+    setInitialWorkoutPlan,
+    initialWorkoutPlan,
+  } = useWorkoutPlanCreator();
 
   const workoutDays = DaysOfTheWeek.filter((day) => !restDays.includes(day));
   // const workoutDays = ["Monday", "Tuesday", "Wednesday"];
@@ -68,19 +68,26 @@ export default function index() {
     setWorkoutPlan(getInitialWorkoutPlan(customWorkoutPlan));
   }, [workoutDayNames]);
 
+  useEffect(() => {
+    console.log(workoutPlan.workoutPlan?.length);
+    if (workoutPlan.workoutPlan?.length == workoutDays.length) {
+      console.log("You are done");
+      setisVisible(true);
+    }
+  }, [workoutPlan]);
+
   const handleNext = () => {
     if (!dayInput) {
       return;
     }
 
-    if (workoutDays.length - 1 >= workoutDaysIndex) {
+    if (workoutDays.length - 1 > workoutDaysIndex) {
       setworkoutDayNames((prev) => [...prev, dayInput]);
       setdayInput("");
       setWorkoutDaysIndex((prev) => prev + 1);
       return;
     } else {
-      setdayInput("");
-      // setisVisible(true);
+      setworkoutDayNames((prev) => [...prev, dayInput]);
     }
   };
 

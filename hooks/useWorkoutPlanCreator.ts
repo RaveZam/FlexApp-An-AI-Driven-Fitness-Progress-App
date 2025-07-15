@@ -6,7 +6,9 @@ import { useEffect, useState } from "react";
 export const useWorkoutPlanCreator = () => {
   const { user } = useAuth();
   const [selectedPlan, setSelectedPlan] = useState<any>([]);
+
   const [initialWorkoutPlan, setInitialWorkoutPlan] = useState<any>([]);
+
   const [currentStepIndex, setCurrentStepIndex] = useState<number>(0);
   const [selectedWorkouts, setSelectedWorkouts] = useState<any[]>([]);
   const [repsPerSet, setRepsPerSet] = useState<any[]>([]);
@@ -228,5 +230,7 @@ export const useWorkoutPlanCreator = () => {
     setRestDays,
     restDays,
     workoutNumberOfDays,
+    setInitialWorkoutPlan,
+    initialWorkoutPlan,
   };
 };
