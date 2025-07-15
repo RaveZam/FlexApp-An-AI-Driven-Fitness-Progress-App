@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 export const useWorkoutPlanCreator = () => {
   const { user } = useAuth();
   const [selectedPlan, setSelectedPlan] = useState<any>([]);
-
   const [initialWorkoutPlan, setInitialWorkoutPlan] = useState<any>([]);
 
   const [currentStepIndex, setCurrentStepIndex] = useState<number>(0);
@@ -18,6 +17,63 @@ export const useWorkoutPlanCreator = () => {
 
   const [workoutNumberOfDays, setWorkoutNumberOfDays] = useState<number>(0);
   const [restDays, setRestDays] = useState<string[]>([]);
+
+  const DaysOfTheWeek = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+  ];
+
+  const [workoutDayNames, setworkoutDayNames] = useState<string[]>([]);
+  const workoutDays = DaysOfTheWeek.filter((day) => !restDays.includes(day));
+  const [workoutDaysIndex, setWorkoutDaysIndex] = useState(0);
+
+  // Custom Workout Logic
+
+  useEffect(() => {
+    // console.log(initialWorkoutPlan?.workoutPlan?.length);
+    if (initialWorkoutPlan?.workoutPlan?.length == workoutDays.length) {
+      console.log("You are done");
+      // setisVisible(true);
+      goToWorkoutSelector();
+      console.log(initialWorkoutPlan);
+    }
+  }, [initialWorkoutPlan]);
+
+  const customWorkoutPlan = workoutDayNames.map((day) => ({
+    day: day,
+    key: day.toLowerCase().replace(/\s+/g, "-"),
+  }));
+
+  useEffect(() => {
+    setInitialWorkoutPlan(getInitialWorkoutPlan(customWorkoutPlan));
+    console.log("Trigger");
+  }, [workoutDayNames]);
+
+  const handleNext = (dayInput: string) => {
+    if (!dayInput) {
+      return;
+    }
+
+    if (workoutDays.length - 1 > workoutDaysIndex) {
+      setworkoutDayNames((prev) => [...prev, dayInput]);
+      // setdayInput("");
+      setWorkoutDaysIndex((prev) => prev + 1);
+      return;
+    } else {
+      setworkoutDayNames((prev) => [...prev, dayInput]);
+    }
+  };
+
+  // Custom Workout Logic
+
+  const goToWorkoutSelector = () => {
+    router.push("/Workouts/WorkoutSelector");
+  };
 
   const handleStartPlan = (plan: string) => {
     setPlanName(plan);
@@ -60,10 +116,11 @@ export const useWorkoutPlanCreator = () => {
   };
 
   const getCurrentIndexDay = () => {
-    return initialWorkoutPlan.workoutPlan?.[currentStepIndex].key;
+    return initialWorkoutPlan?.workoutPlan?.[currentStepIndex]?.key;
   };
 
   function addWorkout(workout_name: string, id: number, workout_image: string) {
+    console.log("Adding workout");
     if (selectedWorkouts.some((workout) => workout.id === id)) {
       setSelectedWorkouts((prev) =>
         prev.filter((workout) => workout.id !== id)
@@ -71,9 +128,20 @@ export const useWorkoutPlanCreator = () => {
       return;
     }
 
-    const key = selectedPlan[currentStepIndex]?.key;
-    console.log(selectedWorkouts);
+    let key = "";
+    if (selectedPlan.length > 0) {
+      console.log("SelectedPlan Detected ");
+      key = selectedPlan[currentStepIndex]?.key;
+    }
+
+    if (customWorkoutPlan.length > 0) {
+      console.log("Custom workout Detected ");
+      key = customWorkoutPlan[currentStepIndex]?.key;
+    }
+
+    console.log("Key Found", key);
     if (!key) return;
+    console.log("Key", key);
 
     const workoutObject = {
       id,
@@ -87,7 +155,17 @@ export const useWorkoutPlanCreator = () => {
   }
 
   function handleNextDay() {
-    const key = selectedPlan[currentStepIndex]?.key;
+    let key = "";
+    if (selectedPlan.length > 0) {
+      console.log("SelectedPlan Detected ");
+      key = selectedPlan[currentStepIndex]?.key;
+    }
+
+    if (customWorkoutPlan.length > 0) {
+      console.log("Custom workout Detected ");
+      key = customWorkoutPlan[currentStepIndex]?.key;
+    }
+
     if (!key) {
       console.log("No key found");
       return;
@@ -132,11 +210,7 @@ export const useWorkoutPlanCreator = () => {
   }, [selectedWorkouts]);
 
   useEffect(() => {
-    console.log("initialWorkoutPlan", initialWorkoutPlan);
-  }, [initialWorkoutPlan]);
-
-  useEffect(() => {
-    if (shouldSave && initialWorkoutPlan.workoutPlan?.length > 0) {
+    if (shouldSave && initialWorkoutPlan?.workoutPlan?.length > 0) {
       console.log("Saving to SupaBase with complete plan:", initialWorkoutPlan);
       saveToSupaBase();
       setShouldSave(false);
@@ -144,7 +218,7 @@ export const useWorkoutPlanCreator = () => {
   }, [shouldSave, initialWorkoutPlan]);
 
   async function saveToSupaBase() {
-    console.log("Initla Workout Plan", initialWorkoutPlan);
+    // console.log("Initla Workout Plan", initialWorkoutPlan);
     try {
       const { data: plan, error: planError } = await supabase
         .from("workout_plans")
@@ -163,8 +237,8 @@ export const useWorkoutPlanCreator = () => {
         return;
       }
 
-      for (let i = 0; i < initialWorkoutPlan.workoutPlan.length; i++) {
-        const day = initialWorkoutPlan.workoutPlan[i];
+      for (let i = 0; i < initialWorkoutPlan?.workoutPlan.length; i++) {
+        const day = initialWorkoutPlan?.workoutPlan[i];
 
         const { data: dayData, error: dayError } = await supabase
           .from("plan_per_day")
@@ -232,5 +306,9 @@ export const useWorkoutPlanCreator = () => {
     workoutNumberOfDays,
     setInitialWorkoutPlan,
     initialWorkoutPlan,
+    handleNext,
+    DaysOfTheWeek,
+    workoutDays,
+    workoutDaysIndex,
   };
 };

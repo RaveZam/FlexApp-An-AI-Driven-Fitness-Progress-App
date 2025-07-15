@@ -6,23 +6,14 @@ import Button from "@/components/ui/Button";
 import CheckBox from "@/components/ui/CheckBox";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 import LoadingOverlay from "@/components/ui/LoadingOverlay";
-import { useWorkoutPlanCreator } from "@/hooks/useWorkoutPlanCreator";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Text, TextInput, View } from "react-native";
 
 import GlassButton from "@/components/ui/GlassButton";
+import { useWorkoutContext } from "@/hooks/useWorkoutPlanContext";
 export default function index() {
   const [isVisible, setisVisible] = useState(false);
   const Days = "1,2,3,4,5,6,7".split(",");
-  const DaysOfTheWeek = [
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-    "Sunday",
-  ];
 
   const [step, setStep] = useState(0);
 
@@ -31,65 +22,14 @@ export default function index() {
     restDays,
     setRestDays,
     workoutNumberOfDays,
-    setInitialWorkoutPlan,
-    initialWorkoutPlan,
-  } = useWorkoutPlanCreator();
+    DaysOfTheWeek,
+    workoutDays,
+    handleNext,
+    workoutDaysIndex,
+  } = useWorkoutContext();
 
-  const workoutDays = DaysOfTheWeek.filter((day) => !restDays.includes(day));
-  // const workoutDays = ["Monday", "Tuesday", "Wednesday"];
-
-  const [workoutDaysIndex, setWorkoutDaysIndex] = useState(0);
-
-  const [workoutDayNames, setworkoutDayNames] = useState<string[]>([]);
   const [dayInput, setdayInput] = useState("");
   const [inputTouched, setInputTouched] = useState(false);
-
-  const [workoutPlan, setWorkoutPlan] = useState<any>([]);
-
-  useEffect(() => {
-    console.log(workoutPlan);
-  }, [workoutPlan]);
-
-  const getInitialWorkoutPlan = (steps: any[]) => {
-    return {
-      workoutPlan: steps.map((step) => ({
-        key: step.day,
-        workouts: [],
-      })),
-    };
-  };
-
-  useEffect(() => {
-    const customWorkoutPlan = workoutDayNames.map((day) => ({
-      day: day,
-      key: day.toLowerCase().replace(/\s+/g, "-"),
-    }));
-
-    setWorkoutPlan(getInitialWorkoutPlan(customWorkoutPlan));
-  }, [workoutDayNames]);
-
-  useEffect(() => {
-    console.log(workoutPlan.workoutPlan?.length);
-    if (workoutPlan.workoutPlan?.length == workoutDays.length) {
-      console.log("You are done");
-      setisVisible(true);
-    }
-  }, [workoutPlan]);
-
-  const handleNext = () => {
-    if (!dayInput) {
-      return;
-    }
-
-    if (workoutDays.length - 1 > workoutDaysIndex) {
-      setworkoutDayNames((prev) => [...prev, dayInput]);
-      setdayInput("");
-      setWorkoutDaysIndex((prev) => prev + 1);
-      return;
-    } else {
-      setworkoutDayNames((prev) => [...prev, dayInput]);
-    }
-  };
 
   return (
     <ThemedView className="flex-1 items-center justify-center">
@@ -161,7 +101,7 @@ export default function index() {
               </Text>
               <TextInput
                 value={dayInput}
-                onSubmitEditing={handleNext}
+                onSubmitEditing={() => handleNext(dayInput)}
                 onChangeText={(text) => {
                   setdayInput(text);
                   if (!inputTouched) setInputTouched(true);
@@ -179,7 +119,7 @@ export default function index() {
               </Text>
             )}
             <GlassButton
-              onPress={handleNext}
+              onPress={() => handleNext(dayInput)}
               accessibilityLabel="Next Day"
               className="mt-8"
             >

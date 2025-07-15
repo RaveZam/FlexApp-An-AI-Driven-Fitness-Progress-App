@@ -20,6 +20,10 @@ type WorkoutContextType = {
   workoutNumberOfDays: number;
   setInitialWorkoutPlan: Dispatch<SetStateAction<any[]>>;
   initialWorkoutPlan: any[];
+  handleNext: (dayInput: string) => void;
+  DaysOfTheWeek: any[];
+  workoutDays: any[];
+  workoutDaysIndex: number;
 };
 
 export const WorkoutContext = createContext<WorkoutContextType | undefined>(
@@ -48,6 +52,10 @@ export default function workoutContextProvider({
     workoutNumberOfDays,
     setInitialWorkoutPlan,
     initialWorkoutPlan,
+    handleNext,
+    DaysOfTheWeek,
+    workoutDays,
+    workoutDaysIndex,
   } = useWorkoutPlanCreator();
   const [selectedDay, setSelectedDay] = React.useState<string>("Mon");
 
@@ -72,6 +80,10 @@ export default function workoutContextProvider({
         setWorkoutNumberOfDays,
         setInitialWorkoutPlan,
         initialWorkoutPlan,
+        handleNext,
+        DaysOfTheWeek,
+        workoutDays,
+        workoutDaysIndex,
       }}
     >
       {children}

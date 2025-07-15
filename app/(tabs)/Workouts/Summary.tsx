@@ -1,12 +1,22 @@
 import { ThemedText } from "@/components/ThemedText";
 import Button from "@/components/ui/Button";
 import { useWorkoutContext } from "@/hooks/useWorkoutPlanContext";
+import { useEffect } from "react";
 import { ScrollView, View } from "react-native";
 import EditWorkoutCard from "./components/EditWorkoutCard";
 
 export default function Summary() {
-  const { getCurrentIndexDay, setRepsPerSet, repsPerSet, handleNextDay } =
-    useWorkoutContext();
+  const {
+    getCurrentIndexDay,
+    setRepsPerSet,
+    repsPerSet,
+    handleNextDay,
+    initialWorkoutPlan,
+  } = useWorkoutContext();
+
+  useEffect(() => {
+    console.log("Entering Workout Selector", initialWorkoutPlan);
+  }, []);
 
   const handleUpdate = (id: number, field: string, value: any) => {
     setRepsPerSet((prev) =>

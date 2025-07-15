@@ -5,15 +5,23 @@ import SearchComponent from "./components/SearchComponent";
 import useWorkouts from "@/hooks/useFetchWorkouts";
 import { useWorkoutContext } from "@/hooks/useWorkoutPlanContext";
 import { useWorkoutPlanCreator } from "@/hooks/useWorkoutPlanCreator";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 export default function WorkoutSelector() {
   const [searchQuery, setSearchQuery] = useState("");
   const { workouts } = useWorkouts();
-  const { getCurrentIndexDay, addWorkout, selectedWorkouts } =
-    useWorkoutContext();
+  const {
+    getCurrentIndexDay,
+    addWorkout,
+    selectedWorkouts,
+    initialWorkoutPlan,
+  } = useWorkoutContext();
   const { navigateToSummary } = useWorkoutPlanCreator();
+
+  useEffect(() => {
+    console.log("Entering Workout Selector", initialWorkoutPlan);
+  }, []);
 
   return (
     <ThemedView className="flex-1">
