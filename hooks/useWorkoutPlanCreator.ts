@@ -179,14 +179,13 @@ export const useWorkoutPlanCreator = () => {
       return { ...prev, workoutPlan: updatedWorkoutPlan };
     });
 
-    if (currentStepIndex < selectedPlan.length - 1) {
+    if (currentStepIndex < customWorkoutPlan?.length - 1) {
       setCurrentStepIndex(currentStepIndex + 1);
       clearWorkouts();
       router.push("/Workouts/WorkoutSelector");
     } else {
-      // On the last step, just show popup, don't navigate
       setShouldSave(true);
-      return; // Exit early to prevent any further navigation
+      return;
     }
   }
 
@@ -218,7 +217,7 @@ export const useWorkoutPlanCreator = () => {
   }, [shouldSave, initialWorkoutPlan]);
 
   async function saveToSupaBase() {
-    // console.log("Initla Workout Plan", initialWorkoutPlan);
+    console.log("Initla Workout Plan", initialWorkoutPlan);
     try {
       const { data: plan, error: planError } = await supabase
         .from("workout_plans")

@@ -40,6 +40,7 @@ export default function Summary() {
         ))}
       </ScrollView>
       <Button
+        className=""
         buttonText={"Next Day"}
         onPress={() => {
           handleNextDay();

@@ -18,7 +18,7 @@ export default function Index() {
       <HomePageChartGraph />
       <Workoutlist />
 
-      <Button buttonText="Start Workout" onPress={() => {}} />
+      <Button className="" buttonText="Start Workout" onPress={() => {}} />
     </ThemedView>
   );
 }

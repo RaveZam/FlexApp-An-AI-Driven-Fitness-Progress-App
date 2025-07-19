@@ -17,6 +17,7 @@ export default function WorkoutSelector() {
     selectedWorkouts,
     initialWorkoutPlan,
   } = useWorkoutContext();
+  
   const { navigateToSummary } = useWorkoutPlanCreator();
 
   useEffect(() => {
