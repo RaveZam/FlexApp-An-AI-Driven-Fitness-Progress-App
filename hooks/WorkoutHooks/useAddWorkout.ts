@@ -1,4 +1,4 @@
-import { useWorkoutContext } from "./useWorkoutPlanContext";
+import { useWorkoutContext } from "../useWorkoutPlanContext";
 
 export const useAddWorkout = () => {
   const {
@@ -18,20 +18,20 @@ export const useAddWorkout = () => {
       return;
     }
 
-    let key = "";
-    if (selectedPlan.length > 0) {
-      console.log("SelectedPlan Detected ");
-      key = (selectedPlan[currentStepIndex] as any)?.key;
-    }
+    // let key = "";
+    // if (selectedPlan.length > 0) {
+    //   console.log("SelectedPlan Detected ");
+    //   key = (selectedPlan[currentStepIndex] as any)?.key;
+    // }
 
-    if (customWorkoutPlan.length > 0) {
-      console.log("Custom workout Detected ");
-      key = (customWorkoutPlan[currentStepIndex] as any)?.key;
-    }
+    // if (customWorkoutPlan.length > 0) {
+    //   console.log("Custom workout Detected ");
+    //   key = (customWorkoutPlan[currentStepIndex] as any)?.key;
+    // }
 
-    console.log("Key Found", key);
-    if (!key) return;
-    console.log("Key", key);
+    // console.log("Key Found", key);
+    // if (!key) return;
+    // console.log("Key", key);
 
     const workoutObject = {
       id,

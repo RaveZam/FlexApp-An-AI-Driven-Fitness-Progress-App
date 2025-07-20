@@ -48,6 +48,7 @@ type WorkoutContextType = {
   selectedPlan: string;
   setSelectedPlan: Dispatch<SetStateAction<string[]>>;
   customWorkoutPlan: CustomWorkoutPlan[];
+  setCurrentStepIndex: Dispatch<SetStateAction<number>>;
 };
 
 export type { WorkoutContextType };

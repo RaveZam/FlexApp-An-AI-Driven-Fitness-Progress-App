@@ -1,6 +1,5 @@
-import { DaysOfTheWeek } from "@/constants/WorkoutConstants";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { useWorkoutContext } from "./useWorkoutPlanContext";
+import { useEffect } from "react";
+import { useWorkoutContext } from "../useWorkoutPlanContext";
 
 export const useAddWorkoutDayNames = () => {
   const {

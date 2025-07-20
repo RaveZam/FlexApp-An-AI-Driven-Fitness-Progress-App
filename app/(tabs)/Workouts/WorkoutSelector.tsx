@@ -8,7 +8,7 @@ import { useWorkoutPlanCreator } from "@/hooks/useWorkoutPlanCreator";
 import { useEffect, useState } from "react";
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { navgationHelpers } from "@/app/helpers/navigationHelpers";
-import { useAddWorkout } from "@/hooks/useAddWorkout";
+import { useAddWorkout } from "@/hooks/WorkoutHooks/useAddWorkout";
 
 export default function WorkoutSelector() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -73,7 +73,7 @@ export default function WorkoutSelector() {
           </TouchableOpacity>
         ))}
       </ScrollView>
-      <View className="flex-row m-4 p-4 px-8 rounded-full mt-auto bg-[#202020] items-center ">
+      <View className="flex-row m-4 p-4 px-8 rounded-full mt-auto bg-[#202020] items-center">
         <ThemedText className="text-lg font-medium">
           Selected Workouts:
         </ThemedText>

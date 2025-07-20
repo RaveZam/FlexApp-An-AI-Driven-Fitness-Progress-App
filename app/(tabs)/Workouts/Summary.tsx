@@ -4,15 +4,19 @@ import { useWorkoutContext } from "@/hooks/useWorkoutPlanContext";
 import { useEffect } from "react";
 import { ScrollView, View } from "react-native";
 import EditWorkoutCard from "./components/EditWorkoutCard";
+import { useAddSelectedWorkouts } from "@/hooks/WorkoutHooks/useAddSelectedWorkouts";
 
 export default function Summary() {
   const {
     getCurrentIndexDay,
     setRepsPerSet,
     repsPerSet,
-    handleNextDay,
+    // handleNextDay,
     initialWorkoutPlan,
+    currentStepIndex,
   } = useWorkoutContext();
+
+  const { handleNextDay } = useAddSelectedWorkouts();
 
   useEffect(() => {
     console.log("Entering Workout Selector", initialWorkoutPlan);
@@ -28,7 +32,7 @@ export default function Summary() {
   return (
     <View className="flex-1 mt-16">
       <ThemedText className="text-2xl text-center">
-        {getCurrentIndexDay()} Day Summary
+        {getCurrentIndexDay(initialWorkoutPlan!, currentStepIndex)} Day Summary
       </ThemedText>
       <ScrollView className="mt-4" showsVerticalScrollIndicator={false}>
         {repsPerSet.map((workout) => (

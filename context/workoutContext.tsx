@@ -30,9 +30,8 @@ export default function workoutContextProvider({
   const [initialWorkoutPlan, setInitialWorkoutPlan] =
     useState<InitialWorkoutPlan | null>(null);
   const [selectedPlan, setSelectedPlan] = useState<any>([]);
-
   const [currentStepIndex, setCurrentStepIndex] = useState<number>(0);
-  const [selectedWorkouts, setSelectedWorkouts] = useState<Workouts[]>([]); //// This is the selected workouts for the current day
+  const [selectedWorkouts, setSelectedWorkouts] = useState<Workouts[]>([]);
 
   const [repsPerSet, setRepsPerSet] = useState<Workouts[]>([]);
 
@@ -75,6 +74,17 @@ export default function workoutContextProvider({
     }
   }, [initialWorkoutPlan]);
 
+  // This Sets the Reps Per Set
+  useEffect(() => {
+    setRepsPerSet((prev) => {
+      const updated = selectedWorkouts.map((workout) => {
+        const existing = prev.find((w) => w.id === workout.id);
+        return existing ?? { ...workout, sets: 2, reps: "8-10" };
+      });
+      return updated;
+    });
+  }, [selectedWorkouts]);
+
   return (
     <WorkoutContext.Provider
       value={{
@@ -107,6 +117,7 @@ export default function workoutContextProvider({
         selectedPlan,
         setSelectedPlan,
         customWorkoutPlan,
+        setCurrentStepIndex,
       }}
     >
       {children}

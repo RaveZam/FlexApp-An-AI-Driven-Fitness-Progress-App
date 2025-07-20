@@ -13,7 +13,7 @@ import GlassButton from "@/components/ui/GlassButton";
 import { useWorkoutContext } from "@/hooks/useWorkoutPlanContext";
 import { useRestDays } from "@/hooks/useRestDays";
 import { DaysOfTheWeek } from "@/constants/WorkoutConstants";
-import { useAddWorkoutDayNames } from "@/hooks/useAddWorkoutDayNames";
+import { useAddWorkoutDayNames } from "@/hooks/WorkoutHooks/useAddWorkoutDayNames";
 export default function index() {
   const [isVisible, setisVisible] = useState(false);
   const Days = "1,2,3,4,5,6,7".split(",");
