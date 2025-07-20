@@ -16,11 +16,7 @@ import { useWorkoutContext } from "@/hooks/useWorkoutPlanContext";
 
 // Component to handle the success popup
 function WorkoutSuccessPopup() {
-  const context = useWorkoutContext();
-
-  if (!context) return null;
-
-  const { showSuccessPopup, handleSuccessPopupClose } = context;
+  const { showSuccessPopup, handleSuccessPopupClose } = useWorkoutContext();
 
   return (
     <Popup

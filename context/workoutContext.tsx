@@ -1,30 +1,15 @@
-import { useWorkoutPlanCreator } from "@/hooks/useWorkoutPlanCreator";
-import React, { createContext, Dispatch, SetStateAction } from "react";
-
-type WorkoutContextType = {
-  handleStartPlan: (plan: string) => void;
-  getCurrentIndexDay: () => string;
-  addWorkout: (workout_name: string, id: number, workout_image: string) => void;
-  selectedWorkouts: any[];
-  repsPerSet: any[];
-  setRepsPerSet: Dispatch<SetStateAction<any[]>>;
-  handleNextDay: () => void;
-  selectedDay: string;
-  setSelectedDay: Dispatch<SetStateAction<string>>;
-  saveToSupaBase: () => Promise<void>;
-  showSuccessPopup: boolean;
-  handleSuccessPopupClose: () => void;
-  setWorkoutNumberOfDays: Dispatch<SetStateAction<number>>;
-  setRestDays: Dispatch<SetStateAction<string[]>>;
-  restDays: any[];
-  workoutNumberOfDays: number;
-  setInitialWorkoutPlan: Dispatch<SetStateAction<any[]>>;
-  initialWorkoutPlan: any[];
-  handleNext: (dayInput: string) => void;
-  DaysOfTheWeek: any[];
-  workoutDays: any[];
-  workoutDaysIndex: number;
-};
+import React, { createContext, useEffect, useState } from "react";
+import { InitialWorkoutPlan, Workouts } from "@/types/WorkoutTypes";
+import {
+  getCurrentIndexDay,
+  getInitialWorkoutPlan,
+} from "@/app/helpers/workoutHelpers";
+import { DaysOfTheWeek } from "@/constants/WorkoutConstants";
+import { workoutPlanService } from "@/services/workoutPlanService";
+import { useAuth } from "@/auth/useAuth";
+import { WorkoutContextType } from "@/types/WorkoutContextTypes";
+import { navgationHelpers } from "@/app/helpers/navigationHelpers";
+import { handleStartPlan } from "@/app/helpers/workoutHelpers";
 
 export const WorkoutContext = createContext<WorkoutContextType | undefined>(
   undefined
@@ -35,29 +20,60 @@ export default function workoutContextProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const {
-    handleStartPlan,
-    getCurrentIndexDay,
-    addWorkout,
-    selectedWorkouts,
-    repsPerSet,
-    setRepsPerSet,
-    handleNextDay,
-    saveToSupaBase,
-    showSuccessPopup,
-    handleSuccessPopupClose,
-    setWorkoutNumberOfDays,
-    setRestDays,
-    restDays,
-    workoutNumberOfDays,
-    setInitialWorkoutPlan,
-    initialWorkoutPlan,
-    handleNext,
-    DaysOfTheWeek,
-    workoutDays,
-    workoutDaysIndex,
-  } = useWorkoutPlanCreator();
+  const { user } = useAuth();
   const [selectedDay, setSelectedDay] = React.useState<string>("Mon");
+  const [workoutNumberOfDays, setWorkoutNumberOfDays] = useState<number>(0);
+  const [restDays, setRestDays] = useState<string[]>([]);
+  const [workoutDaysIndex, setWorkoutDaysIndex] = useState<number>(0);
+  const workoutDays = DaysOfTheWeek.filter((day) => !restDays?.includes(day));
+  const [shouldSave, setShouldSave] = useState<boolean>(false);
+  const [initialWorkoutPlan, setInitialWorkoutPlan] =
+    useState<InitialWorkoutPlan | null>(null);
+  const [selectedPlan, setSelectedPlan] = useState<any>([]);
+
+  const [currentStepIndex, setCurrentStepIndex] = useState<number>(0);
+  const [selectedWorkouts, setSelectedWorkouts] = useState<Workouts[]>([]); //// This is the selected workouts for the current day
+
+  const [repsPerSet, setRepsPerSet] = useState<Workouts[]>([]);
+
+  const [showSuccessPopup, setShowSuccessPopup] = useState<boolean>(false);
+  const [planName, setPlanName] = useState<string>("");
+  const [workoutDayNames, setworkoutDayNames] = useState<string[]>([]);
+
+  //This gets the CustomWorkoutPlan
+  const customWorkoutPlan = workoutDayNames?.map((day) => ({
+    day: day,
+    key: day.toLowerCase().replace(/\s+/g, "-"),
+  }));
+
+  useEffect(() => {
+    setInitialWorkoutPlan(getInitialWorkoutPlan(customWorkoutPlan));
+    console.log("Trigger");
+  }, [workoutDayNames]);
+
+  // Save to supabase
+  useEffect(() => {
+    if (shouldSave && (initialWorkoutPlan?.workoutPlan?.length ?? 0) > 0) {
+      console.log("Saving to SupaBase with complete plan:", initialWorkoutPlan);
+      workoutPlanService.saveToSupaBase(
+        initialWorkoutPlan,
+        user?.id,
+        planName,
+        setShowSuccessPopup
+      );
+      setShouldSave(false);
+    }
+  }, [shouldSave, initialWorkoutPlan]);
+
+  // This Initates The Save Functionality
+  useEffect(() => {
+    console.log(initialWorkoutPlan?.workoutPlan?.length);
+    if (initialWorkoutPlan?.workoutPlan?.length == workoutDays.length) {
+      console.log("You are done");
+      navgationHelpers.goToWorkoutSelector();
+      console.log(initialWorkoutPlan);
+    }
+  }, [initialWorkoutPlan]);
 
   return (
     <WorkoutContext.Provider
@@ -67,23 +83,30 @@ export default function workoutContextProvider({
         setRestDays,
         handleStartPlan,
         getCurrentIndexDay,
-        addWorkout,
         selectedWorkouts,
         repsPerSet,
         setRepsPerSet,
-        handleNextDay,
         selectedDay,
         setSelectedDay,
-        saveToSupaBase,
         showSuccessPopup,
-        handleSuccessPopupClose,
         setWorkoutNumberOfDays,
         setInitialWorkoutPlan,
         initialWorkoutPlan,
-        handleNext,
-        DaysOfTheWeek,
-        workoutDays,
+        setWorkoutDaysIndex,
         workoutDaysIndex,
+        shouldSave,
+        setShouldSave,
+        planName,
+        setPlanName,
+        setShowSuccessPopup,
+        workoutDays,
+        workoutDayNames,
+        setworkoutDayNames,
+        currentStepIndex,
+        setSelectedWorkouts,
+        selectedPlan,
+        setSelectedPlan,
+        customWorkoutPlan,
       }}
     >
       {children}

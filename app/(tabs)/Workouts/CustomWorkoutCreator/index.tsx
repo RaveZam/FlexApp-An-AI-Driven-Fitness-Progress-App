@@ -11,6 +11,9 @@ import { Text, TextInput, View } from "react-native";
 
 import GlassButton from "@/components/ui/GlassButton";
 import { useWorkoutContext } from "@/hooks/useWorkoutPlanContext";
+import { useRestDays } from "@/hooks/useRestDays";
+import { DaysOfTheWeek } from "@/constants/WorkoutConstants";
+import { useAddWorkoutDayNames } from "@/hooks/useAddWorkoutDayNames";
 export default function index() {
   const [isVisible, setisVisible] = useState(false);
   const Days = "1,2,3,4,5,6,7".split(",");
@@ -20,13 +23,14 @@ export default function index() {
   const {
     setWorkoutNumberOfDays,
     restDays,
-    setRestDays,
     workoutNumberOfDays,
-    DaysOfTheWeek,
     workoutDays,
-    handleNext,
     workoutDaysIndex,
   } = useWorkoutContext();
+
+  const { addDayNameHandler } = useAddWorkoutDayNames();
+
+  const { toggleRestDay } = useRestDays();
 
   const [dayInput, setdayInput] = useState("");
   const [inputTouched, setInputTouched] = useState(false);
@@ -63,18 +67,13 @@ export default function index() {
               rest days.
             </Text>
             <View className="w-full flex-col gap-2">
-              {DaysOfTheWeek.map((day) => (
+              {DaysOfTheWeek.map((day: string) => (
                 <View className="flex-row items-center mb-2" key={day}>
                   <CheckBox
                     label={day}
                     checked={restDays.includes(day)}
                     onToggle={() => {
-                      if (7 - workoutNumberOfDays > restDays.length) {
-                        setRestDays((prev) => [...prev, day]);
-                      }
-                      if (restDays.includes(day)) {
-                        setRestDays((prev) => prev.filter((d) => d !== day));
-                      }
+                      toggleRestDay(day);
                     }}
                   />
                 </View>
@@ -101,7 +100,7 @@ export default function index() {
               </Text>
               <TextInput
                 value={dayInput}
-                onSubmitEditing={() => handleNext(dayInput)}
+                onSubmitEditing={() => addDayNameHandler(dayInput)}
                 onChangeText={(text) => {
                   setdayInput(text);
                   if (!inputTouched) setInputTouched(true);
@@ -119,7 +118,7 @@ export default function index() {
               </Text>
             )}
             <GlassButton
-              onPress={() => handleNext(dayInput)}
+              onPress={() => addDayNameHandler(dayInput)}
               accessibilityLabel="Next Day"
               className="mt-8"
             >

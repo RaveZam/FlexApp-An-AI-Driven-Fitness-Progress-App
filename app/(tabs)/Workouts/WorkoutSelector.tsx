@@ -7,18 +7,20 @@ import { useWorkoutContext } from "@/hooks/useWorkoutPlanContext";
 import { useWorkoutPlanCreator } from "@/hooks/useWorkoutPlanCreator";
 import { useEffect, useState } from "react";
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { navgationHelpers } from "@/app/helpers/navigationHelpers";
+import { useAddWorkout } from "@/hooks/useAddWorkout";
 
 export default function WorkoutSelector() {
   const [searchQuery, setSearchQuery] = useState("");
   const { workouts } = useWorkouts();
   const {
     getCurrentIndexDay,
-    addWorkout,
     selectedWorkouts,
     initialWorkoutPlan,
+    currentStepIndex,
   } = useWorkoutContext();
-  
-  const { navigateToSummary } = useWorkoutPlanCreator();
+
+  const { addWorkout } = useAddWorkout();
 
   useEffect(() => {
     console.log("Entering Workout Selector", initialWorkoutPlan);
@@ -31,7 +33,8 @@ export default function WorkoutSelector() {
         searchQuery={searchQuery}
       />
       <ThemedText className="text-2xl text-center">
-        Customize {getCurrentIndexDay()} Day
+        Customize {getCurrentIndexDay(initialWorkoutPlan!, currentStepIndex)}{" "}
+        Day
       </ThemedText>
       <ScrollView showsVerticalScrollIndicator={false}>
         {workouts.map((workout) => (
@@ -80,7 +83,7 @@ export default function WorkoutSelector() {
         <View className="w-1/3 ml-auto">
           <TouchableOpacity
             className="bg-[#BFFA00] px-4 justify-center items-center rounded-full p-2"
-            onPress={navigateToSummary}
+            onPress={navgationHelpers.navigateToSummary}
           >
             <Text className="font-semibold">Next</Text>
           </TouchableOpacity>
