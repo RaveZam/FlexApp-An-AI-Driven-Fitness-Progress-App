@@ -8,6 +8,7 @@ export const useAddWorkoutDayNames = () => {
     setWorkoutDaysIndex,
     workoutDayNames,
     setworkoutDayNames,
+    setdayInput,
   } = useWorkoutContext();
 
   useEffect(() => {
@@ -21,7 +22,7 @@ export const useAddWorkoutDayNames = () => {
     }
     if (workoutDays?.length - 1 > workoutDaysIndex) {
       setworkoutDayNames((prev: string[]) => [...prev, dayInput]);
-      // setdayInput("");
+      setdayInput("");
       setWorkoutDaysIndex((prev) => prev + 1);
       return;
     } else {

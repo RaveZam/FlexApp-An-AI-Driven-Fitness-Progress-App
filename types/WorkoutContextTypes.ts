@@ -8,12 +8,6 @@ import {
 } from "./WorkoutTypes";
 
 type WorkoutContextType = {
-  handleStartPlan: (
-    plan: string,
-    setPlanName: (plan: string) => void,
-    setSelectedPlan: (steps: any[]) => void,
-    setInitialWorkoutPlan: (plan: any) => void
-  ) => void;
   getCurrentIndexDay: (
     initialWorkoutPlan: InitialWorkoutPlan,
     currentStepIndex: number
@@ -49,6 +43,8 @@ type WorkoutContextType = {
   setSelectedPlan: Dispatch<SetStateAction<string[]>>;
   customWorkoutPlan: CustomWorkoutPlan[];
   setCurrentStepIndex: Dispatch<SetStateAction<number>>;
+  dayInput: string;
+  setdayInput: Dispatch<SetStateAction<string>>;
 };
 
 export type { WorkoutContextType };

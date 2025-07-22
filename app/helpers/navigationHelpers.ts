@@ -8,4 +8,8 @@ export const navgationHelpers = {
   navigateToSummary: () => {
     router.push("/Workouts/Summary");
   },
+
+  goToWorkoutScreen: () => {
+    router.push("/Workouts");
+  },
 };

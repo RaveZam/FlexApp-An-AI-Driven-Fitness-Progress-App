@@ -25,7 +25,7 @@ export default function PlanDetails() {
     selectActiveWorkout,
   } = useFetchPlanDetails();
   const [showPopup, setShowPopup] = useState<boolean>(false);
-  const [showLogoutPopup, setShowLogoutPopup] = useState<boolean>(false);
+  // const [showLogoutPopup, setShowLogoutPopup] = useState<boolean>(false);
   useEffect(() => {
     if (planId) {
       fetchPlanAndWorkouts(planId);
@@ -101,6 +101,7 @@ export default function PlanDetails() {
               </View>
             ))}
             <Button
+              className=""
               buttonText="Set Active Workout"
               onPress={() => {
                 selectActiveWorkout(Number(planId)).then((status) => {

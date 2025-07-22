@@ -18,24 +18,9 @@ export const getInitialWorkoutPlan = (steps: any[]) => {
   };
 };
 
-export const handleStartPlan = (
-  plan: string,
-  setPlanName: (plan: string) => void,
-  setSelectedPlan: (steps: any[]) => void,
-  setInitialWorkoutPlan: (plan: any) => void
-) => {
-  setPlanName(plan);
-  const steps = getStepsFromPlan(plan);
-  setSelectedPlan(steps);
-  setInitialWorkoutPlan(getInitialWorkoutPlan(steps));
-  router.push("/Workouts/WorkoutSelector");
-};
-
 export const getCurrentIndexDay = (
   initialWorkoutPlan: InitialWorkoutPlan,
   currentStepIndex: number
 ) => {
-  console.log("Initial Workout Plan", initialWorkoutPlan);
-  console.log("Current Step Index", currentStepIndex);
   return initialWorkoutPlan?.workoutPlan?.[currentStepIndex]?.key;
 };

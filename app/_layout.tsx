@@ -15,25 +15,6 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { useWorkoutContext } from "@/hooks/useWorkoutPlanContext";
 
 // Component to handle the success popup
-function WorkoutSuccessPopup() {
-  const { showSuccessPopup, handleSuccessPopupClose } = useWorkoutContext();
-
-  return (
-    <Popup
-      isVisible={showSuccessPopup}
-      onClose={handleSuccessPopupClose}
-      iconName="checkcircle"
-      iconColor="#10b981"
-      message="Workout plan added successfully!"
-      buttons={[
-        {
-          text: "Continue",
-          onPress: handleSuccessPopupClose,
-        },
-      ]}
-    />
-  );
-}
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -58,7 +39,6 @@ export default function RootLayout() {
             <Stack.Screen name="(auth)" options={{ headerShown: false }} />
           </Stack>
           <StatusBar style="auto" />
-          <WorkoutSuccessPopup />
         </ThemeProvider>
       </WorkoutContextProvider>
     </AuthProvider>

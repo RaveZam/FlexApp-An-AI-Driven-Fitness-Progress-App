@@ -8,7 +8,8 @@ export class workoutPlanService {
     initialWorkoutPlan: InitialWorkoutPlan | null,
     userID: string | undefined,
     planName: string,
-    setShowSuccessPopup: (show: boolean) => void
+    setShowSuccessPopup: (show: boolean) => void,
+    setShouldSave: (shouldSave: boolean) => void
   ) {
     console.log("Initial Workout Plan", initialWorkoutPlan);
     try {

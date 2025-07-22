@@ -26,13 +26,14 @@ export default function index() {
     workoutNumberOfDays,
     workoutDays,
     workoutDaysIndex,
+    dayInput,
+    setdayInput,
   } = useWorkoutContext();
 
   const { addDayNameHandler } = useAddWorkoutDayNames();
 
   const { toggleRestDay } = useRestDays();
 
-  const [dayInput, setdayInput] = useState("");
   const [inputTouched, setInputTouched] = useState(false);
 
   return (

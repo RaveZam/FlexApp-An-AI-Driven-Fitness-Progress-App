@@ -9,7 +9,6 @@ import { workoutPlanService } from "@/services/workoutPlanService";
 import { useAuth } from "@/auth/useAuth";
 import { WorkoutContextType } from "@/types/WorkoutContextTypes";
 import { navgationHelpers } from "@/app/helpers/navigationHelpers";
-import { handleStartPlan } from "@/app/helpers/workoutHelpers";
 
 export const WorkoutContext = createContext<WorkoutContextType | undefined>(
   undefined
@@ -30,16 +29,16 @@ export default function workoutContextProvider({
   const [initialWorkoutPlan, setInitialWorkoutPlan] =
     useState<InitialWorkoutPlan | null>(null);
   const [selectedPlan, setSelectedPlan] = useState<any>([]);
+
   const [currentStepIndex, setCurrentStepIndex] = useState<number>(0);
   const [selectedWorkouts, setSelectedWorkouts] = useState<Workouts[]>([]);
 
   const [repsPerSet, setRepsPerSet] = useState<Workouts[]>([]);
-
+  const [dayInput, setdayInput] = useState<string>("");
   const [showSuccessPopup, setShowSuccessPopup] = useState<boolean>(false);
   const [planName, setPlanName] = useState<string>("");
   const [workoutDayNames, setworkoutDayNames] = useState<string[]>([]);
 
-  //This gets the CustomWorkoutPlan
   const customWorkoutPlan = workoutDayNames?.map((day) => ({
     day: day,
     key: day.toLowerCase().replace(/\s+/g, "-"),
@@ -50,21 +49,7 @@ export default function workoutContextProvider({
     console.log("Trigger");
   }, [workoutDayNames]);
 
-  // Save to supabase
-  useEffect(() => {
-    if (shouldSave && (initialWorkoutPlan?.workoutPlan?.length ?? 0) > 0) {
-      console.log("Saving to SupaBase with complete plan:", initialWorkoutPlan);
-      workoutPlanService.saveToSupaBase(
-        initialWorkoutPlan,
-        user?.id,
-        planName,
-        setShowSuccessPopup
-      );
-      setShouldSave(false);
-    }
-  }, [shouldSave, initialWorkoutPlan]);
-
-  // This Initates The Save Functionality
+  // This Initates The Finish Functionality After Adding Workout Day Names
   useEffect(() => {
     console.log(initialWorkoutPlan?.workoutPlan?.length);
     if (initialWorkoutPlan?.workoutPlan?.length == workoutDays.length) {
@@ -73,6 +58,19 @@ export default function workoutContextProvider({
       console.log(initialWorkoutPlan);
     }
   }, [initialWorkoutPlan]);
+
+  useEffect(() => {
+    if (shouldSave) {
+      workoutPlanService.saveToSupaBase(
+        initialWorkoutPlan,
+        user?.id,
+        planName,
+        setShowSuccessPopup,
+        setShouldSave
+      );
+      setShouldSave(false);
+    }
+  }, [shouldSave]);
 
   // This Sets the Reps Per Set
   useEffect(() => {
@@ -91,7 +89,6 @@ export default function workoutContextProvider({
         workoutNumberOfDays,
         restDays,
         setRestDays,
-        handleStartPlan,
         getCurrentIndexDay,
         selectedWorkouts,
         repsPerSet,
@@ -118,6 +115,8 @@ export default function workoutContextProvider({
         setSelectedPlan,
         customWorkoutPlan,
         setCurrentStepIndex,
+        dayInput,
+        setdayInput,
       }}
     >
       {children}

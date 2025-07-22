@@ -5,9 +5,10 @@ import { useWorkoutContext } from "@/hooks/useWorkoutPlanContext";
 import { router } from "expo-router";
 import { View } from "react-native";
 import SelectDayComponent from "./components/SelectDayComponent";
+import { usePlanStarter } from "@/hooks/WorkoutHooks/usePlanStarter";
 
 export default function SelectWorkoutPlan() {
-  const { handleStartPlan } = useWorkoutContext();
+  const { handleStartPlan } = usePlanStarter();
   return (
     <ThemedView className="flex-1 items-center justify-center">
       <View className="items-center justify-center bg-[#191818] h-1/2 w-4/5 rounded-[38px] ">
