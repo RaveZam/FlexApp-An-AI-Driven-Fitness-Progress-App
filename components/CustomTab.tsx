@@ -21,7 +21,7 @@ export function CustomTab({
   const { buildHref } = useLinkBuilder();
 
   const icon = {
-    Home: ({ color, iconAnimatedStyle }: any) => (
+    index: ({ color, iconAnimatedStyle }: any) => (
       <Animated.View style={iconAnimatedStyle}>
         <IconSymbol size={32} name="house.fill" color={color} />
       </Animated.View>
@@ -134,7 +134,7 @@ export function CustomTab({
                     },
                   ]}
                 >
-                  {route.name}
+                  {route.name === "index" ? "Home" : route.name}
                 </AnimatedText>
               )}
             </View>

@@ -1,10 +1,15 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { ThemedText } from "../ThemedText";
 import { ThemedView } from "../ThemedView";
 
 export default function ScheduleBar() {
   const [days, useDays] = useState([
+    {
+      name: "Sun",
+      isActive: false,
+      date: 17,
+    },
     {
       name: "Mon",
       isActive: false,
@@ -36,12 +41,23 @@ export default function ScheduleBar() {
       isActive: false,
       date: 16,
     },
-    {
-      name: "Sun",
-      isActive: false,
-      date: 17,
-    },
   ]);
+
+  const getTodayDay = () => {
+    const dayOfTheWeek = new Date();
+
+    return days[dayOfTheWeek.getDay()];
+  };
+
+  const getTodayDate = () => {
+    const today = new Date().toISOString().split("T")[0];
+    return today;
+  };
+
+  useEffect(() => {
+    console.log(getTodayDay());
+    console.log(getTodayDate());
+  }, []);
 
   return (
     <View
