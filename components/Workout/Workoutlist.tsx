@@ -23,7 +23,7 @@ export default function Workoutlist() {
   ];
 
   return (
-    <View className="m-4">
+    <View className="p-4 bg-dark rounded-t-2xl border border-important">
       <ThemedText className="text-lg font-medium mb-4">
         Today's Workout
       </ThemedText>

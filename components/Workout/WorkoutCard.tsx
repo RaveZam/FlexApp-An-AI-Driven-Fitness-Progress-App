@@ -36,9 +36,7 @@ export default function WorkoutCard({
         resizeMode="cover"
       />
       <View className="flex-1 justify-center">
-        <ThemedText className="text-base font-semibold mb-1 opacity-90">
-          {workout}
-        </ThemedText>
+        <ThemedText className="text-md mb-1 opacity-90">{workout}</ThemedText>
         <ThemedText className="text-xs opacity-60 mb-1">
           {muscle_group}
         </ThemedText>

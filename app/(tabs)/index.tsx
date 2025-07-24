@@ -13,11 +13,9 @@ export default function Index() {
   return (
     <ThemedView className="h-full">
       <UserInfoCard />
-
       <ScheduleBar />
       <HomePageChartGraph />
       <Workoutlist />
-
       <Button className="" buttonText="Start Workout" onPress={() => {}} />
     </ThemedView>
   );

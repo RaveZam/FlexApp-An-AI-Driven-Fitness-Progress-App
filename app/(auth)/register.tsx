@@ -12,7 +12,7 @@ export default function RegisterScreen() {
 
   useEffect(() => {
     if (session) {
-      router.replace("/Home");
+      router.replace("/");
     }
   }, [session]);
 
@@ -71,4 +71,3 @@ export default function RegisterScreen() {
     </View>
   );
 }
-

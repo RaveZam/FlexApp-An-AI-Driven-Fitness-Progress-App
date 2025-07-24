@@ -1,21 +1,82 @@
-import { View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import React, { useState } from "react";
+import { Pressable, Text, View } from "react-native";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
 import { ThemedText } from "./ThemedText";
 import MyChart from "./ui/AreaChart";
 
 export default function HomePageChartGraph() {
+  const [toggled, setToggled] = useState(false);
+  const collapsedHeight = 52; // Height for one line of text (adjust as needed)
+  const expandedHeight = 100; // Height for full text (adjust as needed)
+  const animation = useSharedValue(expandedHeight);
+
+  const handleToggle = () => {
+    setToggled((prev) => {
+      const next = !prev;
+      animation.value = withTiming(next ? expandedHeight : collapsedHeight, {
+        duration: 300,
+      });
+      return next;
+    });
+  };
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    height: animation.value,
+  }));
+
+  // Ensure animation is correct on first render
+  React.useEffect(() => {
+    animation.value = toggled ? expandedHeight : collapsedHeight;
+  }, []);
+
   return (
-    <View className="mx-8 mt-4">
+    <View className="m-4 bg-lightDark border  p-4 py-6 rounded-lg">
       <ThemedText className="text-lg font-medium">
         Your Workout Progress This Month
       </ThemedText>
-      <ThemedText className="text-md font-medium opacity-50 italic">
-        (Based on your Activity)
+      <ThemedText className="text-sm font-medium opacity-50">
+        Based on your Activity
       </ThemedText>
 
       <MyChart />
-      <ThemedText className="text-lg font-medium opacity-90">
-        Your Lifts has Increased by 2% per week this month.
-      </ThemedText>
+      <View className="gap-2 mt-2">
+        <Pressable
+          onPress={handleToggle}
+          className="flex-row gap-2 hover:cursor-pointer items-center"
+        >
+          <View className="flex-row gap-1 items-center">
+            <Ionicons name="stats-chart-sharp" size={12} color="white" />
+            <Text className="text-md text-whiteText font-medium ">
+              AI Analysis
+            </Text>
+          </View>
+          <Ionicons
+            name={toggled ? "chevron-up" : "chevron-down"}
+            size={12}
+            color="white"
+          />
+        </Pressable>
+        <Animated.View
+          className="p-4 bg-important rounded-lg"
+          style={[{ overflow: "hidden", width: "100%" }, animatedStyle]}
+        >
+          <Text
+            className="text-sm text-mutedText font-medium"
+            numberOfLines={toggled ? undefined : 1}
+            ellipsizeMode="tail"
+            style={{ width: "100%" }}
+          >
+            Based on your recent workout logs, your lifting performance is
+            progressing steadily. You've consistently increased weights on your
+            compound lifts over the last 3 weeks.
+          </Text>
+        </Animated.View>
+      </View>
     </View>
   );
 }

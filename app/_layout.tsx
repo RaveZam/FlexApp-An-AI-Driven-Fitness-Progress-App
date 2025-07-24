@@ -1,25 +1,32 @@
 import { AuthProvider } from "@/auth/useAuth";
 import {
+  Inter_400Regular,
+  Inter_500Medium,
+  Inter_600SemiBold,
+  Inter_700Bold,
+  useFonts,
+} from "@expo-google-fonts/inter";
+import {
   DarkTheme,
   DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
-import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 
-import Popup from "@/components/ui/Popup";
 import WorkoutContextProvider from "@/context/workoutContext"; // ✅ use the default export (which is the provider)
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { useWorkoutContext } from "@/hooks/useWorkoutPlanContext";
 
 // Component to handle the success popup
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
-    SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
+    Inter_400Regular,
+    Inter_500Medium,
+    Inter_600SemiBold,
+    Inter_700Bold,
   });
 
   if (!loaded) {

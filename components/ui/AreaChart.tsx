@@ -19,7 +19,7 @@ export default function MyChart() {
   return (
     <View>
       <VictoryChart
-        height={200}
+        height={140}
         padding={{ top: 0, bottom: 40 }}
         theme={VictoryTheme.clean}
         domainPadding={{ y: 20 }}
