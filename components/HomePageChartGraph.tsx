@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import Feather from "@expo/vector-icons/Feather";
 import React, { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import Animated, {
@@ -6,7 +7,6 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
-import { ThemedText } from "./ThemedText";
 import MyChart from "./ui/AreaChart";
 
 export default function HomePageChartGraph() {
@@ -35,13 +35,13 @@ export default function HomePageChartGraph() {
   }, []);
 
   return (
-    <View className="m-4 bg-lightDark border  p-4 py-6 rounded-lg">
-      <ThemedText className="text-lg font-medium">
+    <View className="m-4 bg-lightDark border p-4  rounded-xl">
+      <Text className="text-lg font-medium text-whiteText font-md">
         Your Workout Progress This Month
-      </ThemedText>
-      <ThemedText className="text-sm font-medium opacity-50">
+      </Text>
+      <Text className="text-md text-mutedText opacity-70">
         Based on your Activity
-      </ThemedText>
+      </Text>
 
       <MyChart />
       <View className="gap-2 mt-2">
@@ -50,7 +50,7 @@ export default function HomePageChartGraph() {
           className="flex-row gap-2 hover:cursor-pointer items-center"
         >
           <View className="flex-row gap-1 items-center">
-            <Ionicons name="stats-chart-sharp" size={12} color="white" />
+            <Feather name="bar-chart" size={20} color="white" />
             <Text className="text-md text-whiteText font-medium ">
               AI Analysis
             </Text>

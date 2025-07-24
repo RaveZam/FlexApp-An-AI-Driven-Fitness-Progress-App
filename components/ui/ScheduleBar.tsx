@@ -63,17 +63,13 @@ export default function ScheduleBar() {
     <View
       style={{
         flexDirection: "row",
-        // backgroundColor: "#1E1E1E",
         padding: 16,
         paddingBottom: 20,
         paddingHorizontal: 20,
         justifyContent: "space-between",
         gap: 8,
-        margin: 12,
-        marginTop: 0,
-        borderRadius: 24,
       }}
-      className="bg-lightDark border border-important"
+      className="bg-lightDark rounded-xl m-4 mt-0"
     >
       {days.map((day) => (
         <View className="items-center justify-center" key={day.name}>
