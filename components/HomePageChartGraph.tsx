@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import Feather from "@expo/vector-icons/Feather";
-import React, { Dispatch, SetStateAction } from "react";
+import React, { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
@@ -9,13 +9,8 @@ import Animated, {
 } from "react-native-reanimated";
 import MyChart from "./ui/AreaChart";
 
-export default function HomePageChartGraph({
-  toggled,
-  setToggled,
-}: {
-  toggled: boolean;
-  setToggled: Dispatch<SetStateAction<boolean>>;
-}) {
+export default function HomePageChartGraph() {
+  const [toggled, setToggled] = useState(false);
   const collapsedHeight = 52; // Height for one line of text (adjust as needed)
   const expandedHeight = 100; // Height for full text (adjust as needed)
   const animation = useSharedValue(expandedHeight);
