@@ -1,13 +1,12 @@
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
+import Button from "@/components/ui/Button";
+import Popup from "@/components/ui/Popup";
 import WorkoutCard from "@/components/Workout/WorkoutCard";
 import { useFetchPlanDetails } from "@/hooks/useFetchPlanDetails";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, ScrollView, View } from "react-native";
-import Button from "@/components/ui/Button";
-import NavigateBack from "@/components/ui/NavigateBack";
-import Popup from "@/components/ui/Popup";
 
 export default function PlanDetails() {
   const router = useRouter();
@@ -24,6 +23,7 @@ export default function PlanDetails() {
     fetchPlanAndWorkouts,
     selectActiveWorkout,
   } = useFetchPlanDetails();
+  console.log(workouts);
   const [showPopup, setShowPopup] = useState<boolean>(false);
   // const [showLogoutPopup, setShowLogoutPopup] = useState<boolean>(false);
   useEffect(() => {
@@ -85,12 +85,10 @@ export default function PlanDetails() {
                     <WorkoutCard
                       key={workout.id}
                       workout={workout.workout_id.workout_name}
+                      workout_image={workout.workout_id.workout_image}
                       reps={workout.reps}
                       sets={workout.sets}
                       rest_time={workout.rest_time}
-                      muscle_group={workout.workout_id.muscle_group}
-                      description={workout.workout_id.workout_description}
-                      workout_image={workout.workout_id.workout_image}
                     />
                   ))
                 ) : (

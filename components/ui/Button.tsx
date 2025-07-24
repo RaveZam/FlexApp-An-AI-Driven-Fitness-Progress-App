@@ -1,5 +1,4 @@
 import { Text, TouchableOpacity } from "react-native";
-import Svg, { Defs, LinearGradient, Rect } from "react-native-svg";
 
 export default function Button({
   buttonText,

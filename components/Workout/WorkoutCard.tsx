@@ -1,4 +1,4 @@
-import { Image, View } from "react-native";
+import { Image, Text, View } from "react-native";
 import { ThemedText } from "../ThemedText";
 
 export default function WorkoutCard({
@@ -6,49 +6,50 @@ export default function WorkoutCard({
   reps,
   sets,
   rest_time,
-  muscle_group,
-  description,
   workout_image,
 }: {
   workout: string;
   reps: string;
   sets: string;
   rest_time: string;
-  muscle_group: string;
-  description: string;
-  workout_image?: string;
+  workout_image: string;
 }) {
+  console.log(workout_image);
   return (
-    <View className="flex-row items-center rounded-2xl bg-[#18181b] shadow-sm overflow-hidden my-3 p-3">
+    <View
+      className="flex-row items-stretch rounded-2xl bg-important shadow-md overflow-hidden my-3"
+      style={{ minHeight: 96 }}
+    >
       <Image
-        source={
-          workout_image
-            ? { uri: workout_image }
-            : require("../../assets/images/WorkoutImages/latpulldownimage.webp")
-        }
+        source={{
+          uri: workout_image,
+        }}
         style={{
-          width: 72,
-          height: 72,
-          borderRadius: 16,
-          backgroundColor: "#232323",
-          marginRight: 16,
+          width: 160,
+          height: 100,
+          borderTopLeftRadius: 16,
+          borderBottomLeftRadius: 16,
+          borderTopRightRadius: 0,
+          borderBottomRightRadius: 0,
         }}
         resizeMode="cover"
       />
-      <View className="flex-1 justify-center">
-        <ThemedText className="text-md mb-1 opacity-90">{workout}</ThemedText>
-        <ThemedText className="text-xs opacity-60 mb-1">
-          {muscle_group}
+      <View className="flex-1 flex-col justify-center px-4 ">
+        <ThemedText className="text-lg font-medium mb-1 text-black/90">
+          {workout}
         </ThemedText>
-        <ThemedText className="text-xs opacity-50 mb-1">
-          {description}
-        </ThemedText>
-        <View className="flex-row gap-3 mt-1">
-          <ThemedText className="text-xs opacity-70">Reps: {reps}</ThemedText>
-          <ThemedText className="text-xs opacity-70">Sets: {sets}</ThemedText>
-          <ThemedText className="text-xs opacity-70">
+        <View className="flex-row items-center mb-1"></View>
+
+        <View className="flex-row gap-4 mt-1">
+          <Text className="text-md text-mutedText font-medium">
+            Reps: {reps}
+          </Text>
+          <Text className="text-md text-mutedText font-medium">
+            Sets: {sets}
+          </Text>
+          <Text className="text-md text-mutedText font-medium">
             Rest: {rest_time}s
-          </ThemedText>
+          </Text>
         </View>
       </View>
     </View>

@@ -35,7 +35,7 @@ export default function HomePageChartGraph() {
   }, []);
 
   return (
-    <View className="m-4 bg-lightDark border p-4  rounded-xl">
+    <View className="m-4 bg-lightDark border p-4 rounded-xl">
       <Text className="text-lg font-medium text-whiteText font-md">
         Your Workout Progress This Month
       </Text>
