@@ -1,7 +1,5 @@
 import { supabase } from "@/scripts/SupabaseClient";
 import { InitialWorkoutPlan } from "@/types/WorkoutTypes";
-import { User } from "@supabase/supabase-js";
-import { useEffect } from "react";
 
 export class workoutPlanService {
   static async saveToSupaBase(
@@ -37,6 +35,7 @@ export class workoutPlanService {
           .insert({
             workout_plan_id: plan.id,
             day_name: day?.key,
+            day: day?.dayOfTheWeek,
           })
           .select()
           .single();

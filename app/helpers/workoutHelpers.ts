@@ -1,6 +1,5 @@
 import { WORKOUT_STEPS_BY_PLAN } from "@/constants/WorkoutConstants";
 import { InitialWorkoutPlan } from "@/types/WorkoutTypes";
-import { router } from "expo-router";
 
 export const getStepsFromPlan = (selectedPlan: string) => {
   return (
@@ -14,6 +13,7 @@ export const getInitialWorkoutPlan = (steps: any[]) => {
     workoutPlan: steps.map((step) => ({
       key: step.day,
       workouts: [],
+      dayOfTheWeek: step.dayOfTheWeek,
     })),
   };
 };

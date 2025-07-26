@@ -9,15 +9,17 @@ interface Workouts {
 interface WorkoutDay {
   key: string;
   workouts: Workouts[];
+  dayOfTheWeek: string;
 }
 
 interface CustomWorkoutPlan {
   day: string;
   key: string;
+  dayOfTheWeek: string;
 }
 
 interface InitialWorkoutPlan {
   workoutPlan: WorkoutDay[];
 }
 
-export type { Workouts, WorkoutDay, InitialWorkoutPlan, CustomWorkoutPlan };
+export type { CustomWorkoutPlan, InitialWorkoutPlan, WorkoutDay, Workouts };

@@ -1,7 +1,7 @@
-import { useSaveWorkout } from "@/services/useSaveWorkout";
+// import { useSaveWorkout } from "@/services/useSaveWorkout";
+import { navgationHelpers } from "@/app/helpers/navigationHelpers";
 import { useWorkoutContext } from "../useWorkoutPlanContext";
 import { useClearWorkouts } from "./useClearWorkouts";
-import { navgationHelpers } from "@/app/helpers/navigationHelpers";
 
 export const useAddSelectedWorkouts = () => {
   const {
@@ -26,15 +26,11 @@ export const useAddSelectedWorkouts = () => {
     });
 
     if (currentStepIndex < (initialWorkoutPlan?.workoutPlan?.length ?? 0) - 1) {
-      console.log(
-        "Current Step index proceeding to next day",
-        currentStepIndex
-      );
       setCurrentStepIndex(currentStepIndex + 1);
       clearWorkouts();
       navgationHelpers.goToWorkoutSelector();
     } else {
-      console.log("Else Save True Triggered");
+      clearWorkouts();
       setShouldSave(true);
       return;
     }

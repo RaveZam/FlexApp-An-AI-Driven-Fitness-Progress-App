@@ -2,8 +2,8 @@ import { SetStateAction } from "react";
 
 import { Dispatch } from "react";
 import {
-  InitialWorkoutPlan,
   CustomWorkoutPlan,
+  InitialWorkoutPlan,
   Workouts,
 } from "./WorkoutTypes";
 
@@ -45,6 +45,8 @@ type WorkoutContextType = {
   setCurrentStepIndex: Dispatch<SetStateAction<number>>;
   dayInput: string;
   setdayInput: Dispatch<SetStateAction<string>>;
+  dayOfTheWeek: string[];
+  setDayOfTheWeek: Dispatch<SetStateAction<string[]>>;
 };
 
 export type { WorkoutContextType };

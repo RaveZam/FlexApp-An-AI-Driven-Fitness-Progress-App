@@ -1,13 +1,7 @@
 import { useWorkoutContext } from "../useWorkoutPlanContext";
 
 export const useAddWorkout = () => {
-  const {
-    selectedWorkouts,
-    selectedPlan,
-    currentStepIndex,
-    setSelectedWorkouts,
-    customWorkoutPlan,
-  } = useWorkoutContext();
+  const { selectedWorkouts, setSelectedWorkouts } = useWorkoutContext();
 
   function addWorkout(workout_name: string, id: number, workout_image: string) {
     console.log("Adding workout");
@@ -17,21 +11,6 @@ export const useAddWorkout = () => {
       );
       return;
     }
-
-    // let key = "";
-    // if (selectedPlan.length > 0) {
-    //   console.log("SelectedPlan Detected ");
-    //   key = (selectedPlan[currentStepIndex] as any)?.key;
-    // }
-
-    // if (customWorkoutPlan.length > 0) {
-    //   console.log("Custom workout Detected ");
-    //   key = (customWorkoutPlan[currentStepIndex] as any)?.key;
-    // }
-
-    // console.log("Key Found", key);
-    // if (!key) return;
-    // console.log("Key", key);
 
     const workoutObject = {
       id,

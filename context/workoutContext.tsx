@@ -1,14 +1,14 @@
-import React, { createContext, useEffect, useState } from "react";
-import { InitialWorkoutPlan, Workouts } from "@/types/WorkoutTypes";
+import { navgationHelpers } from "@/app/helpers/navigationHelpers";
 import {
   getCurrentIndexDay,
   getInitialWorkoutPlan,
 } from "@/app/helpers/workoutHelpers";
+import { useAuth } from "@/auth/useAuth";
 import { DaysOfTheWeek } from "@/constants/WorkoutConstants";
 import { workoutPlanService } from "@/services/workoutPlanService";
-import { useAuth } from "@/auth/useAuth";
 import { WorkoutContextType } from "@/types/WorkoutContextTypes";
-import { navgationHelpers } from "@/app/helpers/navigationHelpers";
+import { InitialWorkoutPlan, Workouts } from "@/types/WorkoutTypes";
+import React, { createContext, useEffect, useState } from "react";
 
 export const WorkoutContext = createContext<WorkoutContextType | undefined>(
   undefined
@@ -38,13 +38,17 @@ export default function workoutContextProvider({
   const [showSuccessPopup, setShowSuccessPopup] = useState<boolean>(false);
   const [planName, setPlanName] = useState<string>("");
   const [workoutDayNames, setworkoutDayNames] = useState<string[]>([]);
+  const [dayOfTheWeek, setDayOfTheWeek] = useState<string[]>([]);
 
-  const customWorkoutPlan = workoutDayNames?.map((day) => ({
+  const customWorkoutPlan = workoutDayNames?.map((day, index) => ({
     day: day,
     key: day.toLowerCase().replace(/\s+/g, "-"),
+    dayOfTheWeek: workoutDays[index],
   }));
 
   useEffect(() => {
+    console.log("Final Custom Workout Plan", customWorkoutPlan);
+    console.log("Current Day Loggin:", workoutDays);
     setInitialWorkoutPlan(getInitialWorkoutPlan(customWorkoutPlan));
     console.log("Trigger");
   }, [workoutDayNames]);
@@ -117,6 +121,8 @@ export default function workoutContextProvider({
         setCurrentStepIndex,
         dayInput,
         setdayInput,
+        dayOfTheWeek,
+        setDayOfTheWeek,
       }}
     >
       {children}
