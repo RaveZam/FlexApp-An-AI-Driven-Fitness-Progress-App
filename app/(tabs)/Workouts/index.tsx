@@ -8,7 +8,7 @@ import { ActivityIndicator, ScrollView, View } from "react-native";
 
 export default function index() {
   const router = useRouter();
-  const { workoutPlans, loading, error } = useFetchWorkoutPlans();
+  const { workoutPlans, loading } = useFetchWorkoutPlans();
 
   if (loading) {
     return (
@@ -36,7 +36,6 @@ export default function index() {
                 key={plan.id}
                 plan={plan}
                 onPress={() => {
-                  // Navigate to plan details screen
                   router.push({
                     pathname: "/Workouts/PlanDetails" as never,
                     params: { planId: plan.id, planName: plan.name },

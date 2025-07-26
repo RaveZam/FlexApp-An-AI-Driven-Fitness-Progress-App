@@ -23,9 +23,8 @@ export default function PlanDetails() {
     fetchPlanAndWorkouts,
     selectActiveWorkout,
   } = useFetchPlanDetails();
-  console.log(workouts);
+
   const [showPopup, setShowPopup] = useState<boolean>(false);
-  // const [showLogoutPopup, setShowLogoutPopup] = useState<boolean>(false);
   useEffect(() => {
     if (planId) {
       fetchPlanAndWorkouts(planId);

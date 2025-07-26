@@ -12,7 +12,6 @@ type WorkoutContextType = {
     initialWorkoutPlan: InitialWorkoutPlan,
     currentStepIndex: number
   ) => string;
-  // addWorkout: (workout_name: string, id: number, workout_image: string) => void;
   selectedWorkouts: Workouts[];
   repsPerSet: Workouts[];
   setRepsPerSet: Dispatch<SetStateAction<Workouts[]>>;
@@ -20,7 +19,6 @@ type WorkoutContextType = {
   selectedDay: string;
   setSelectedDay: Dispatch<SetStateAction<string>>;
   showSuccessPopup: boolean;
-  // handleSuccessPopupClose: () => void;
   setWorkoutNumberOfDays: Dispatch<SetStateAction<number>>;
   setRestDays: Dispatch<SetStateAction<string[]>>;
   restDays: string[];
@@ -47,6 +45,8 @@ type WorkoutContextType = {
   setdayInput: Dispatch<SetStateAction<string>>;
   dayOfTheWeek: string[];
   setDayOfTheWeek: Dispatch<SetStateAction<string[]>>;
+  currentDayWorkout: Workouts[];
+  setCurrentDayWorkout: Dispatch<SetStateAction<Workouts[]>>;
 };
 
 export type { WorkoutContextType };

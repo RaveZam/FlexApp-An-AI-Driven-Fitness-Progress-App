@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 export const useFetchWorkoutPlans = () => {
   const { user } = useAuth();
   const [workoutPlans, setWorkoutPlans] = useState<any[] | null>(null);
+  const [activeWorkoutID, setActiveWorkoutID] = useState<number | null>(null);
   // const [workoutPlan, setWorkoutPlan] = useState<any[] | null>(null);
   // const [workoutPerDays, setWorkoutPerDays] = useState<any[] | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -33,6 +34,7 @@ export const useFetchWorkoutPlans = () => {
         ];
 
         setWorkoutPlans(activeWorkoutFirst);
+        setActiveWorkoutID(activeWorkoutFirst[0].id);
       } catch (err) {
         setError(err as Error);
       } finally {
@@ -43,5 +45,5 @@ export const useFetchWorkoutPlans = () => {
     fetchWorkoutPlans();
   }, [user?.id]);
 
-  return { workoutPlans, loading, error };
+  return { workoutPlans, loading, error, activeWorkoutID };
 };

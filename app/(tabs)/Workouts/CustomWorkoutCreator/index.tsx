@@ -10,9 +10,9 @@ import { useState } from "react";
 import { Text, TextInput, View } from "react-native";
 
 import GlassButton from "@/components/ui/GlassButton";
-import { useWorkoutContext } from "@/hooks/useWorkoutPlanContext";
-import { useRestDays } from "@/hooks/useRestDays";
 import { DaysOfTheWeek } from "@/constants/WorkoutConstants";
+import { useRestDays } from "@/hooks/useRestDays";
+import { useWorkoutContext } from "@/hooks/useWorkoutPlanContext";
 import { useAddWorkoutDayNames } from "@/hooks/WorkoutHooks/useAddWorkoutDayNames";
 export default function index() {
   const [isVisible, setisVisible] = useState(false);

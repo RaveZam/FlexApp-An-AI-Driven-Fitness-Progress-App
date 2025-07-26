@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { View } from "react-native";
 import { ThemedText } from "../ThemedText";
 import { ThemedView } from "../ThemedView";
@@ -42,22 +42,6 @@ export default function ScheduleBar() {
       date: 16,
     },
   ]);
-
-  const getTodayDay = () => {
-    const dayOfTheWeek = new Date();
-
-    return days[dayOfTheWeek.getDay()];
-  };
-
-  const getTodayDate = () => {
-    const today = new Date().toISOString().split("T")[0];
-    return today;
-  };
-
-  useEffect(() => {
-    console.log(getTodayDay());
-    console.log(getTodayDate());
-  }, []);
 
   return (
     <View

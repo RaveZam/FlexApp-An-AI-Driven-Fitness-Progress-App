@@ -1,5 +1,6 @@
+import { useGetCurrentWorkoutToday } from "@/hooks/useGetCurrentWorkoutToday";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { ActivityIndicator, ScrollView, StyleSheet, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -15,6 +16,8 @@ export default function Workoutlist({
   collapsed: boolean;
   setCollapsed: (collapsed: boolean) => void;
 }) {
+  const { currentWorkout, loading } = useGetCurrentWorkoutToday();
+
   const height = useSharedValue(200);
 
   const toggleCollapse = () => {
@@ -27,13 +30,6 @@ export default function Workoutlist({
   const animatedStyle = useAnimatedStyle(() => ({
     height: height.value,
   }));
-
-  const workoutData = [
-    { Workout: "Lat-Pull Down", reps: "10-12" },
-    { Workout: "Seated Rows", reps: "10-12" },
-    { Workout: "Seated Rows", reps: "10-12" },
-    { Workout: "Seated Rows", reps: "10-12" },
-  ];
 
   return (
     <>
@@ -55,19 +51,30 @@ export default function Workoutlist({
           />
         </View>
 
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          className="h-full"
-          contentContainerStyle={{ paddingBottom: 40 }}
-        >
-          {workoutData.map((workout, index) => (
-            <WorkoutCard
-              key={index}
-              workout={workout.Workout}
-              reps={workout.reps}
-            />
-          ))}
-        </ScrollView>
+        {loading ? (
+          <View className="flex-1 justify-center items-center">
+            <ActivityIndicator size="large" color="#10b981" />
+          </View>
+        ) : (
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            className="h-full"
+            contentContainerStyle={{ paddingBottom: 40 }}
+          >
+            {currentWorkout?.workouts_per_day?.map(
+              (workout: any, index: number) => (
+                <WorkoutCard
+                  key={index}
+                  workout={workout.workout_id.workout_name}
+                  reps={workout.reps}
+                  sets={workout.sets}
+                  rest_time={workout.rest_time}
+                  workout_image={workout.workout_id.workout_image}
+                />
+              )
+            )}
+          </ScrollView>
+        )}
       </Animated.View>
     </>
   );

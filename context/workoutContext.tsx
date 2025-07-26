@@ -39,6 +39,7 @@ export default function workoutContextProvider({
   const [planName, setPlanName] = useState<string>("");
   const [workoutDayNames, setworkoutDayNames] = useState<string[]>([]);
   const [dayOfTheWeek, setDayOfTheWeek] = useState<string[]>([]);
+  const [currentDayWorkout, setCurrentDayWorkout] = useState<Workouts[]>([]);
 
   const customWorkoutPlan = workoutDayNames?.map((day, index) => ({
     day: day,
@@ -47,19 +48,13 @@ export default function workoutContextProvider({
   }));
 
   useEffect(() => {
-    console.log("Final Custom Workout Plan", customWorkoutPlan);
-    console.log("Current Day Loggin:", workoutDays);
     setInitialWorkoutPlan(getInitialWorkoutPlan(customWorkoutPlan));
-    console.log("Trigger");
   }, [workoutDayNames]);
 
   // This Initates The Finish Functionality After Adding Workout Day Names
   useEffect(() => {
-    console.log(initialWorkoutPlan?.workoutPlan?.length);
     if (initialWorkoutPlan?.workoutPlan?.length == workoutDays.length) {
-      console.log("You are done");
       navgationHelpers.goToWorkoutSelector();
-      console.log(initialWorkoutPlan);
     }
   }, [initialWorkoutPlan]);
 
@@ -123,6 +118,8 @@ export default function workoutContextProvider({
         setdayInput,
         dayOfTheWeek,
         setDayOfTheWeek,
+        currentDayWorkout,
+        setCurrentDayWorkout,
       }}
     >
       {children}

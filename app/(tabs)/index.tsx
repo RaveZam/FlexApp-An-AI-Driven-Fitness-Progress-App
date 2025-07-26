@@ -13,7 +13,7 @@ import "../../global.css";
 
 export default function Index() {
   const [collapsed, setCollapsed] = useState(false);
-  console.log(collapsed);
+
   return (
     <View className="relative h-full overflow-hidden">
       <BlurOverlay
