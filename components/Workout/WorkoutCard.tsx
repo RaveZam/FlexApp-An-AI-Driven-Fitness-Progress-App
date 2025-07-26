@@ -14,7 +14,6 @@ export default function WorkoutCard({
   rest_time: string;
   workout_image: string;
 }) {
-  console.log(workout_image);
   return (
     <View
       className="flex-row items-stretch rounded-2xl bg-important shadow-md overflow-hidden my-3"

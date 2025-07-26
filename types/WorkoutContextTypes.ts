@@ -47,6 +47,8 @@ type WorkoutContextType = {
   setDayOfTheWeek: Dispatch<SetStateAction<string[]>>;
   currentDayWorkout: Workouts[];
   setCurrentDayWorkout: Dispatch<SetStateAction<Workouts[]>>;
+  currentWorkout: any;
+  setCurrentWorkout: Dispatch<SetStateAction<any>>;
 };
 
 export type { WorkoutContextType };

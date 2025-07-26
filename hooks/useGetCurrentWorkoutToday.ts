@@ -1,13 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useFetchPlanDetails } from "./useFetchPlanDetails";
 import { useFetchWorkoutPlans } from "./useFetchWorkoutPlans";
 import { useGetDays } from "./useGetDays";
+import { useWorkoutContext } from "./useWorkoutPlanContext";
 
 export const useGetCurrentWorkoutToday = () => {
-  const [currentWorkout, setCurrentWorkout] = useState<any>(null);
+  const { currentWorkout, setCurrentWorkout } = useWorkoutContext();
   const { activeWorkoutID } = useFetchWorkoutPlans();
-  const { workouts, planDetails, fetchPlanAndWorkouts, loading } =
-    useFetchPlanDetails();
+  const { workouts, fetchPlanAndWorkouts, loading } = useFetchPlanDetails();
   const { getTodayDay } = useGetDays();
 
   useEffect(() => {
@@ -15,10 +15,6 @@ export const useGetCurrentWorkoutToday = () => {
       fetchPlanAndWorkouts(activeWorkoutID.toString());
     }
   }, [activeWorkoutID]);
-
-  useEffect(() => {
-    console.log(workouts);
-  }, [workouts]);
 
   useEffect(() => {
     const currentWorkout = workouts?.find((workout: any) => {

@@ -1,4 +1,5 @@
 import { useGetCurrentWorkoutToday } from "@/hooks/useGetCurrentWorkoutToday";
+import { useWorkoutContext } from "@/hooks/useWorkoutPlanContext";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { ActivityIndicator, ScrollView, StyleSheet, View } from "react-native";
 import Animated, {
@@ -16,7 +17,8 @@ export default function Workoutlist({
   collapsed: boolean;
   setCollapsed: (collapsed: boolean) => void;
 }) {
-  const { currentWorkout, loading } = useGetCurrentWorkoutToday();
+  const { loading } = useGetCurrentWorkoutToday();
+  const { currentWorkout } = useWorkoutContext();
 
   const height = useSharedValue(200);
 
