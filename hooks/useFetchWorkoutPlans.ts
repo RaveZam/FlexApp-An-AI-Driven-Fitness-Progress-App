@@ -1,11 +1,12 @@
 import { useAuth } from "@/auth/useAuth";
 import { supabase } from "@/scripts/SupabaseClient";
 import { useEffect, useState } from "react";
+import { useWorkoutContext } from "./useWorkoutPlanContext";
 
 export const useFetchWorkoutPlans = () => {
   const { user } = useAuth();
   const [workoutPlans, setWorkoutPlans] = useState<any[] | null>(null);
-  const [activeWorkoutID, setActiveWorkoutID] = useState<number | null>(null);
+  const { setActiveWorkoutID } = useWorkoutContext();
   // const [workoutPlan, setWorkoutPlan] = useState<any[] | null>(null);
   // const [workoutPerDays, setWorkoutPerDays] = useState<any[] | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -45,5 +46,5 @@ export const useFetchWorkoutPlans = () => {
     fetchWorkoutPlans();
   }, [user?.id]);
 
-  return { workoutPlans, loading, error, activeWorkoutID };
+  return { workoutPlans, loading, error };
 };

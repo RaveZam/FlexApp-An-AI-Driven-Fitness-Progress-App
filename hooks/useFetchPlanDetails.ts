@@ -1,5 +1,6 @@
 import { supabase } from "@/scripts/SupabaseClient";
 import { useState } from "react";
+import { useGetCurrentWorkoutToday } from "./useGetCurrentWorkoutToday";
 
 export const useFetchPlanDetails = () => {
   const [planDetails, setPlanDetails] = useState<any | null>(null);
@@ -14,7 +15,6 @@ export const useFetchPlanDetails = () => {
       setLoading(true);
       setError(null);
 
-      // Fetch plan days with their workouts and workout details in one query
       const { data: planData, error: planError } = await supabase
         .from("plan_per_day")
         .select(
@@ -38,6 +38,7 @@ export const useFetchPlanDetails = () => {
 
       setPlanDetails(planData?.[0] || null); // Optionally set the first plan day as details
       setWorkouts(planData || []); // Set all plan days with their workouts
+      console.log(planData);
     } catch (err) {
       setError(err as Error);
     } finally {

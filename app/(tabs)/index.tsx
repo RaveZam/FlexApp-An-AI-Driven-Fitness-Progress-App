@@ -8,14 +8,14 @@ import Workoutlist from "@/components/Workout/Workoutlist";
 
 import Button from "@/components/ui/Button";
 import { useState } from "react";
-import { View } from "react-native";
+import { ScrollView, View } from "react-native";
 import "../../global.css";
 
 export default function Index() {
   const [collapsed, setCollapsed] = useState(false);
 
   return (
-    <View className="relative h-full overflow-hidden">
+    <View className="flex-col h-full">
       <BlurOverlay
         collapsed={collapsed}
         style={{
@@ -28,12 +28,14 @@ export default function Index() {
         }}
       />
       <UserInfoCard />
-      <ScheduleBar />
-      <HomePageChartGraph />
+      <ScrollView showsHorizontalScrollIndicator={false} className="h-[20%]">
+        <ScheduleBar />
+        <HomePageChartGraph />
+      </ScrollView>
       <View className="flex-1" style={{ zIndex: 2, position: "relative" }}>
         <Workoutlist collapsed={collapsed} setCollapsed={setCollapsed} />
       </View>
-      <Button className="" buttonText="Start Workout" onPress={() => {}} />
+      <Button className="z-20" buttonText="Start Workout" onPress={() => {}} />
     </View>
   );
 }

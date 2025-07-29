@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { View } from "react-native";
+import { View, Text } from "react-native";
 import { ThemedText } from "../ThemedText";
 import { ThemedView } from "../ThemedView";
+import { Dimensions } from "react-native";
 
 export default function ScheduleBar() {
   const [days, useDays] = useState([
@@ -43,6 +44,9 @@ export default function ScheduleBar() {
     },
   ]);
 
+  const screenWidth = Dimensions.get("window").width;
+  const circleSize = (screenWidth - 40 - 6 * 12) / 7; // 40 is padding, 6*8 is 6 gaps of 8px
+
   return (
     <View
       style={{
@@ -68,10 +72,12 @@ export default function ScheduleBar() {
           <View
             style={{
               borderWidth: 2,
+              width: circleSize,
+              height: circleSize,
             }}
-            className="rounded-full items-center justify-center w-12 h-12 border-2 border-[#10b981] "
+            className="rounded-full items-center justify-center border-2 border-[#10b981] "
           >
-            <ThemedText>{day.date}</ThemedText>
+            <Text className=" color-white">{day.date}</Text>
           </View>
         </View>
       ))}

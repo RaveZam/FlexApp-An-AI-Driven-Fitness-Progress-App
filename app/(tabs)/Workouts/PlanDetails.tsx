@@ -4,6 +4,7 @@ import Button from "@/components/ui/Button";
 import Popup from "@/components/ui/Popup";
 import WorkoutCard from "@/components/Workout/WorkoutCard";
 import { useFetchPlanDetails } from "@/hooks/useFetchPlanDetails";
+import { useGetCurrentWorkoutToday } from "@/hooks/useGetCurrentWorkoutToday";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, ScrollView, View } from "react-native";
@@ -103,7 +104,9 @@ export default function PlanDetails() {
               onPress={() => {
                 selectActiveWorkout(Number(planId)).then((status) => {
                   if (status === 200) {
+                    console.log("triggered Fetch Workout");
                     setShowPopup(true);
+                    fetchPlanAndWorkouts(planId);
                   }
                 });
               }}

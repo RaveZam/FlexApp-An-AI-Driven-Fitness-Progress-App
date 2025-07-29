@@ -5,21 +5,24 @@ import { useGetDays } from "./useGetDays";
 import { useWorkoutContext } from "./useWorkoutPlanContext";
 
 export const useGetCurrentWorkoutToday = () => {
-  const { currentWorkout, setCurrentWorkout } = useWorkoutContext();
-  const { activeWorkoutID } = useFetchWorkoutPlans();
+  const { currentWorkout, setCurrentWorkout, activeWorkoutID } =
+    useWorkoutContext();
   const { workouts, fetchPlanAndWorkouts, loading } = useFetchPlanDetails();
   const { getTodayDay } = useGetDays();
 
   useEffect(() => {
+    console.log("Active Workout ID", activeWorkoutID);
     if (activeWorkoutID) {
       fetchPlanAndWorkouts(activeWorkoutID.toString());
     }
   }, [activeWorkoutID]);
 
   useEffect(() => {
+    console.log("2nd use Effect Triggered ");
     const currentWorkout = workouts?.find((workout: any) => {
       return workout.day === getTodayDay().name;
     });
+
     setCurrentWorkout(currentWorkout);
   }, [workouts]);
 

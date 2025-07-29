@@ -40,9 +40,9 @@ export default function workoutContextProvider({
   const [workoutDayNames, setworkoutDayNames] = useState<string[]>([]);
   const [dayOfTheWeek, setDayOfTheWeek] = useState<string[]>([]);
   const [currentDayWorkout, setCurrentDayWorkout] = useState<Workouts[]>([]);
-  const [currentWorkout, setCurrentWorkout] = useState<any>(null);
+  const [activeWorkoutID, setActiveWorkoutID] = useState<number | null>(null);
 
-  console.log(currentWorkout);
+  const [currentWorkout, setCurrentWorkout] = useState<any>(null);
 
   const customWorkoutPlan = workoutDayNames?.map((day, index) => ({
     day: day,
@@ -125,6 +125,8 @@ export default function workoutContextProvider({
         setCurrentDayWorkout,
         currentWorkout,
         setCurrentWorkout,
+        activeWorkoutID,
+        setActiveWorkoutID,
       }}
     >
       {children}
