@@ -7,12 +7,18 @@ import UserInfoCard from "@/components/UserInfoCard";
 import Workoutlist from "@/components/Workout/Workoutlist";
 
 import Button from "@/components/ui/Button";
+import { useRouter } from "expo-router";
 import { useState } from "react";
 import { ScrollView, View } from "react-native";
 import "../../global.css";
 
 export default function Index() {
   const [collapsed, setCollapsed] = useState(false);
+  const router = useRouter();
+
+  const handleStartWorkout = () => {
+    router.push("/Workouts/WorkoutScreen" as never);
+  };
 
   return (
     <View className="flex-col h-full">
@@ -35,7 +41,11 @@ export default function Index() {
       <View className="flex-1" style={{ zIndex: 2, position: "relative" }}>
         <Workoutlist collapsed={collapsed} setCollapsed={setCollapsed} />
       </View>
-      <Button className="z-20" buttonText="Start Workout" onPress={() => {}} />
+      <Button
+        className="z-20"
+        buttonText="Start Workout"
+        onPress={handleStartWorkout}
+      />
     </View>
   );
 }
