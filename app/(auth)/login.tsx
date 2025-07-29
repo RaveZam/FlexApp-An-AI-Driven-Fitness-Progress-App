@@ -15,7 +15,7 @@ export default function LoginScreen() {
 
   useEffect(() => {
     if (session) {
-      router.replace("/Home");
+      router.replace("/");
     }
   }, [session]);
 
@@ -34,7 +34,7 @@ export default function LoginScreen() {
       setErrorMessage(message);
       setErrorPopupVisible(true);
     } else {
-      router.replace("/Home");
+      router.replace("/");
     }
   };
 
@@ -88,11 +88,8 @@ export default function LoginScreen() {
         iconName="exclamationcircleo"
         iconColor="#FF4D4D"
         message={errorMessage}
-        buttons={[
-          { text: "OK", onPress: () => setErrorPopupVisible(false) },
-        ]}
+        buttons={[{ text: "OK", onPress: () => setErrorPopupVisible(false) }]}
       />
     </View>
   );
 }
-

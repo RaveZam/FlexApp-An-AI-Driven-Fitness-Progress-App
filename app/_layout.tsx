@@ -18,15 +18,8 @@ import "react-native-reanimated";
 import WorkoutContextProvider from "@/context/workoutContext"; // ✅ use the default export (which is the provider)
 import { useColorScheme } from "@/hooks/useColorScheme";
 import * as NavigationBar from "expo-navigation-bar";
-import { useEffect } from "react";
-import { Platform } from "react-native";
 
-useEffect(() => {
-  if (Platform.OS === "android") {
-    NavigationBar.setVisibilityAsync("hidden"); // hides nav bar
-    NavigationBar.setBehaviorAsync("overlay-swipe"); // allows swipe to reveal it
-  }
-}, []);
+NavigationBar.setVisibilityAsync("hidden");
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
