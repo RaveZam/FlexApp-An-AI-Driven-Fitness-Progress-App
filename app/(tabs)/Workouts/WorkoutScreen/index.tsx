@@ -3,9 +3,10 @@ import { ThemedView } from "@/components/ThemedView";
 import Button from "@/components/ui/Button";
 import ExercisesModal from "@/components/ui/ExercisesModal";
 import LineChart from "@/components/ui/LineChart";
+import RestTimerOverlay from "@/components/ui/RestTimerOverlay";
+import WorkoutLogOverlay from "@/components/ui/WorkoutLogOverlay";
 import { useFetchWorkoutPlans } from "@/hooks/useFetchWorkoutPlans";
 import { useWorkoutContext } from "@/hooks/useWorkoutPlanContext";
-import Ionicons from "@expo/vector-icons/Ionicons";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
@@ -16,6 +17,16 @@ export default function index() {
   const router = useRouter();
   const [showExercisesModal, setShowExercisesModal] = useState(false);
   const [selectedExercise, setSelectedExercise] = useState<any>(null);
+  const [showWorkoutLog, setShowWorkoutLog] = useState(false);
+  const [showRestTimer, setShowRestTimer] = useState(false);
+  const [currentSet, setCurrentSet] = useState(1);
+  const [workoutLog, setWorkoutLog] = useState<
+    Array<{ weight: string; reps: string }>
+  >([]);
+  const [currentWeight, setCurrentWeight] = useState("");
+  const [currentReps, setCurrentReps] = useState("");
+  const [restTime, setRestTime] = useState(180); // 3 minutes in seconds
+  const [isRestTimerActive, setIsRestTimerActive] = useState(false);
 
   useEffect(() => {
     if (
@@ -25,6 +36,23 @@ export default function index() {
       setSelectedExercise(currentWorkout.workouts_per_day[0]);
     }
   }, [currentWorkout]);
+
+  useEffect(() => {
+    let interval: ReturnType<typeof setInterval>;
+    if (isRestTimerActive && restTime > 0) {
+      interval = setInterval(() => {
+        setRestTime((prev) => {
+          if (prev <= 1) {
+            setIsRestTimerActive(false);
+            setShowRestTimer(false);
+            return 180; // Reset to 3 minutes
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [isRestTimerActive, restTime]);
 
   const handleExercisesPress = () => {
     setShowExercisesModal(true);
@@ -38,9 +66,43 @@ export default function index() {
     setSelectedExercise(exercise);
   };
 
+  const handleStartWorkout = () => {
+    setShowWorkoutLog(true);
+  };
+
+  const handleSaveWorkoutLog = () => {
+    if (currentWeight && currentReps) {
+      setWorkoutLog([
+        ...workoutLog,
+        { weight: currentWeight, reps: currentReps },
+      ]);
+      setCurrentWeight("");
+      setCurrentReps("");
+      setCurrentSet(currentSet + 1);
+      setShowWorkoutLog(false);
+      setShowRestTimer(true);
+      setIsRestTimerActive(true);
+    }
+  };
+
+  const handleCloseWorkoutLog = () => {
+    setShowWorkoutLog(false);
+    setCurrentWeight("");
+    setCurrentReps("");
+  };
+
+  const handleStartNextSet = () => {
+    setShowRestTimer(false);
+    setIsRestTimerActive(false);
+    setRestTime(180);
+    setShowWorkoutLog(true);
+  };
+
   const displayExercise =
     selectedExercise ||
     (currentWorkout?.workouts_per_day && currentWorkout.workouts_per_day[0]);
+
+  const progressPercentage = ((180 - restTime) / 180) * 100;
 
   return (
     <ThemedView className="flex-1">
@@ -159,49 +221,73 @@ export default function index() {
             Sets
           </ThemedText>
 
-          {/* Set 1 */}
-          <View className="flex-row items-center bg-lightDark rounded-lg p-3 mb-2">
-            <View className="flex-1 flex-row justify-between items-center">
-              <ThemedText className="text-whiteText font-medium">
-                40lb
-              </ThemedText>
-              <View className="w-px h-6 bg-important mx-4" />
-              <ThemedText className="text-whiteText">3 Reps</ThemedText>
+          {/* Previous Sets */}
+          {workoutLog.map((set, index) => (
+            <View
+              key={index}
+              className="flex-row items-center bg-lightDark rounded-2xl p-4 mb-2"
+            >
+              <View className="flex-row items-center justify-center min-w-24">
+                <Text className="text-whiteText font-medium">
+                  {set.weight}lb
+                </Text>
+              </View>
+              <View className="w-px h-6 bg-mutedText mx-4" />
+              <View className="flex-row items-center justify-center min-w-24">
+                <Text className="text-whiteText font-medium">
+                  {set.reps} Reps
+                </Text>
+              </View>
+              <View className="w-px h-6 bg-mutedText mx-4" />
             </View>
-            <View className="w-8 h-8 bg-important rounded-full items-center justify-center ml-3">
-              <ThemedText className="text-veryMutedText">...</ThemedText>
-            </View>
-          </View>
+          ))}
 
-          {/* Set 2 */}
-          <View className="flex-row items-center bg-lightDark rounded-lg p-3 mb-2">
-            <View className="flex-1 flex-row justify-between items-center">
-              <ThemedText className="text-whiteText font-medium">
-                50lb
-              </ThemedText>
-              <View className="w-px h-6 bg-important mx-4" />
-              <ThemedText className="text-whiteText">9 Reps</ThemedText>
+          {/* Current Set Input */}
+          <View className="flex-row items-center bg-lightDark rounded-2xl p-4 mb-2">
+            <View className="flex-row items-center justify-center min-w-24">
+              <Text className="text-whiteText font-medium">
+                Set {currentSet}
+              </Text>
             </View>
-            <View className="w-8 h-8 bg-important rounded-full items-center justify-center ml-3">
-              <ThemedText className="text-veryMutedText">...</ThemedText>
+            <View className="w-px h-6 bg-mutedText mx-4" />
+            <View className="flex-row items-center justify-center min-w-24">
+              <Text className="text-whiteText font-medium">Input</Text>
             </View>
-          </View>
-
-          {/* Set 3 - Active/Completed */}
-          <View className="flex-row items-center bg-emerald-500 rounded-lg p-3 mb-2">
-            <View className="flex-1 flex-row justify-between items-center">
-              <ThemedText className="text-white font-medium">50lb</ThemedText>
-              <View className="w-px h-6 bg-white mx-4" />
-              <ThemedText className="text-white">10 Reps</ThemedText>
-            </View>
-            <View className="w-8 h-8 bg-white rounded-full items-center justify-center ml-3">
-              <Ionicons name="checkmark" size={16} color="#10b981" />
-            </View>
+            <View className="w-px h-6 bg-mutedText mx-4" />
           </View>
         </View>
       </ScrollView>
 
-      <Button className="z-20" buttonText="Start Workout" onPress={() => {}} />
+      <Button
+        className="z-20"
+        buttonText="Start Workout"
+        onPress={handleStartWorkout}
+      />
+
+      {/* Workout Log Overlay */}
+      <WorkoutLogOverlay
+        visible={showWorkoutLog}
+        onClose={handleCloseWorkoutLog}
+        onSave={handleSaveWorkoutLog}
+        currentWeight={currentWeight}
+        setCurrentWeight={setCurrentWeight}
+        currentReps={currentReps}
+        setCurrentReps={setCurrentReps}
+        currentSet={currentSet}
+        totalSets={displayExercise?.sets || 3}
+        exerciseName={displayExercise?.workout_id?.workout_name || "Exercise"}
+        workoutLog={workoutLog}
+      />
+
+      {/* Rest Timer Overlay */}
+      <RestTimerOverlay
+        visible={showRestTimer}
+        onClose={() => setShowRestTimer(false)}
+        onStartNextSet={handleStartNextSet}
+        restTime={restTime}
+        progressPercentage={progressPercentage}
+        exerciseName={displayExercise?.workout_id?.workout_name || "Exercise"}
+      />
 
       {/* Exercises Modal */}
       <ExercisesModal

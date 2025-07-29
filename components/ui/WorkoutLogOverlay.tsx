@@ -1,0 +1,124 @@
+import { ThemedText } from "@/components/ThemedText";
+import Button from "@/components/ui/Button";
+import React from "react";
+import { Modal, TextInput, TouchableOpacity, View } from "react-native";
+
+interface WorkoutLogOverlayProps {
+  visible: boolean;
+  onClose: () => void;
+  onSave: () => void;
+  currentWeight: string;
+  setCurrentWeight: (weight: string) => void;
+  currentReps: string;
+  setCurrentReps: (reps: string) => void;
+  currentSet: number;
+  totalSets: number;
+  exerciseName: string;
+  workoutLog: Array<{ weight: string; reps: string }>;
+  disabled?: boolean;
+}
+
+export default function WorkoutLogOverlay({
+  visible,
+  onClose,
+  onSave,
+  currentWeight,
+  setCurrentWeight,
+  currentReps,
+  setCurrentReps,
+  currentSet,
+  totalSets,
+  exerciseName,
+  workoutLog,
+  disabled = false,
+}: WorkoutLogOverlayProps) {
+  return (
+    <Modal
+      visible={visible}
+      transparent={true}
+      animationType="fade"
+      onRequestClose={onClose}
+    >
+      <View className="flex-1 bg-black/50 justify-center items-center">
+        <View className="bg-lightDark rounded-2xl p-6 mx-4 w-full max-w-sm">
+          {/* Close Button */}
+          <TouchableOpacity
+            onPress={onClose}
+            className="absolute top-4 right-4 z-10"
+          >
+            <ThemedText className="text-whiteText text-2xl font-bold">
+              ×
+            </ThemedText>
+          </TouchableOpacity>
+
+          <ThemedText className="text-whiteText text-xl font-bold text-center mb-6">
+            Log Your Set
+          </ThemedText>
+
+          <ThemedText className="text-whiteText text-lg mb-4">
+            {exerciseName}
+          </ThemedText>
+
+          <ThemedText className="text-mutedText mb-4">
+            Set {currentSet} of {totalSets}
+          </ThemedText>
+
+          {/* Weight Input */}
+          <View className="mb-4">
+            <ThemedText className="text-whiteText mb-2">Weight (lb)</ThemedText>
+            <TextInput
+              value={currentWeight}
+              onChangeText={setCurrentWeight}
+              placeholder="Enter weight"
+              placeholderTextColor="#6B7280"
+              className="bg-important rounded-lg p-3 text-whiteText"
+              keyboardType="numeric"
+            />
+          </View>
+
+          {/* Reps Input */}
+          <View className="mb-6">
+            <ThemedText className="text-whiteText mb-2">Reps</ThemedText>
+            <TextInput
+              value={currentReps}
+              onChangeText={setCurrentReps}
+              placeholder="Enter reps"
+              placeholderTextColor="#6B7280"
+              className="bg-important rounded-lg p-3 text-whiteText"
+              keyboardType="numeric"
+            />
+          </View>
+
+          {/* Previous Sets Log */}
+          {workoutLog.length > 0 && (
+            <View className="mb-4">
+              <ThemedText className="text-whiteText mb-2">
+                Previous Sets:
+              </ThemedText>
+              {workoutLog.map((set, index) => (
+                <View
+                  key={index}
+                  className="flex-row justify-between bg-important rounded-lg p-2 mb-1"
+                >
+                  <ThemedText className="text-whiteText">
+                    Set {index + 1}
+                  </ThemedText>
+                  <ThemedText className="text-whiteText">
+                    {set.weight}lb × {set.reps} reps
+                  </ThemedText>
+                </View>
+              ))}
+            </View>
+          )}
+
+          <Button
+            buttonText="Save Set"
+            onPress={onSave}
+            disabled={disabled || !currentWeight || !currentReps}
+            className=""
+          />
+        </View>
+      </View>
+    </Modal>
+  );
+}

@@ -43,7 +43,7 @@ export default function Index() {
       </View>
       <Button
         className="z-20"
-        buttonText="Start Workout"
+        buttonText="Start Session"
         onPress={handleStartWorkout}
       />
     </View>
