@@ -11,8 +11,8 @@ export default function WorkoutPlanCard({
   return (
     <TouchableOpacity
       onPress={onPress}
-      className={`rounded-[28px] border  bg-[#191818] overflow-hidden mt-4 p-6 ${
-        plan.is_active ? "border border-emerald-500" : "border border-[#333333]"
+      className={`rounded-2xl border bg-lightDark overflow-hidden mt-4 p-4 px-6 ${
+        plan.is_active ? "border border-emerald-500" : "border border-important"
       }`}
       activeOpacity={0.7}
     >
