@@ -12,6 +12,7 @@ module.exports = {
         rim: "hsl(0, 0%, 12%)",
         whiteText: "hsl(0, 0%, 95%)",
         mutedText: "hsl(0, 0%, 70%)",
+        veryMutedText: "hsl(0, 0%, 50%)",
       },
     },
   },

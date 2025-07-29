@@ -76,8 +76,8 @@ export default function PlanDetails() {
             className="flex-1 px-2"
           >
             {workouts.map((day: any) => (
-              <View key={day.id} className="mb-8">
-                <ThemedText className="text-lg font-bold mb-3 tracking-wide opacity-80">
+              <View key={day.id}>
+                <ThemedText className="mb-4 font-medium text-whiteText">
                   {day.day_name}
                 </ThemedText>
                 {day.workouts_per_day && day.workouts_per_day.length > 0 ? (

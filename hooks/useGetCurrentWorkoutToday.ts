@@ -11,14 +11,12 @@ export const useGetCurrentWorkoutToday = () => {
   const { getTodayDay } = useGetDays();
 
   useEffect(() => {
-    console.log("Active Workout ID", activeWorkoutID);
     if (activeWorkoutID) {
       fetchPlanAndWorkouts(activeWorkoutID.toString());
     }
   }, [activeWorkoutID]);
 
   useEffect(() => {
-    console.log("2nd use Effect Triggered ");
     const currentWorkout = workouts?.find((workout: any) => {
       return workout.day === getTodayDay().name;
     });

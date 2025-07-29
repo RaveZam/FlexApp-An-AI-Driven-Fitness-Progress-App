@@ -1,5 +1,6 @@
 import { Image, Text, View } from "react-native";
 import { ThemedText } from "../ThemedText";
+import { rest } from "lodash";
 
 export default function WorkoutCard({
   workout,
@@ -14,9 +15,11 @@ export default function WorkoutCard({
   rest_time: string;
   workout_image: string;
 }) {
+  const truncate = (text: string, max = 20) =>
+    text.length > max ? `${text.slice(0, max)}...` : text;
   return (
     <View
-      className="flex-row items-stretch rounded-2xl bg-important shadow-md overflow-hidden my-3"
+      className="flex-row  rounded-md bg-lightDark border-important border shadow-md overflow-hidden my-3"
       style={{ minHeight: 96 }}
     >
       <Image
@@ -26,29 +29,39 @@ export default function WorkoutCard({
         style={{
           width: 160,
           height: 100,
-          borderTopLeftRadius: 16,
-          borderBottomLeftRadius: 16,
           borderTopRightRadius: 0,
           borderBottomRightRadius: 0,
         }}
         resizeMode="cover"
       />
-      <View className="flex-1 flex-col justify-center px-4 ">
-        <ThemedText className="text-lg font-medium mb-1 text-black/90">
-          {workout}
+      <View className="flex-1 flex-col items-center  justify-center p-4 ">
+        <ThemedText className="text-sm  mb-1 text-black/90">
+          {truncate(workout)}
         </ThemedText>
         <View className="flex-row items-center mb-1"></View>
 
-        <View className="flex-row gap-4 mt-1">
-          <Text className="text-md text-mutedText font-medium">
-            Reps: {reps}
-          </Text>
-          <Text className="text-md text-mutedText font-medium">
-            Sets: {sets}
-          </Text>
-          <Text className="text-md text-mutedText font-medium">
-            Rest: {rest_time}s
-          </Text>
+        <View className="flex-row gap-4">
+          <View className="flex-col items-center">
+            <Text className="text-sm text-veryMutedText font-medium">
+              Reps:
+            </Text>
+            <Text className="text-md text-mutedText font-medium">{reps}</Text>
+          </View>
+
+          <View className="flex-col items-center">
+            <Text className="text-sm text-veryMutedText  font-medium">
+              Sets:
+            </Text>
+            <Text className="text-md text-mutedText font-medium">{sets}</Text>
+          </View>
+          <View className="flex-col items-center">
+            <Text className="text-sm text-veryMutedText font-medium">
+              Rest:
+            </Text>
+            <Text className="text-md text-mutedText font-medium">
+              {rest_time}
+            </Text>
+          </View>
         </View>
       </View>
     </View>

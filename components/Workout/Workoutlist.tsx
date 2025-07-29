@@ -15,6 +15,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { ThemedText } from "../ThemedText";
 import WorkoutCard from "./WorkoutCard";
+import { useFetchWorkoutPlans } from "@/hooks/useFetchWorkoutPlans";
 
 export default function Workoutlist({
   collapsed,
@@ -24,6 +25,7 @@ export default function Workoutlist({
   setCollapsed: (collapsed: boolean) => void;
 }) {
   const { loading, currentWorkout } = useGetCurrentWorkoutToday();
+  useFetchWorkoutPlans();
 
   const height = useSharedValue(200);
 
@@ -38,7 +40,6 @@ export default function Workoutlist({
     height: height.value,
   }));
 
-  console.log(currentWorkout);
   return (
     <>
       <Animated.View
@@ -46,7 +47,7 @@ export default function Workoutlist({
         className="w-full bottom-0 rounded-t-[42px] z-50 bg-lightDark px-8 pt-6 flex-1"
       >
         <View className="relative">
-          <ThemedText className="text-lg font-medium mb-4">
+          <ThemedText className="text-lg text-whiteText font-medium mb-4">
             Today's Workout
           </ThemedText>
 
@@ -69,16 +70,25 @@ export default function Workoutlist({
             className="h-full"
             contentContainerStyle={{ paddingBottom: 40 }}
           >
-            {currentWorkout?.workouts_per_day?.map(
-              (workout: any, index: number) => (
-                <WorkoutCard
-                  key={index}
-                  workout={workout.workout_id.workout_name}
-                  reps={workout.reps}
-                  sets={workout.sets}
-                  rest_time={workout.rest_time}
-                  workout_image={workout.workout_id.workout_image}
-                />
+            {currentWorkout?.workouts_per_day === undefined ? (
+              <View className=" justify-center mt-12 items-center">
+                <Text className="text-veryMutedText text-[1.1rem]">
+                  {" "}
+                  No Workout Today
+                </Text>
+              </View>
+            ) : (
+              currentWorkout.workouts_per_day.map(
+                (workout: any, index: number) => (
+                  <WorkoutCard
+                    key={index}
+                    workout={workout.workout_id.workout_name}
+                    reps={workout.reps}
+                    sets={workout.sets}
+                    rest_time={workout.rest_time}
+                    workout_image={workout.workout_id.workout_image}
+                  />
+                )
               )
             )}
           </ScrollView>
