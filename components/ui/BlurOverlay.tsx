@@ -1,5 +1,5 @@
 import React from "react";
-import { View } from "react-native";
+import { Text, View } from "react-native";
 
 export default function BlurOverlay({
   collapsed,
@@ -15,7 +15,7 @@ export default function BlurOverlay({
       }`}
       style={style}
     >
-      .
+      <Text>.</Text>
     </View>
   );
 }

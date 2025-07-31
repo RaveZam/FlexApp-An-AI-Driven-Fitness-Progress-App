@@ -2,11 +2,10 @@ import "react-native-reanimated";
 
 import HomePageChartGraph from "@/components/HomePageChartGraph";
 import BlurOverlay from "@/components/ui/BlurOverlay";
+import Button from "@/components/ui/Button";
 import ScheduleBar from "@/components/ui/ScheduleBar";
 import UserInfoCard from "@/components/UserInfoCard";
 import Workoutlist from "@/components/Workout/Workoutlist";
-
-import Button from "@/components/ui/Button";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { ScrollView, View } from "react-native";
@@ -33,6 +32,7 @@ export default function Index() {
           zIndex: 1,
         }}
       />
+
       <UserInfoCard />
       <ScrollView showsHorizontalScrollIndicator={false} className="h-[20%]">
         <ScheduleBar />

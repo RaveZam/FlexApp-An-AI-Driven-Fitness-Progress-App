@@ -1,5 +1,5 @@
+import { useFetchWorkoutPlans } from "@/hooks/useFetchWorkoutPlans";
 import { useGetCurrentWorkoutToday } from "@/hooks/useGetCurrentWorkoutToday";
-import { useWorkoutContext } from "@/hooks/useWorkoutPlanContext";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import {
   ActivityIndicator,
@@ -15,7 +15,6 @@ import Animated, {
 } from "react-native-reanimated";
 import { ThemedText } from "../ThemedText";
 import WorkoutCard from "./WorkoutCard";
-import { useFetchWorkoutPlans } from "@/hooks/useFetchWorkoutPlans";
 
 export default function Workoutlist({
   collapsed,

@@ -4,11 +4,14 @@ export const useAddWorkout = () => {
   const { selectedWorkouts, setSelectedWorkouts } = useWorkoutContext();
 
   function addWorkout(workout_name: string, id: number, workout_image: string) {
-    console.log("Adding workout");
+    console.log("selectedWorkouts:", selectedWorkouts);
+    console.log("incoming id:", id);
+    console.log("1");
     if (selectedWorkouts.some((workout) => workout.id === id)) {
-      setSelectedWorkouts((prev) =>
-        prev.filter((workout: any) => workout.id !== id)
-      );
+      setSelectedWorkouts((prev) => {
+        console.log("3");
+        return prev.filter((workout: any) => workout.id !== id);
+      });
       return;
     }
 
@@ -20,7 +23,9 @@ export const useAddWorkout = () => {
       reps: "8-10",
     };
 
-    setSelectedWorkouts((prev: any) => [...prev, workoutObject]);
+    console.log("2");
+
+    // setSelectedWorkouts((prev: any) => [...prev, workoutObject]);
   }
 
   return {

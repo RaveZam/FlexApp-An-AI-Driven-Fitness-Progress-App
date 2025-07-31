@@ -1,6 +1,6 @@
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { PlatformPressable } from "@react-navigation/elements";
-import { useLinkBuilder, useTheme } from "@react-navigation/native";
+import { useTheme } from "@react-navigation/native";
 import { Text, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
@@ -18,7 +18,6 @@ export function CustomTab({
   navigation,
 }: BottomTabBarProps) {
   const { colors } = useTheme();
-  const { buildHref } = useLinkBuilder();
 
   const icon = {
     index: ({ color, iconAnimatedStyle }: any) => (
@@ -105,7 +104,6 @@ export function CustomTab({
         return (
           <PlatformPressable
             key={index}
-            href={buildHref(route.name, route.params)}
             accessibilityState={isFocused ? { selected: true } : {}}
             accessibilityLabel={options.tabBarAccessibilityLabel}
             testID={options.tabBarButtonTestID}
