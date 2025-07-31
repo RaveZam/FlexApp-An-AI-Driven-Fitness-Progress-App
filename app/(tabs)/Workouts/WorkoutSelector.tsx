@@ -2,13 +2,19 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import SearchComponent from "./components/SearchComponent";
 
+import { navgationHelpers } from "@/app/helpers/navigationHelpers";
 import useWorkouts from "@/hooks/useFetchWorkouts";
 import { useWorkoutContext } from "@/hooks/useWorkoutPlanContext";
-// import { useWorkoutPlanCreator } from "@/hooks/useWorkoutPlanCreator";
-import { navgationHelpers } from "@/app/helpers/navigationHelpers";
 import { useAddWorkout } from "@/hooks/WorkoutHooks/useAddWorkout";
 import { useEffect, useState } from "react";
-import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import {
+  Image,
+  Pressable,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 export default function WorkoutSelector() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -18,6 +24,7 @@ export default function WorkoutSelector() {
     selectedWorkouts,
     initialWorkoutPlan,
     currentStepIndex,
+    setSelectedWorkouts,
   } = useWorkoutContext();
 
   const { addWorkout } = useAddWorkout();
@@ -38,13 +45,13 @@ export default function WorkoutSelector() {
       </ThemedText>
       <ScrollView showsVerticalScrollIndicator={false}>
         {workouts.map((workout) => (
-          <TouchableOpacity
+          <Pressable
             key={workout.id}
-            className={`flex-row m-4 mx-8 rounded-2xl items-center bg-[#191818] overflow-hidden cursor-pointer ${
-              selectedWorkouts?.some(
+            className={`flex-row m-4 mx-8 rounded-2xl items-center bg-[#191818] overflow-hidden ${
+              selectedWorkouts.some(
                 (selectedWorkout) => selectedWorkout.id === workout.id
               )
-                ? "border-2 border-[#BFFA00] opacity-80 duration-300"
+                ? "border border-[#BFFA00]"
                 : ""
             }`}
             onPress={() => {
@@ -70,7 +77,7 @@ export default function WorkoutSelector() {
               </ThemedText>
             </View>
             <ThemedText>{workout.description}</ThemedText>
-          </TouchableOpacity>
+          </Pressable>
         ))}
       </ScrollView>
       <View className="flex-row m-4 p-4 px-8 rounded-full mt-auto bg-[#202020] items-center">
