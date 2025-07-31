@@ -19,9 +19,8 @@ import WorkoutContextProvider from "@/context/workoutContext"; // ✅ use the de
 import { useColorScheme } from "@/hooks/useColorScheme";
 import * as NavigationBar from "expo-navigation-bar";
 
-NavigationBar.setVisibilityAsync("hidden");
-
 export default function RootLayout() {
+  NavigationBar.setVisibilityAsync("hidden");
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     Inter_400Regular,

@@ -34,7 +34,10 @@ export default function index() {
             {workoutPlans.map((plan: any) => (
               <>
                 {plan.is_active && (
-                  <Text className="text-emerald-600 font-medium text-center">
+                  <Text
+                    key={plan.is_active}
+                    className="text-emerald-600 font-medium text-center"
+                  >
                     Currently Active Plan:
                   </Text>
                 )}

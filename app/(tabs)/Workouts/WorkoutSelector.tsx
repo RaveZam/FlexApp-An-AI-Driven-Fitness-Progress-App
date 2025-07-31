@@ -7,14 +7,7 @@ import useWorkouts from "@/hooks/useFetchWorkouts";
 import { useWorkoutContext } from "@/hooks/useWorkoutPlanContext";
 import { useAddWorkout } from "@/hooks/WorkoutHooks/useAddWorkout";
 import { useEffect, useState } from "react";
-import {
-  Image,
-  Pressable,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 export default function WorkoutSelector() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -45,7 +38,7 @@ export default function WorkoutSelector() {
       </ThemedText>
       <ScrollView showsVerticalScrollIndicator={false}>
         {workouts.map((workout) => (
-          <Pressable
+          <TouchableOpacity
             key={workout.id}
             className={`flex-row m-4 mx-8 rounded-2xl items-center bg-[#191818] overflow-hidden ${
               selectedWorkouts.some(
@@ -77,7 +70,7 @@ export default function WorkoutSelector() {
               </ThemedText>
             </View>
             <ThemedText>{workout.description}</ThemedText>
-          </Pressable>
+          </TouchableOpacity>
         ))}
       </ScrollView>
       <View className="flex-row m-4 p-4 px-8 rounded-full mt-auto bg-[#202020] items-center">
