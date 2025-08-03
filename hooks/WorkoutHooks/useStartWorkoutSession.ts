@@ -1,14 +1,15 @@
 import { useAuth } from "@/auth/useAuth";
 import { startWorkoutService } from "@/services/startWorkoutService";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { navgationHelpers } from "../../helpers/navigationHelpers";
 import { useGetCurrentWorkoutToday } from "../useGetCurrentWorkoutToday";
 import { useWorkoutContext } from "../useWorkoutPlanContext";
+import { useWorkoutSession } from "../useWorkoutSession";
 
 export const useStartWorkoutSession = () => {
   const { user } = useAuth();
   const { currentWorkout } = useGetCurrentWorkoutToday();
   const { activeWorkoutID } = useWorkoutContext();
+  const { setWorkoutSession } = useWorkoutSession();
 
   const startWorkoutSession = async () => {
     navgationHelpers.startWorkout();
@@ -19,9 +20,11 @@ export const useStartWorkoutSession = () => {
       plan_per_day_id: currentWorkout?.id ?? 0,
       status: "in-progress",
     });
-    const expiresAt = Date.now() + 10 * 60 * 1000;
-    const payload = JSON.stringify({ sessionID, expiresAt });
-    await AsyncStorage.setItem("workoutSession", payload);
+    if (!sessionID) {
+      return;
+    }
+    setWorkoutSession(sessionID);
+    console.log("New Active Workout Session", sessionID);
   };
 
   return { startWorkoutSession };
