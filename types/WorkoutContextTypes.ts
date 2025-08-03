@@ -51,6 +51,8 @@ type WorkoutContextType = {
   setCurrentWorkout: Dispatch<SetStateAction<any>>;
   activeWorkoutID: number | null;
   setActiveWorkoutID: Dispatch<SetStateAction<number | null>>;
+  activeWorkoutSession: number | null;
+  setActiveWorkoutSession: Dispatch<SetStateAction<number | null>>;
 };
 
 export type { WorkoutContextType };

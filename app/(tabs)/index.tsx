@@ -8,9 +8,10 @@ import Popup from "@/components/ui/Popup";
 import ScheduleBar from "@/components/ui/ScheduleBar";
 import UserInfoCard from "@/components/UserInfoCard";
 import Workoutlist from "@/components/Workout/Workoutlist";
+import { useWorkoutContext } from "@/hooks/useWorkoutPlanContext";
 import { useWorkoutSession } from "@/hooks/useWorkoutSession";
 import { useStartWorkoutSession } from "@/hooks/WorkoutHooks/useStartWorkoutSession";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ScrollView, View } from "react-native";
 import {
   configureReanimatedLogger,
@@ -25,25 +26,22 @@ export default function Index() {
     strict: false, // Reanimated runs in strict mode by default
   });
   const { checkWorkoutSession } = useWorkoutSession();
-  const [activeWorkoutSession, setActiveWorkoutSession] = useState<
-    string | null
-  >(null);
-  useEffect(() => {
-    (async () => {
-      const session = await checkWorkoutSession();
-      console.log("Previous Active Workout Session", session);
-      setActiveWorkoutSession(session);
-    })();
-  }, []);
+  const { activeWorkoutSession } = useWorkoutContext();
+  console.log("activeWorkoutSession", activeWorkoutSession);
 
   const [collapsed, setCollapsed] = useState(false);
   const [popup, setPopup] = useState(false);
   const [isLoading, setisLoading] = useState(false);
 
-  const { startWorkoutSession } = useStartWorkoutSession();
+  const { startWorkoutSession, resumeWorkoutSession } =
+    useStartWorkoutSession();
 
   const handleStartWorkout = async () => {
-    startWorkoutSession();
+    if (activeWorkoutSession) {
+      resumeWorkoutSession();
+    } else {
+      startWorkoutSession();
+    }
   };
 
   return (

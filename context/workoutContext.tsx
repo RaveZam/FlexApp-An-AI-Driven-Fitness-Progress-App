@@ -1,15 +1,15 @@
 // import { navgationHelpers } from "@/app/helpers/navigationHelpers";
-import { navgationHelpers } from "../helpers/navigationHelpers";
-import {
-  getCurrentIndexDay,
-  getInitialWorkoutPlan,
-} from "../helpers/workoutHelpers";
 import { useAuth } from "@/auth/useAuth";
 import { DaysOfTheWeek } from "@/constants/WorkoutConstants";
 import { workoutPlanService } from "@/services/workoutPlanService";
 import { WorkoutContextType } from "@/types/WorkoutContextTypes";
 import { InitialWorkoutPlan, Workouts } from "@/types/WorkoutTypes";
 import React, { createContext, useEffect, useState } from "react";
+import { navgationHelpers } from "../helpers/navigationHelpers";
+import {
+  getCurrentIndexDay,
+  getInitialWorkoutPlan,
+} from "../helpers/workoutHelpers";
 
 export const WorkoutContext = createContext<WorkoutContextType | undefined>(
   undefined
@@ -41,6 +41,10 @@ export default function workoutContextProvider({
   const [currentDayWorkout, setCurrentDayWorkout] = useState<Workouts[]>([]);
   const [activeWorkoutID, setActiveWorkoutID] = useState<number | null>(null);
   const [currentWorkout, setCurrentWorkout] = useState<any>(null);
+
+  const [activeWorkoutSession, setActiveWorkoutSession] = useState<
+    number | null
+  >(null);
 
   const customWorkoutPlan = workoutDayNames?.map((day, index) => ({
     day: day,
@@ -127,6 +131,8 @@ export default function workoutContextProvider({
         setCurrentWorkout,
         activeWorkoutID,
         setActiveWorkoutID,
+        activeWorkoutSession,
+        setActiveWorkoutSession,
       }}
     >
       {children}

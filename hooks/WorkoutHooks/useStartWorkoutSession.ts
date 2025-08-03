@@ -9,9 +9,11 @@ export const useStartWorkoutSession = () => {
   const { user } = useAuth();
   const { currentWorkout } = useGetCurrentWorkoutToday();
   const { activeWorkoutID } = useWorkoutContext();
-  const { setWorkoutSession } = useWorkoutSession();
+  const { setWorkoutSession, checkWorkoutSession } = useWorkoutSession();
+  const { setActiveWorkoutSession } = useWorkoutContext();
 
   const startWorkoutSession = async () => {
+    console.log("Starting New Workout Session");
     navgationHelpers.startWorkout();
     console.log(user?.id);
     const sessionID = await startWorkoutService.createWorkoutSession({
@@ -24,8 +26,20 @@ export const useStartWorkoutSession = () => {
       return;
     }
     setWorkoutSession(sessionID);
+    setActiveWorkoutSession(sessionID);
     console.log("New Active Workout Session", sessionID);
   };
 
-  return { startWorkoutSession };
+  const resumeWorkoutSession = async () => {
+    console.log("Resuming Active Workout Session");
+    const sessionID = await checkWorkoutSession();
+    if (!sessionID) {
+      return;
+    }
+    setWorkoutSession(sessionID);
+    console.log("Resumed Active Workout Session", sessionID);
+    navgationHelpers.startWorkout();
+  };
+
+  return { startWorkoutSession, resumeWorkoutSession };
 };

@@ -23,7 +23,6 @@ export const useWorkoutSession = () => {
       return null;
     }
 
-    console.log("Active Workout Session");
     return sessionID;
   };
 
