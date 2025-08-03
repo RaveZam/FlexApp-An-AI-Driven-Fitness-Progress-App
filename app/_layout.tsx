@@ -14,7 +14,6 @@ import {
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
-
 import WorkoutContextProvider from "@/context/workoutContext"; // ✅ use the default export (which is the provider)
 import { useColorScheme } from "@/hooks/useColorScheme";
 import * as NavigationBar from "expo-navigation-bar";

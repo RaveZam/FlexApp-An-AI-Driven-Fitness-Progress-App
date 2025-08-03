@@ -88,11 +88,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "rgba(26, 71, 42, 0.3)", // Subtle border for glassmorphism
     // Add shadow for depth if desired, but might not be visible on all platforms
-    // shadowColor: '#000',
-    // shadowOffset: { width: 0, height: 2 },
-    // shadowOpacity: 0.25,
-    // shadowRadius: 3.84,
-    // elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   icon: {
     marginBottom: 15,
@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#000000",
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: "medium",
   },
   destructiveButtonText: {
     color: "#FFFFFF",

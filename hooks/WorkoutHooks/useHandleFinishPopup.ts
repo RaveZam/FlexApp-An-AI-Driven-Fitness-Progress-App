@@ -1,5 +1,5 @@
 import { useWorkoutContext } from "../useWorkoutPlanContext";
-import { navgationHelpers } from "@/app/helpers/navigationHelpers";
+import { navgationHelpers } from "../../helpers/navigationHelpers";
 
 export const useHandleFinishPopup = () => {
   const { setShowSuccessPopup } = useWorkoutContext();

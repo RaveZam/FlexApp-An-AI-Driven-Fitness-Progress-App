@@ -2,7 +2,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import SearchComponent from "./components/SearchComponent";
 
-import { navgationHelpers } from "@/app/helpers/navigationHelpers";
+import { navgationHelpers } from "../../../helpers/navigationHelpers";
 import useWorkouts from "@/hooks/useFetchWorkouts";
 import { useWorkoutContext } from "@/hooks/useWorkoutPlanContext";
 import { useAddWorkout } from "@/hooks/WorkoutHooks/useAddWorkout";

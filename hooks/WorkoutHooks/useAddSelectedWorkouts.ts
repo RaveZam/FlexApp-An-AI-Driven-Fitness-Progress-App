@@ -1,5 +1,5 @@
 // import { useSaveWorkout } from "@/services/useSaveWorkout";
-import { navgationHelpers } from "@/app/helpers/navigationHelpers";
+import { navgationHelpers } from "../../helpers/navigationHelpers";
 import { useWorkoutContext } from "../useWorkoutPlanContext";
 import { useClearWorkouts } from "./useClearWorkouts";
 

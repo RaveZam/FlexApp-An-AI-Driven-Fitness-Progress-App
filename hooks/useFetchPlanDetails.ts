@@ -1,6 +1,5 @@
 import { supabase } from "@/scripts/SupabaseClient";
 import { useState } from "react";
-import { useGetCurrentWorkoutToday } from "./useGetCurrentWorkoutToday";
 
 export const useFetchPlanDetails = () => {
   const [planDetails, setPlanDetails] = useState<any | null>(null);

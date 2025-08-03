@@ -1,9 +1,9 @@
 // import { navgationHelpers } from "@/app/helpers/navigationHelpers";
-import { navgationHelpers } from "@/app/helpers/navigationHelpers";
+import { navgationHelpers } from "../helpers/navigationHelpers";
 import {
   getCurrentIndexDay,
   getInitialWorkoutPlan,
-} from "@/app/helpers/workoutHelpers";
+} from "../helpers/workoutHelpers";
 import { useAuth } from "@/auth/useAuth";
 import { DaysOfTheWeek } from "@/constants/WorkoutConstants";
 import { workoutPlanService } from "@/services/workoutPlanService";
@@ -30,10 +30,8 @@ export default function workoutContextProvider({
   const [initialWorkoutPlan, setInitialWorkoutPlan] =
     useState<InitialWorkoutPlan | null>(null);
   const [selectedPlan, setSelectedPlan] = useState<any>([]);
-
   const [currentStepIndex, setCurrentStepIndex] = useState<number>(0);
   const [selectedWorkouts, setSelectedWorkouts] = useState<Workouts[]>([]);
-
   const [repsPerSet, setRepsPerSet] = useState<Workouts[]>([]);
   const [dayInput, setdayInput] = useState<string>("");
   const [showSuccessPopup, setShowSuccessPopup] = useState<boolean>(false);
@@ -42,7 +40,6 @@ export default function workoutContextProvider({
   const [dayOfTheWeek, setDayOfTheWeek] = useState<string[]>([]);
   const [currentDayWorkout, setCurrentDayWorkout] = useState<Workouts[]>([]);
   const [activeWorkoutID, setActiveWorkoutID] = useState<number | null>(null);
-
   const [currentWorkout, setCurrentWorkout] = useState<any>(null);
 
   const customWorkoutPlan = workoutDayNames?.map((day, index) => ({

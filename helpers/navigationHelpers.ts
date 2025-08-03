@@ -12,4 +12,8 @@ export const navgationHelpers = {
   goToWorkoutScreen: () => {
     router.push("/Workouts");
   },
+
+  startWorkout: () => {
+    router.push("/Workouts/WorkoutScreen");
+  },
 };

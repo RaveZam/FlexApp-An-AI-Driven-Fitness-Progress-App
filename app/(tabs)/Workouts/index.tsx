@@ -31,11 +31,11 @@ export default function index() {
             alwaysBounceVertical={true}
             className="flex-1 mx-4"
           >
-            {workoutPlans.map((plan: any) => (
+            {workoutPlans.map((plan: any, index) => (
               <>
                 {plan.is_active && (
                   <Text
-                    key={plan.is_active}
+                    key={index}
                     className="text-emerald-600 font-medium text-center"
                   >
                     Currently Active Plan:
