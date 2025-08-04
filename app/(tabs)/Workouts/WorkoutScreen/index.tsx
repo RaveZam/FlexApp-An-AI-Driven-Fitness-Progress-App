@@ -7,6 +7,8 @@ import RestTimerOverlay from "@/components/ui/RestTimerOverlay";
 import WorkoutLogOverlay from "@/components/ui/WorkoutLogOverlay";
 import { useFetchWorkoutPlans } from "@/hooks/useFetchWorkoutPlans";
 import { useWorkoutContext } from "@/hooks/useWorkoutPlanContext";
+import { useWorkoutSessionTimer } from "@/hooks/WorkoutHooks/useWorkoutSessionTimer";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
@@ -14,7 +16,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function index() {
   useFetchWorkoutPlans();
-  const { currentWorkout } = useWorkoutContext();
+  const { currentWorkout, setActiveWorkoutSession } = useWorkoutContext();
   const router = useRouter();
   const [showExercisesModal, setShowExercisesModal] = useState(false);
   const [selectedExercise, setSelectedExercise] = useState<any>(null);
@@ -28,6 +30,7 @@ export default function index() {
   const [currentReps, setCurrentReps] = useState("");
   const [restTime, setRestTime] = useState(180); // 3 minutes in seconds
   const [isRestTimerActive, setIsRestTimerActive] = useState(false);
+  const { time, formatTime, removeTimer } = useWorkoutSessionTimer();
 
   useEffect(() => {
     if (
@@ -108,7 +111,9 @@ export default function index() {
         <View className="flex-row justify-between items-center mx-4 px-4 py-3">
           <View className="items-center">
             <Text className="text-mutedText text-sm">Time</Text>
-            <Text className="text-emerald-500 text-lg ">0:03:30</Text>
+            <Text className="text-emerald-500 text-lg ">
+              {formatTime(time)}
+            </Text>
           </View>
           <View className="items-center">
             <Text className="text-mutedText text-sm">Rest Time</Text>
@@ -247,7 +252,17 @@ export default function index() {
         <Button
           className="z-20"
           buttonText="Start Workout"
-          onPress={() => setShowWorkoutLog(true)}
+          // onPress={() => setShowWorkoutLog(true)}
+          // onPress={() => {
+          //   removeTimer();
+          // }}
+          onPress={() => {
+            console.log("Removing Workout Session");
+            AsyncStorage.removeItem("workoutSession");
+            AsyncStorage.removeItem("startDate");
+            setActiveWorkoutSession(null);
+            removeTimer();
+          }}
         />
 
         {/* Workout Log Overlay */}

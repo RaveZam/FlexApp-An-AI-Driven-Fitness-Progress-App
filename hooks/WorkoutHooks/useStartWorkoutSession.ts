@@ -32,13 +32,13 @@ export const useStartWorkoutSession = () => {
 
   const resumeWorkoutSession = async () => {
     console.log("Resuming Active Workout Session");
+    navgationHelpers.startWorkout();
     const sessionID = await checkWorkoutSession();
     if (!sessionID) {
       return;
     }
     setWorkoutSession(sessionID);
     console.log("Resumed Active Workout Session", sessionID);
-    navgationHelpers.startWorkout();
   };
 
   return { startWorkoutSession, resumeWorkoutSession };

@@ -1,22 +1,29 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useWorkoutContext } from "./useWorkoutPlanContext";
+import { useWorkoutSessionTimer } from "./WorkoutHooks/useWorkoutSessionTimer";
 
 export const useWorkoutSession = () => {
+  const { setActiveWorkoutSession } = useWorkoutContext();
+  const { removeTimer, startTimer } = useWorkoutSessionTimer();
   const setWorkoutSession = async (sessionID: number) => {
     const expiresAt = Date.now() + 60 * 60 * 1000; // 10 minutes
     const payload = JSON.stringify({ sessionID, expiresAt });
     await AsyncStorage.setItem("workoutSession", payload);
+    startTimer();
   };
 
   const checkWorkoutSession = async () => {
     const raw = await AsyncStorage.getItem("workoutSession");
-
+    // console.log("Finding Workout Session");
     if (!raw) {
       console.log("No Active Workout Session");
+      removeTimer();
       return null;
     }
 
     const { sessionID, expiresAt } = JSON.parse(raw);
-
+    // console.log("Workout Session Found", sessionID);
+    setActiveWorkoutSession(sessionID);
     if (Date.now() > expiresAt) {
       await AsyncStorage.removeItem("workoutSession");
       console.log("Expired Active Workout Session");

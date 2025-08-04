@@ -48,6 +48,8 @@ export default function Index() {
   const { startWorkoutSession, resumeWorkoutSession } =
     useStartWorkoutSession();
 
+  checkWorkoutSession();
+
   const handleStartWorkout = async () => {
     if (activeWorkoutSession) {
       resumeWorkoutSession();
