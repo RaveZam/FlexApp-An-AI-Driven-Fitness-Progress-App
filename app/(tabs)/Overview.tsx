@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useState } from "react";
 import { Button, ScrollView, Text, TextInput, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import "../../global.css";
 
@@ -38,28 +39,30 @@ export default function Performance() {
   }
 
   return (
-    <View className="flex-1 items-center justify-center  p-4">
-      <Text className="text-white text-2xl">Talk To Mistral</Text>
-      <ScrollView>
-        {messages.map((message, index) => {
-          return (
-            <View className="text-white flex flex-row" key={index}>
-              <Text className="text-white">
-                {message.role === "user" ? "You: " : "Mistral: "}
-              </Text>
-              <Text className="text-white">{message.content}</Text>
-            </View>
-          );
-        })}
-      </ScrollView>
-      <TextInput
-        value={input}
-        onChangeText={(e) => setInput(e)}
-        placeholder="Type Something..."
-        className="p-4 w-full text-lg border-b focus:outline-none border-white mt-4 text-white"
-      />
+    <SafeAreaView className="flex-1">
+      <View className="flex-1 items-center justify-center  p-4">
+        <Text className="text-white text-2xl">Talk To Mistral</Text>
+        <ScrollView>
+          {messages.map((message, index) => {
+            return (
+              <View className="text-white flex flex-row" key={index}>
+                <Text className="text-white">
+                  {message.role === "user" ? "You: " : "Mistral: "}
+                </Text>
+                <Text className="text-white">{message.content}</Text>
+              </View>
+            );
+          })}
+        </ScrollView>
+        <TextInput
+          value={input}
+          onChangeText={(e) => setInput(e)}
+          placeholder="Type Something..."
+          className="p-4 w-full text-lg border-b focus:outline-none border-white mt-4 text-white"
+        />
 
-      <Button title="send" onPress={sendMessage} />
-    </View>
+        <Button title="send" onPress={sendMessage} />
+      </View>
+    </SafeAreaView>
   );
 }

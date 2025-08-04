@@ -1,4 +1,6 @@
 import { AuthProvider } from "@/auth/useAuth";
+import WorkoutContextProvider from "@/context/workoutContext"; // ✅ use the default export (which is the provider)
+import { useColorScheme } from "@/hooks/useColorScheme";
 import {
   Inter_400Regular,
   Inter_500Medium,
@@ -11,16 +13,15 @@ import {
   DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
+import * as NavigationBar from "expo-navigation-bar";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
-import WorkoutContextProvider from "@/context/workoutContext"; // ✅ use the default export (which is the provider)
-import { useColorScheme } from "@/hooks/useColorScheme";
-import * as NavigationBar from "expo-navigation-bar";
 
 export default function RootLayout() {
   NavigationBar.setVisibilityAsync("hidden");
   const colorScheme = useColorScheme();
+
   const [loaded] = useFonts({
     Inter_400Regular,
     Inter_500Medium,

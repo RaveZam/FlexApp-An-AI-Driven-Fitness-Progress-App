@@ -14,3 +14,5 @@ So TLDR Design the logic flow on how to handle the User Logs,
 It should remember what workouts ive taken and show the logs
 
 So It Could be a filter and comparison if it exists in the session log vs the current workout shown on the app since it already tracks it in the client side.
+
+//NOTE FIX ERROR WHEN FRESH OPEN FROM APP IT DOESNT RESUME THE SESSION!
