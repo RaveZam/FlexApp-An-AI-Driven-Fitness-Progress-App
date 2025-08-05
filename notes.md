@@ -1,21 +1,11 @@
 What i did today:
 
-Initated The implementation for for the session timers, i created a custom hook that is used by the useWorkout To Track the Session Timer along with their new/destroyed or track if theyre abandoned,
-
-Note that there is a new issue tho that everything that is related with the timer rerenders per tick.
+Fixed the Timer. Everything Works Perfectly Now.
 
 Whats Next:
 
-Figure out how to track what the user has worked out vs not, maybe thats on the database also,
-So adding all the workouts on that session??? and then having a boolean taken true or false. Basta figure it out.
+Start The Part First When the user would log their workouts.
 
-So TLDR Design the logic flow on how to handle the User Logs,
+Decide how would it track the logs and sets per workout.
 
-It should remember what workouts ive taken and show the logs
-
-So It Could be a filter and comparison if it exists in the session log vs the current workout shown on the app since it already tracks it in the client side.
-
-HIGH PRIORITY FIX THE TIMER TRIGGERING RERENDERING. ADD A FINISH WORKOUT FUNCTION EVEN IF ITS JUST A BUTTON
-
-//NOTE FIX ERROR WHEN FRESH OPEN FROM APP IT DOESNT RESUME THE SESSION!
-//NOTE FIX RERENDERING ISSUE, ANYTHING THAT USES USEWORKOUTSESSIONTIMER RERENDERS PER TICK ON THE USE EFFECT.
+Then proceed to how will it Detect Which Workouts have you taken yet.
