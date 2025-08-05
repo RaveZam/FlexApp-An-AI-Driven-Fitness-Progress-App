@@ -39,7 +39,7 @@ export default function Index() {
   });
   const { checkWorkoutSession } = useWorkoutSession();
   const { activeWorkoutSession } = useWorkoutContext();
-  console.log("activeWorkoutSession", activeWorkoutSession);
+  // console.log("activeWorkoutSession", activeWorkoutSession);
 
   const [collapsed, setCollapsed] = useState(false);
   const [popup, setPopup] = useState(false);

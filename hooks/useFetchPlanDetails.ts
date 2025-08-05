@@ -37,7 +37,6 @@ export const useFetchPlanDetails = () => {
 
       setPlanDetails(planData?.[0] || null); // Optionally set the first plan day as details
       setWorkouts(planData || []); // Set all plan days with their workouts
-      console.log(planData);
     } catch (err) {
       setError(err as Error);
     } finally {

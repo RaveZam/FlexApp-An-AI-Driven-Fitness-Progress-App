@@ -5,37 +5,34 @@ import { useWorkoutContext } from "../useWorkoutPlanContext";
 export const useWorkoutSessionTimer = () => {
   const [time, setTime] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
-  const { activeWorkoutSession } = useWorkoutContext();
+  const { activeWorkoutSession, setActiveWorkoutSession } = useWorkoutContext();
+
+  const loadStartTime = async () => {
+    const startDate = await AsyncStorage.getItem("startDate");
+    if (startDate) {
+      console.log("Previous Timer Found started on:", startDate);
+      const now = Date.now();
+      const startTime = Number(startDate);
+      const elapsed = Math.floor((now - startTime) / 1000);
+      setTime(elapsed);
+      setIsRunning(true);
+      return true;
+    } else {
+      return false;
+    }
+  };
 
   useEffect(() => {
-    const loadStartTime = async () => {
-      const startDate = await AsyncStorage.getItem("startDate");
-      if (startDate) {
-        console.log("Previous Timer Found started on:", startDate);
-        const now = Date.now();
-        const startTime = Number(startDate);
-        const elapsed = Math.floor((now - startTime) / 1000);
-
-        setTime(elapsed);
-        setIsRunning(true);
-      } else {
-        console.log("No Previous Timer Found, starting new timer");
-        startTimer();
-      }
-    };
-    loadStartTime();
-  }, []);
-
-  useEffect(() => {
+    console.log("isRunning", isRunning);
     let interval: ReturnType<typeof setInterval>;
 
-    if (isRunning) {
+    if (isRunning && activeWorkoutSession) {
       interval = setInterval(() => {
         setTime((prev) => prev + 1);
       }, 1000);
     }
     return () => clearInterval(interval);
-  }, [isRunning]);
+  }, [isRunning, activeWorkoutSession]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -49,12 +46,22 @@ export const useWorkoutSessionTimer = () => {
     setIsRunning(true);
   };
 
-  const removeTimer = async () => {
-    await AsyncStorage.removeItem("startDate");
+  const removeTimer = () => {
+    AsyncStorage.removeItem("startDate");
+    AsyncStorage.removeItem("workoutSession");
+    setActiveWorkoutSession(null);
     setIsRunning(false);
     setTime(0);
   };
   const resetTimer = () => setTime(0);
 
-  return { time, isRunning, startTimer, removeTimer, resetTimer, formatTime };
+  return {
+    time,
+    isRunning,
+    startTimer,
+    removeTimer,
+    resetTimer,
+    formatTime,
+    loadStartTime,
+  };
 };

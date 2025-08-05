@@ -4,6 +4,7 @@ import { navgationHelpers } from "../../helpers/navigationHelpers";
 import { useGetCurrentWorkoutToday } from "../useGetCurrentWorkoutToday";
 import { useWorkoutContext } from "../useWorkoutPlanContext";
 import { useWorkoutSession } from "../useWorkoutSession";
+import { useWorkoutSessionTimer } from "./useWorkoutSessionTimer";
 
 export const useStartWorkoutSession = () => {
   const { user } = useAuth();
@@ -11,11 +12,11 @@ export const useStartWorkoutSession = () => {
   const { activeWorkoutID } = useWorkoutContext();
   const { setWorkoutSession, checkWorkoutSession } = useWorkoutSession();
   const { setActiveWorkoutSession } = useWorkoutContext();
+  const { loadStartTime } = useWorkoutSessionTimer();
 
   const startWorkoutSession = async () => {
     console.log("Starting New Workout Session");
     navgationHelpers.startWorkout();
-    console.log(user?.id);
     const sessionID = await startWorkoutService.createWorkoutSession({
       user_id: user?.id ?? "",
       workout_plan_id: activeWorkoutID ?? 0,
@@ -31,6 +32,7 @@ export const useStartWorkoutSession = () => {
   };
 
   const resumeWorkoutSession = async () => {
+    loadStartTime();
     console.log("Resuming Active Workout Session");
     navgationHelpers.startWorkout();
     const sessionID = await checkWorkoutSession();

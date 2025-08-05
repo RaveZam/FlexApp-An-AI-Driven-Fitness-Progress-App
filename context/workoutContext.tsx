@@ -51,9 +51,7 @@ export default function workoutContextProvider({
     key: day.toLowerCase().replace(/\s+/g, "-"),
     dayOfTheWeek: workoutDays[index],
   }));
-  useEffect(() => {
-    console.log("selectedWorkouts", selectedWorkouts);
-  }, [selectedWorkouts]);
+
   useEffect(() => {
     setInitialWorkoutPlan(getInitialWorkoutPlan(customWorkoutPlan));
   }, [workoutDayNames]);

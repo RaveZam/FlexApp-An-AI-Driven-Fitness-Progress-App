@@ -8,7 +8,6 @@ import WorkoutLogOverlay from "@/components/ui/WorkoutLogOverlay";
 import { useFetchWorkoutPlans } from "@/hooks/useFetchWorkoutPlans";
 import { useWorkoutContext } from "@/hooks/useWorkoutPlanContext";
 import { useWorkoutSessionTimer } from "@/hooks/WorkoutHooks/useWorkoutSessionTimer";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
@@ -30,7 +29,21 @@ export default function index() {
   const [currentReps, setCurrentReps] = useState("");
   const [restTime, setRestTime] = useState(180); // 3 minutes in seconds
   const [isRestTimerActive, setIsRestTimerActive] = useState(false);
-  const { time, formatTime, removeTimer } = useWorkoutSessionTimer();
+  const { time, formatTime, removeTimer, startTimer, loadStartTime } =
+    useWorkoutSessionTimer();
+  const { activeWorkoutSession } = useWorkoutContext();
+
+  useEffect(() => {
+    console.log("Trig");
+    const loadPreviousTimer = async () => {
+      const previousTimer = await loadStartTime();
+      console.log("previousTimer", previousTimer);
+      if (!previousTimer) {
+        startTimer();
+      }
+    };
+    loadPreviousTimer();
+  }, [activeWorkoutSession]);
 
   useEffect(() => {
     if (
@@ -258,9 +271,7 @@ export default function index() {
           // }}
           onPress={() => {
             console.log("Removing Workout Session");
-            AsyncStorage.removeItem("workoutSession");
-            AsyncStorage.removeItem("startDate");
-            setActiveWorkoutSession(null);
+
             removeTimer();
           }}
         />
