@@ -2,15 +2,19 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import Button from "@/components/ui/Button";
 import ExercisesModal from "@/components/ui/ExercisesModal";
-import LineChart from "@/components/ui/LineChart";
 import RestTimerOverlay from "@/components/ui/RestTimerOverlay";
 import WorkoutLogOverlay from "@/components/ui/WorkoutLogOverlay";
+import HistoryCard from "@/components/WorkoutScreenComponents/PersonalRecordAndHistoryComponents/HistoryCard";
+import PersonalRecordsCard from "@/components/WorkoutScreenComponents/PersonalRecordAndHistoryComponents/PersonalRecordsCard";
+import SelectedWorkoutCard from "@/components/WorkoutScreenComponents/SelectedWorkoutCard";
+import WorkoutScreenHeader from "@/components/WorkoutScreenComponents/WorkoutScreenHeader";
+import WorkoutTimers from "@/components/WorkoutScreenComponents/WorkoutTimers";
 import { useFetchWorkoutPlans } from "@/hooks/useFetchWorkoutPlans";
 import { useWorkoutContext } from "@/hooks/useWorkoutPlanContext";
 import { useWorkoutSessionTimer } from "@/hooks/WorkoutHooks/useWorkoutSessionTimer";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function index() {
@@ -34,16 +38,18 @@ export default function index() {
   const { activeWorkoutSession } = useWorkoutContext();
 
   useEffect(() => {
-    console.log("Trig");
     const loadPreviousTimer = async () => {
       const previousTimer = await loadStartTime();
-      console.log("previousTimer", previousTimer);
       if (!previousTimer) {
         startTimer();
       }
     };
     loadPreviousTimer();
   }, [activeWorkoutSession]);
+
+  useEffect(() => {
+    console.log("Selected Workout", selectedExercise);
+  }, [selectedExercise]);
 
   useEffect(() => {
     if (
@@ -108,114 +114,18 @@ export default function index() {
   return (
     <SafeAreaView className="flex-1">
       <ThemedView className="flex-1">
-        <View className="flex-row justify-between items-center ml-12 mx-8 py-8 border-b border-important">
-          <TouchableOpacity onPress={() => router.back()}>
-            <ThemedText className="text-whiteText">Exit</ThemedText>
-          </TouchableOpacity>
-          <ThemedText className="text-whiteText font-medium">
-            Workout 1/6
-          </ThemedText>
-          <TouchableOpacity onPress={() => setShowExercisesModal(true)}>
-            <ThemedText className="text-whiteText">Exercises</ThemedText>
-          </TouchableOpacity>
-        </View>
-
+        <WorkoutScreenHeader setShowExercisesModal={setShowExercisesModal} />
         {/* Timers Section */}
-        <View className="flex-row justify-between items-center mx-4 px-4 py-3">
-          <View className="items-center">
-            <Text className="text-mutedText text-sm">Time</Text>
-            <Text className="text-emerald-500 text-lg ">
-              {formatTime(time)}
-            </Text>
-          </View>
-          <View className="items-center">
-            <Text className="text-mutedText text-sm">Rest Time</Text>
-            <Text className="text-emerald-400 text-lg ">3:00</Text>
-          </View>
-        </View>
+        <WorkoutTimers formatTime={formatTime} time={time} />
 
         <ScrollView className="flex-1 " showsVerticalScrollIndicator={false}>
           <View className="bg-lightDark p-4">
-            {displayExercise ? (
-              <View className="border-2 border-emerald-500 rounded-lg p-4 mb-4 bg-lightDark">
-                <View className="flex-row items-center">
-                  <View className="w-32 h-24 bg-important rounded-lg mr-4 overflow-hidden flex-shrink-0">
-                    <Image
-                      source={{
-                        uri:
-                          displayExercise.workout_id?.workout_image ||
-                          "https://example.com/incline-dumbbell-press.jpg",
-                      }}
-                      className="w-full h-full"
-                      resizeMode="cover"
-                    />
-                  </View>
-                  <View className="flex-1">
-                    <ThemedText className="text-whiteText text-lg font-medium">
-                      {displayExercise.workout_id?.workout_name ||
-                        "Incline Dumbbell Press"}
-                    </ThemedText>
-                    <ThemedText className="text-mutedText text-sm mt-1">
-                      {displayExercise.sets} sets × {displayExercise.reps} reps
-                    </ThemedText>
-                  </View>
-                </View>
-              </View>
-            ) : (
-              <View className="border-2 border-emerald-500 rounded-lg p-4 mb-4 bg-lightDark">
-                <View className="flex-row items-center">
-                  <View className="w-24 h-24 bg-important rounded-lg mr-4 overflow-hidden flex-shrink-0">
-                    <Image
-                      source={{
-                        uri: "https://example.com/incline-dumbbell-press.jpg",
-                      }}
-                      className="w-full h-full"
-                      resizeMode="cover"
-                    />
-                  </View>
-                  <View className="flex-1">
-                    <ThemedText className="text-whiteText text-lg font-medium">
-                      Incline Dumbbell Press
-                    </ThemedText>
-                    <ThemedText className="text-mutedText text-sm mt-1">
-                      3 sets × 8-10 reps
-                    </ThemedText>
-                  </View>
-                </View>
-              </View>
-            )}
+            <SelectedWorkoutCard displayExercise={selectedExercise} />
 
             {/* Personal Record and History */}
             <View className="flex-row justify-around w-full m-4 ">
-              <View>
-                <ThemedText className="text-mutedText font-medium text-md mb-2">
-                  Personal Record:
-                </ThemedText>
-                <View className="">
-                  <View className="flex-row gap-1">
-                    <Text className="text-sm text-veryMutedText">Weight:</Text>
-                    <Text className="text-emerald-500 font-semibold text-sm">
-                      50lb
-                    </Text>
-                  </View>
-                  <View className="flex-row gap-1 ">
-                    <Text className="text-sm text-veryMutedText">Reps:</Text>
-                    <Text className="text-sm text-emerald-500">9</Text>
-                  </View>
-                  <View className="flex-row ">
-                    <Text className="text-sm text-mutedText">03/21/2025</Text>
-                  </View>
-                </View>
-              </View>
-
-              <View className="flex-1 items-center">
-                <ThemedText className="text-mutedText text-sm mb-2">
-                  History
-                </ThemedText>
-                <View className="bg-lightDark rounded-lg w-full justify-center items-center">
-                  <LineChart />
-                </View>
-              </View>
+              <PersonalRecordsCard />
+              <HistoryCard />
             </View>
           </View>
 
@@ -265,15 +175,7 @@ export default function index() {
         <Button
           className="z-20"
           buttonText="Start Workout"
-          // onPress={() => setShowWorkoutLog(true)}
-          // onPress={() => {
-          //   removeTimer();
-          // }}
-          onPress={() => {
-            console.log("Removing Workout Session");
-
-            removeTimer();
-          }}
+          onPress={() => setShowWorkoutLog(true)}
         />
 
         {/* Workout Log Overlay */}

@@ -21,6 +21,7 @@ export const useFetchPlanDetails = () => {
           workouts_per_day (
             *,
             workout_id (
+              id,
               workout_name,
               workout_description,
               muscle_group,
