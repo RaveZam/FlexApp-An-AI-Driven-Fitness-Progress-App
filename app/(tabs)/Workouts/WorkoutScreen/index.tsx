@@ -12,6 +12,7 @@ import WorkoutTimers from "@/components/WorkoutScreenComponents/WorkoutTimers";
 import { useFetchWorkoutPlans } from "@/hooks/useFetchWorkoutPlans";
 import { useWorkoutContext } from "@/hooks/useWorkoutPlanContext";
 import { useWorkoutSessionTimer } from "@/hooks/WorkoutHooks/useWorkoutSessionTimer";
+import { useRestTimer } from "@/hooks/WorkoutScreenHooks/useRestTimer";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
@@ -24,18 +25,24 @@ export default function index() {
   const [showExercisesModal, setShowExercisesModal] = useState(false);
   const [selectedExercise, setSelectedExercise] = useState<any>(null);
   const [showWorkoutLog, setShowWorkoutLog] = useState(false);
-  const [showRestTimer, setShowRestTimer] = useState(false);
+
   const [currentSet, setCurrentSet] = useState(1);
   const [workoutLog, setWorkoutLog] = useState<
     Array<{ weight: string; reps: string }>
   >([]);
   const [currentWeight, setCurrentWeight] = useState("");
   const [currentReps, setCurrentReps] = useState("");
-  const [restTime, setRestTime] = useState(180); // 3 minutes in seconds
-  const [isRestTimerActive, setIsRestTimerActive] = useState(false);
+
   const { time, formatTime, removeTimer, startTimer, loadStartTime } =
     useWorkoutSessionTimer();
   const { activeWorkoutSession } = useWorkoutContext();
+  const {
+    showRestTimer,
+    setShowRestTimer,
+    setIsRestTimerActive,
+    restTime,
+    setRestTime,
+  } = useRestTimer();
 
   useEffect(() => {
     const loadPreviousTimer = async () => {
@@ -60,23 +67,6 @@ export default function index() {
     }
   }, [currentWorkout]);
 
-  useEffect(() => {
-    let interval: ReturnType<typeof setInterval>;
-    if (isRestTimerActive && restTime > 0) {
-      interval = setInterval(() => {
-        setRestTime((prev) => {
-          if (prev <= 1) {
-            setIsRestTimerActive(false);
-            setShowRestTimer(false);
-            return 180; // Reset to 3 minutes
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [isRestTimerActive, restTime]);
-
   const handleSaveWorkoutLog = () => {
     if (currentWeight && currentReps) {
       setWorkoutLog([
@@ -98,18 +88,9 @@ export default function index() {
     setCurrentReps("");
   };
 
-  const handleStartNextSet = () => {
-    setShowRestTimer(false);
-    setIsRestTimerActive(false);
-    setRestTime(180);
-    setShowWorkoutLog(true);
-  };
-
   const displayExercise =
     selectedExercise ||
     (currentWorkout?.workouts_per_day && currentWorkout.workouts_per_day[0]);
-
-  const progressPercentage = ((180 - restTime) / 180) * 100;
 
   return (
     <SafeAreaView className="flex-1">
@@ -196,11 +177,10 @@ export default function index() {
         {/* Rest Timer Overlay */}
         <RestTimerOverlay
           visible={showRestTimer}
-          onClose={() => setShowRestTimer(false)}
-          onStartNextSet={handleStartNextSet}
-          restTime={restTime}
-          progressPercentage={progressPercentage}
           exerciseName={displayExercise?.workout_id?.workout_name || "Exercise"}
+          restTime={restTime}
+          onClose={() => setShowRestTimer(false)}
+          handleStartNextSet={() => setShowWorkoutLog(true)}
         />
 
         {/* Exercises Modal */}

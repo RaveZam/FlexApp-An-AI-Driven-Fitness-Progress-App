@@ -6,26 +6,26 @@ import { AnimatedCircularProgress } from "react-native-circular-progress";
 
 interface RestTimerOverlayProps {
   visible: boolean;
-  onClose: () => void;
-  onStartNextSet: () => void;
-  restTime: number;
-  progressPercentage: number;
   exerciseName: string;
+  restTime: number;
+  onClose: () => void;
+  handleStartNextSet: () => void;
 }
 
 export default function RestTimerOverlay({
   visible,
-  onClose,
-  onStartNextSet,
-  restTime,
-  progressPercentage,
   exerciseName,
+  restTime,
+  onClose,
+  handleStartNextSet,
 }: RestTimerOverlayProps) {
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
+
+  const progressPercentage = ((180 - restTime) / 180) * 100;
 
   return (
     <Modal
@@ -66,7 +66,7 @@ export default function RestTimerOverlay({
 
           <Button
             buttonText="Start Next Set"
-            onPress={onStartNextSet}
+            onPress={handleStartNextSet}
             className=""
           />
         </View>
