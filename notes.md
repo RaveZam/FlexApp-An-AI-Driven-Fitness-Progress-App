@@ -19,3 +19,5 @@ and flexible. That way the user dont have to remake their whole workout plan jus
 
 Add An option to add new workouts on their current workout (Pag may gusto sila i try di na nila need pumunta sa workout creation so parang
 real time pwede i edit and delete. para hindi restrictive.)
+
+HIGH PRIORITY: FIX WORKOUT LOGS NOT BEING CORRECTLY LOG POSSIBLY DUE TO TWICE CALLING WORKOUTLGOSHOOK

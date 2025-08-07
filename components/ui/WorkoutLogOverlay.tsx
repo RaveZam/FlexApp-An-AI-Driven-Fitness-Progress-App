@@ -5,45 +5,56 @@ import { Modal, TextInput, TouchableOpacity, View } from "react-native";
 
 interface WorkoutLogOverlayProps {
   visible: boolean;
-  onClose: () => void;
-  onSave: () => void;
-  currentWeight: string;
-  setCurrentWeight: (weight: string) => void;
-  currentReps: string;
-  setCurrentReps: (reps: string) => void;
   currentSet: number;
   totalSets: number;
   exerciseName: string;
   workoutLog: Array<{ weight: string; reps: string }>;
   disabled?: boolean;
+  setShowWorkoutLog: (show: boolean) => void;
+  setShowRestTimer: (show: boolean) => void;
+  setIsRestTimerActive: (active: boolean) => void;
+  currentWeight: string;
+  setCurrentWeight: (weight: string) => void;
+  currentReps: string;
+  setCurrentReps: (reps: string) => void;
+  handleSaveWorkoutLog: () => void;
+  handleCloseWorkoutLog: () => void;
 }
 
 export default function WorkoutLogOverlay({
   visible,
-  onClose,
-  onSave,
-  currentWeight,
-  setCurrentWeight,
-  currentReps,
-  setCurrentReps,
   currentSet,
   totalSets,
   exerciseName,
   workoutLog,
   disabled = false,
+  setShowWorkoutLog,
+  setShowRestTimer,
+  setIsRestTimerActive,
+  currentWeight,
+  setCurrentWeight,
+  currentReps,
+  setCurrentReps,
+  handleSaveWorkoutLog,
+  handleCloseWorkoutLog,
 }: WorkoutLogOverlayProps) {
   return (
     <Modal
       visible={visible}
       transparent={true}
       animationType="fade"
-      onRequestClose={onClose}
+      onRequestClose={() => {
+        setShowWorkoutLog(false);
+        handleCloseWorkoutLog();
+      }}
     >
       <View className="flex-1 bg-black/50 justify-center items-center">
         <View className="bg-lightDark rounded-2xl p-6 mx-4 w-full max-w-sm">
-          {/* Close Button */}
           <TouchableOpacity
-            onPress={onClose}
+            onPress={() => {
+              handleCloseWorkoutLog();
+              setShowWorkoutLog(false);
+            }}
             className="absolute top-4 right-4 z-10"
           >
             <ThemedText className="text-whiteText text-2xl font-bold">
@@ -113,7 +124,12 @@ export default function WorkoutLogOverlay({
 
           <Button
             buttonText="Save Set"
-            onPress={onSave}
+            onPress={() => {
+              handleSaveWorkoutLog();
+              setShowWorkoutLog(false);
+              setShowRestTimer(true);
+              setIsRestTimerActive(true);
+            }}
             disabled={disabled || !currentWeight || !currentReps}
             className=""
           />

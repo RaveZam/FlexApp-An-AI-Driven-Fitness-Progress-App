@@ -3,16 +3,14 @@ import { useEffect, useState } from "react";
 export const useRestTimer = () => {
   const [showRestTimer, setShowRestTimer] = useState(false);
   const [isRestTimerActive, setIsRestTimerActive] = useState(false);
-  const [restTime, setRestTime] = useState(180);
-  const [showWorkoutLog, setShowWorkoutLog] = useState(false);
 
+  const [restTime, setRestTime] = useState(180);
   const onClose = () => {};
 
   const handleStartNextSet = () => {
     setShowRestTimer(false);
     setIsRestTimerActive(false);
     setRestTime(180);
-    setShowWorkoutLog(true);
   };
 
   useEffect(() => {
@@ -37,7 +35,6 @@ export const useRestTimer = () => {
     onClose,
     handleStartNextSet,
     setShowRestTimer,
-    setShowWorkoutLog,
     restTime,
     setRestTime,
     showRestTimer,
