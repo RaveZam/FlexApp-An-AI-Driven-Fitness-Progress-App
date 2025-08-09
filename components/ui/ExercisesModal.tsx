@@ -1,6 +1,7 @@
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import WorkoutCard from "@/components/Workout/WorkoutCard";
+import { useWorkoutContext } from "@/hooks/useWorkoutPlanContext";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import React from "react";
 import { Modal, ScrollView, TouchableOpacity, View } from "react-native";
@@ -20,6 +21,7 @@ export default function ExercisesModal({
   onSelect,
   selectedExercise,
 }: ExercisesModalProps) {
+  const { finishedWorkouts } = useWorkoutContext();
   return (
     <Modal
       visible={isVisible}
@@ -59,7 +61,11 @@ export default function ExercisesModal({
                   }}
                   activeOpacity={0.7}
                   className={`mb-2 ${
-                    isSelected ? "border-2 border-emerald-500 rounded-lg" : ""
+                    isSelected
+                      ? "border-2 border-emerald-500 rounded-lg"
+                      : finishedWorkouts.includes(exercise.workout_id?.id)
+                      ? "opacity-50"
+                      : ""
                   }`}
                 >
                   <WorkoutCard
