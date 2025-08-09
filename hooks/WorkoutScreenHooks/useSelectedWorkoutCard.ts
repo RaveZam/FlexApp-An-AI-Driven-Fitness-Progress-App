@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useWorkoutContext } from "../useWorkoutPlanContext";
 
 export const useSelectedWorkoutCard = () => {
-  const [selectedExercise, setSelectedExercise] = useState<any>(null);
-  const { currentWorkout } = useWorkoutContext();
+  const { currentWorkout, selectedExercise, setSelectedExercise } =
+    useWorkoutContext();
 
   useEffect(() => {
     if (

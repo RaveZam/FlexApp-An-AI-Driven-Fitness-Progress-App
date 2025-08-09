@@ -20,3 +20,13 @@ Add An option to add new workouts on their current workout (Pag may gusto sila i
 real time pwede i edit and delete. para hindi restrictive.)
 
 Goal before uni: Make the app usable with user logs to atleast track their lifts.
+
+Refactor Soon: Make A CurrentWorkout Context, I Moved States in the WorkoutContext.
+
+Here is what i moved to the context.
+selectedExercise,
+setSelectedExercise,
+currentSet,
+setCurrentSet,
+workoutLog,
+setWorkoutLog,

@@ -53,6 +53,16 @@ type WorkoutContextType = {
   setActiveWorkoutID: Dispatch<SetStateAction<number | null>>;
   activeWorkoutSession: number | null;
   setActiveWorkoutSession: Dispatch<SetStateAction<number | null>>;
+  selectedExercise: any;
+  setSelectedExercise: Dispatch<SetStateAction<any>>;
+  currentSet: number;
+  setCurrentSet: Dispatch<SetStateAction<number>>;
+  workoutLog: Array<{ weight: string; reps: string }>;
+  setWorkoutLog: Dispatch<
+    SetStateAction<Array<{ weight: string; reps: string }>>
+  >;
+  finishedWorkouts: number[];
+  setFinishedWorkouts: Dispatch<SetStateAction<number[]>>;
 };
 
 export type { WorkoutContextType };

@@ -1,25 +1,102 @@
+import {
+  getWorkoutSessionLog,
+  insertSessionLog,
+} from "@/services/insertSessionLogs";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
+import { useWorkoutContext } from "../useWorkoutPlanContext";
 
 export const useWorkoutLogs = () => {
-  const [currentSet, setCurrentSet] = useState(1);
-  const [workoutLog, setWorkoutLog] = useState<
-    Array<{ weight: string; reps: string }>
-  >([]);
+  const STORAGE_KEY = "finishedWorkouts";
+
   const [currentWeight, setCurrentWeight] = useState("");
   const [currentReps, setCurrentReps] = useState("");
+  const {
+    activeWorkoutSession,
+    currentSet,
+    setCurrentSet,
+    selectedExercise,
+    workoutLog,
+    setWorkoutLog,
+    setFinishedWorkouts,
+  } = useWorkoutContext();
 
   useEffect(() => {
-    console.log("workoutLog", workoutLog);
-  }, [workoutLog]);
+    console.log("Change Detected");
+    console.log("currentSet", currentSet);
+    loadWorkoutLogs();
+  }, [selectedExercise, currentSet]);
+
+  useEffect(() => {
+    loadFinishedWorkouts();
+  }, [currentSet]);
+
+  const loadWorkoutLogs = async () => {
+    console.log("selectedExercise", selectedExercise?.workout_id?.id);
+    console.log("activeWorkoutSession", activeWorkoutSession);
+    if (activeWorkoutSession && selectedExercise?.workout_id?.id) {
+      console.log("Loading Workout Logs");
+      const workoutLogs = await getWorkoutSessionLog(
+        activeWorkoutSession,
+        selectedExercise?.workout_id?.id
+      );
+      console.log("Workout Logs: ", workoutLogs);
+
+      const workoutLogsArray = workoutLogs?.map((log) => ({
+        weight: log.weight,
+        reps: log.reps,
+      }));
+      setCurrentSet((workoutLogsArray?.length ?? 0) + 1);
+      setWorkoutLog(workoutLogsArray ?? []);
+    }
+  };
+
+  const addFinishedWorkout = async (workoutId: number) => {
+    console.log("Adding Finished Workout: ", workoutId);
+    try {
+      // Get current saved array
+      const jsonValue = await AsyncStorage.getItem(STORAGE_KEY);
+      const workouts = jsonValue != null ? JSON.parse(jsonValue) : [];
+
+      // Add new workout ID if not already there
+      if (!workouts.includes(workoutId)) {
+        workouts.push(workoutId);
+      }
+
+      // Save updated array
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(workouts));
+    } catch (e) {
+      console.error("Error saving workout:", e);
+    }
+  };
+
+  const clearFinishedWorkouts = async () => {
+    await AsyncStorage.removeItem(STORAGE_KEY);
+  };
+
+  const loadFinishedWorkouts = async () => {
+    try {
+      const jsonValue = await AsyncStorage.getItem(STORAGE_KEY);
+      const workouts = jsonValue ? JSON.parse(jsonValue) : [];
+
+      setFinishedWorkouts(workouts);
+    } catch (e) {
+      console.error("Error loading workouts:", e);
+      return [];
+    }
+  };
 
   const handleSaveWorkoutLog = () => {
     console.log("currentWeight", currentWeight);
     console.log("currentReps", currentReps);
     if (currentWeight && currentReps) {
-      setWorkoutLog([
-        ...workoutLog,
-        { weight: currentWeight, reps: currentReps },
-      ]);
+      insertSessionLog(
+        activeWorkoutSession,
+        selectedExercise.workout_id.id,
+        currentSet,
+        currentReps,
+        currentWeight
+      );
       setCurrentWeight("");
       setCurrentReps("");
       setCurrentSet(currentSet + 1);
@@ -32,7 +109,6 @@ export const useWorkoutLogs = () => {
   };
 
   return {
-    currentSet,
     setCurrentSet,
     workoutLog,
     setWorkoutLog,
@@ -42,5 +118,8 @@ export const useWorkoutLogs = () => {
     setCurrentReps,
     handleSaveWorkoutLog,
     handleCloseWorkoutLog,
+    loadWorkoutLogs,
+    addFinishedWorkout,
+    loadFinishedWorkouts,
   };
 };

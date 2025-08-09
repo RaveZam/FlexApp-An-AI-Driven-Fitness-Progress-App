@@ -1,22 +1,29 @@
 import { useEffect, useState } from "react";
+import { useWorkoutLogs } from "./useWorkoutLogs";
 
 export const useRestTimer = () => {
   const [showRestTimer, setShowRestTimer] = useState(false);
   const [isRestTimerActive, setIsRestTimerActive] = useState(false);
+  const { loadWorkoutLogs } = useWorkoutLogs();
 
   const [restTime, setRestTime] = useState(180);
-  const onClose = () => {};
+
+  const onClose = () => {
+    console.log("Closing Timer");
+    setIsRestTimerActive(false);
+  };
 
   const handleStartNextSet = () => {
+    console.log("Starting Next Set");
     setShowRestTimer(false);
     setIsRestTimerActive(false);
     setRestTime(180);
+    loadWorkoutLogs();
   };
 
   useEffect(() => {
     let interval: ReturnType<typeof setInterval>;
     if (isRestTimerActive && restTime > 0) {
-      console.log("isRestTimerActive:", isRestTimerActive);
       interval = setInterval(() => {
         setRestTime((prev: number) => {
           if (prev <= 1) {

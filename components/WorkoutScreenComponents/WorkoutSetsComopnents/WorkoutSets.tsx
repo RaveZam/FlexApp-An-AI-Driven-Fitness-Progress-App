@@ -1,4 +1,5 @@
 import { ThemedText } from "@/components/ThemedText";
+import { useWorkoutContext } from "@/hooks/useWorkoutPlanContext";
 import React from "react";
 import { ScrollView, Text, View } from "react-native";
 import HistoryCard from "../PersonalRecordAndHistoryComponents/HistoryCard";
@@ -6,14 +7,13 @@ import PersonalRecordsCard from "../PersonalRecordAndHistoryComponents/PersonalR
 import SelectedWorkoutCard from "../SelectedWorkoutCard";
 
 export default function WorkoutSets({
-  workoutLog,
-  currentSet,
   selectedExercise,
+  isFinished,
 }: {
-  workoutLog: any;
-  currentSet: number;
   selectedExercise: any;
+  isFinished: boolean;
 }) {
+  const { currentSet, workoutLog } = useWorkoutContext();
   return (
     <ScrollView className="flex-1 " showsVerticalScrollIndicator={false}>
       <View className="bg-lightDark p-4">
@@ -52,16 +52,22 @@ export default function WorkoutSets({
         ))}
 
         {/* Current Set Input */}
-        <View className="flex-row items-center bg-lightDark rounded-2xl p-4 mb-2">
-          <View className="flex-row items-center justify-center min-w-24">
-            <Text className="text-whiteText font-medium">Set {currentSet}</Text>
+        {isFinished ? (
+          ""
+        ) : (
+          <View className="flex-row items-center bg-lightDark rounded-2xl p-4 mb-2">
+            <View className="flex-row items-center justify-center min-w-24">
+              <Text className="text-whiteText font-medium">
+                Set {currentSet}
+              </Text>
+            </View>
+            <View className="w-px h-6 bg-mutedText mx-4" />
+            <View className="flex-row items-center justify-center min-w-24">
+              <Text className="text-whiteText font-medium">Input</Text>
+            </View>
+            <View className="w-px h-6 bg-mutedText mx-4" />
           </View>
-          <View className="w-px h-6 bg-mutedText mx-4" />
-          <View className="flex-row items-center justify-center min-w-24">
-            <Text className="text-whiteText font-medium">Input</Text>
-          </View>
-          <View className="w-px h-6 bg-mutedText mx-4" />
-        </View>
+        )}
       </View>
     </ScrollView>
   );

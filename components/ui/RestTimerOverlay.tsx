@@ -10,6 +10,7 @@ interface RestTimerOverlayProps {
   restTime: number;
   onClose: () => void;
   handleStartNextSet: () => void;
+  isFinished: boolean;
 }
 
 export default function RestTimerOverlay({
@@ -18,6 +19,7 @@ export default function RestTimerOverlay({
   restTime,
   onClose,
   handleStartNextSet,
+  isFinished,
 }: RestTimerOverlayProps) {
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -65,7 +67,7 @@ export default function RestTimerOverlay({
           </ThemedText>
 
           <Button
-            buttonText="Start Next Set"
+            buttonText={isFinished ? "Next Exercise" : "Start Next Set"}
             onPress={handleStartNextSet}
             className=""
           />

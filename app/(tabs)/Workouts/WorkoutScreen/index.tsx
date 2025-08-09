@@ -24,7 +24,7 @@ export default function index() {
 
   const { time, formatTime, startTimer, loadStartTime } =
     useWorkoutSessionTimer();
-  const { activeWorkoutSession } = useWorkoutContext();
+  const { activeWorkoutSession, finishedWorkouts } = useWorkoutContext();
 
   const {
     showRestTimer,
@@ -32,17 +32,18 @@ export default function index() {
     setIsRestTimerActive,
     restTime,
     handleStartNextSet,
+    onClose,
   } = useRestTimer();
 
   const {
-    currentSet,
-    workoutLog,
     handleCloseWorkoutLog,
     currentWeight,
     setCurrentWeight,
     currentReps,
     setCurrentReps,
     handleSaveWorkoutLog,
+    addFinishedWorkout,
+    loadFinishedWorkouts,
   } = useWorkoutLogs();
 
   const { displayExercise, selectedExercise, setSelectedExercise } =
@@ -58,6 +59,8 @@ export default function index() {
     loadPreviousTimer();
   }, [activeWorkoutSession]);
 
+  const isFinished = finishedWorkouts.includes(displayExercise?.workout_id?.id);
+
   return (
     <SafeAreaView className="flex-1">
       <ThemedView className="flex-1">
@@ -66,24 +69,35 @@ export default function index() {
         <WorkoutTimers formatTime={formatTime} time={time} />
 
         <WorkoutSets
-          workoutLog={workoutLog}
-          currentSet={currentSet}
+          isFinished={isFinished}
           selectedExercise={selectedExercise}
         />
 
+        {/* <Button
+          className="z-20"
+          buttonText="Load Finished Workouts"
+          // onPress={() => {
+          //   AsyncStorage.removeItem("startDate");
+          //   AsyncStorage.removeItem("workoutSession");
+          //   setShowRestTimer(false);
+          //   setIsRestTimerActive(false);
+          // }}
+          onPress={() => {
+            // console.log("loadFinishedWorkouts", loadFinishedWorkouts());
+          }}
+        /> */}
         <Button
           className="z-20"
-          buttonText="Start Workout"
+          buttonText={isFinished ? "Workout Finished" : "Start Workout"}
+          disabled={isFinished}
           onPress={() => setShowWorkoutLog(true)}
         />
 
         {/* Workout Log Overlay */}
         <WorkoutLogOverlay
           visible={showWorkoutLog}
-          currentSet={currentSet}
           totalSets={displayExercise?.sets || 3}
           exerciseName={displayExercise?.workout_id?.workout_name || "Exercise"}
-          workoutLog={workoutLog}
           setShowWorkoutLog={setShowWorkoutLog}
           setShowRestTimer={setShowRestTimer}
           setIsRestTimerActive={setIsRestTimerActive}
@@ -93,15 +107,25 @@ export default function index() {
           setCurrentReps={setCurrentReps}
           handleSaveWorkoutLog={handleSaveWorkoutLog}
           handleCloseWorkoutLog={handleCloseWorkoutLog}
+          addFinishedWorkout={addFinishedWorkout}
+          selectedExcerciseID={displayExercise?.workout_id?.id}
+          loadFinishedWorkouts={loadFinishedWorkouts}
         />
 
         {/* Rest Timer Overlay */}
         <RestTimerOverlay
+          isFinished={isFinished}
           visible={showRestTimer}
           exerciseName={displayExercise?.workout_id?.workout_name || "Exercise"}
           restTime={restTime}
           onClose={() => setShowRestTimer(false)}
           handleStartNextSet={() => {
+            if (isFinished) {
+              setShowWorkoutLog(false);
+              setShowRestTimer(false);
+              setIsRestTimerActive(false);
+              return;
+            }
             handleStartNextSet();
             setShowWorkoutLog(true);
           }}

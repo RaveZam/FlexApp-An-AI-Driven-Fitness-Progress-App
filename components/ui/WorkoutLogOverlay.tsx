@@ -1,14 +1,14 @@
 import { ThemedText } from "@/components/ThemedText";
 import Button from "@/components/ui/Button";
+import { useWorkoutContext } from "@/hooks/useWorkoutPlanContext";
 import React from "react";
 import { Modal, TextInput, TouchableOpacity, View } from "react-native";
 
 interface WorkoutLogOverlayProps {
   visible: boolean;
-  currentSet: number;
+
   totalSets: number;
   exerciseName: string;
-  workoutLog: Array<{ weight: string; reps: string }>;
   disabled?: boolean;
   setShowWorkoutLog: (show: boolean) => void;
   setShowRestTimer: (show: boolean) => void;
@@ -19,14 +19,15 @@ interface WorkoutLogOverlayProps {
   setCurrentReps: (reps: string) => void;
   handleSaveWorkoutLog: () => void;
   handleCloseWorkoutLog: () => void;
+  addFinishedWorkout: (workoutId: number) => void;
+  selectedExcerciseID: number;
+  loadFinishedWorkouts: () => void;
 }
 
 export default function WorkoutLogOverlay({
   visible,
-  currentSet,
   totalSets,
   exerciseName,
-  workoutLog,
   disabled = false,
   setShowWorkoutLog,
   setShowRestTimer,
@@ -37,7 +38,12 @@ export default function WorkoutLogOverlay({
   setCurrentReps,
   handleSaveWorkoutLog,
   handleCloseWorkoutLog,
+  addFinishedWorkout,
+  selectedExcerciseID,
+  loadFinishedWorkouts,
 }: WorkoutLogOverlayProps) {
+  const { currentSet, workoutLog } = useWorkoutContext();
+
   return (
     <Modal
       visible={visible}
@@ -71,7 +77,7 @@ export default function WorkoutLogOverlay({
           </ThemedText>
 
           <ThemedText className="text-mutedText mb-4">
-            Set {currentSet} of {totalSets}
+            Set {currentSet > totalSets ? totalSets : currentSet} of {totalSets}
           </ThemedText>
 
           {/* Weight Input */}
@@ -123,8 +129,13 @@ export default function WorkoutLogOverlay({
           )}
 
           <Button
-            buttonText="Save Set"
+            buttonText={
+              currentSet === totalSets ? "Finish Workout" : "Save Set"
+            }
             onPress={() => {
+              if (currentSet === totalSets) {
+                addFinishedWorkout(selectedExcerciseID);
+              }
               handleSaveWorkoutLog();
               setShowWorkoutLog(false);
               setShowRestTimer(true);
