@@ -70,5 +70,6 @@ export const useWorkoutSessionTimer = () => {
     resetTimer,
     formatTime,
     loadStartTime,
+    stopTimer,
   };
 };

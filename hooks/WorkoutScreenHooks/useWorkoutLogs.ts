@@ -6,12 +6,14 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
 import { useWorkoutContext } from "../useWorkoutPlanContext";
+import { useWorkoutSessionTimer } from "../WorkoutHooks/useWorkoutSessionTimer";
 
 export const useWorkoutLogs = () => {
   const STORAGE_KEY = "finishedWorkouts";
 
   const [currentWeight, setCurrentWeight] = useState("");
   const [currentReps, setCurrentReps] = useState("");
+  const { stopTimer } = useWorkoutSessionTimer();
   const {
     activeWorkoutSession,
     currentSet,
@@ -67,6 +69,7 @@ export const useWorkoutLogs = () => {
       console.log("Workouts: ", workouts.length);
       if (workouts.length === currentWorkout.workouts_per_day.length) {
         console.log("Finishing Session");
+        stopTimer();
         await updateFinishedWorkout(activeWorkoutSession ?? 0);
       }
     } catch (e) {

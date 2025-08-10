@@ -12,6 +12,7 @@ import { useWorkoutSessionTimer } from "@/hooks/WorkoutHooks/useWorkoutSessionTi
 import { useRestTimer } from "@/hooks/WorkoutScreenHooks/useRestTimer";
 import { useSelectedWorkoutCard } from "@/hooks/WorkoutScreenHooks/useSelectedWorkoutCard";
 import { useWorkoutLogs } from "@/hooks/WorkoutScreenHooks/useWorkoutLogs";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -22,9 +23,20 @@ export default function index() {
 
   const [showWorkoutLog, setShowWorkoutLog] = useState(false);
 
-  const { time, formatTime, startTimer, loadStartTime } =
+  const { time, formatTime, startTimer, loadStartTime, stopTimer } =
     useWorkoutSessionTimer();
-  const { activeWorkoutSession, finishedWorkouts } = useWorkoutContext();
+  const {
+    activeWorkoutSession,
+    finishedWorkouts,
+    currentSessionStatus,
+    setCurrentSet,
+  } = useWorkoutContext();
+
+  useEffect(() => {
+    if (currentSessionStatus === "completed") {
+      stopTimer();
+    }
+  }, [currentSessionStatus]);
 
   const {
     showRestTimer,
@@ -77,15 +89,15 @@ export default function index() {
         <Button
           className="z-20"
           buttonText="Clear Workouts"
-          // onPress={() => {
-          //   AsyncStorage.removeItem("startDate");
-          //   AsyncStorage.removeItem("workoutSession");
-          //   AsyncStorage.removeItem("finishedWorkouts");
-          //   setShowRestTimer(false);
-          //   setIsRestTimerActive(false);
-          //   setCurrentSet(1);
-          // }}
-          onPress={() => {}}
+          onPress={() => {
+            AsyncStorage.removeItem("startDate");
+            AsyncStorage.removeItem("workoutSession");
+            AsyncStorage.removeItem("finishedWorkouts");
+            setShowRestTimer(false);
+            setIsRestTimerActive(false);
+            setCurrentSet(1);
+            stopTimer();
+          }}
         />
         <Button
           className="z-20"
