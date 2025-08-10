@@ -1,6 +1,7 @@
 import { AuthProvider } from "@/auth/useAuth";
 import WorkoutContextProvider from "@/context/workoutContext"; // ✅ use the default export (which is the provider)
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { useStorageCleaner } from "@/hooks/useStorageCleaner";
 import {
   Inter_400Regular,
   Inter_500Medium,
@@ -21,6 +22,7 @@ import "react-native-reanimated";
 export default function RootLayout() {
   NavigationBar.setVisibilityAsync("hidden");
   const colorScheme = useColorScheme();
+  useStorageCleaner();
 
   const [loaded] = useFonts({
     Inter_400Regular,
@@ -30,7 +32,6 @@ export default function RootLayout() {
   });
 
   if (!loaded) {
-    // Async font loading only occurs in development.
     return null;
   }
 

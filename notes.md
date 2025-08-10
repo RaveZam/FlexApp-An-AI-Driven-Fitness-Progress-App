@@ -2,17 +2,14 @@ What i did today:
 
 I Did a huge chunk in the workout Screen Functionalities.
 
+Fixed The Completition Handling.
+
 Whats Next:
 
-Figure out a way to Finish the workout.
+Figure Out A Way To Clear The Workout Session BY Time.
 
-Base From the Session if its in progress or completed. If Completed It Will Say at the Button Workout Complete,
-It Will Then Redirect To the old workout screen and Display All The Workouts But they would not be able to Log Any, Only View In That Session.
-
-Just Set If current completed Workouts is 1/2 and its in the handle Save to session and complete the workout If both of them are met
-Then Set The Session To Complete.
-
-Then The Rest Function Should Trigger every 12am Answer How.
+Get The highest Weight -> Then By Highest Reps of that Weight
+Display It. With The Time Stamp
 
 Next Plan: (Purpose ng plan para maging flexible yung workout sessions. )
 

@@ -12,7 +12,6 @@ import { useWorkoutSessionTimer } from "@/hooks/WorkoutHooks/useWorkoutSessionTi
 import { useRestTimer } from "@/hooks/WorkoutScreenHooks/useRestTimer";
 import { useSelectedWorkoutCard } from "@/hooks/WorkoutScreenHooks/useSelectedWorkoutCard";
 import { useWorkoutLogs } from "@/hooks/WorkoutScreenHooks/useWorkoutLogs";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -86,7 +85,7 @@ export default function index() {
           selectedExercise={selectedExercise}
         />
 
-        <Button
+        {/* <Button
           className="z-20"
           buttonText="Clear Workouts"
           onPress={() => {
@@ -96,9 +95,8 @@ export default function index() {
             setShowRestTimer(false);
             setIsRestTimerActive(false);
             setCurrentSet(1);
-            stopTimer();
           }}
-        />
+        /> */}
         <Button
           className="z-20"
           buttonText={isFinished ? "Workout Finished" : "Start Workout"}
