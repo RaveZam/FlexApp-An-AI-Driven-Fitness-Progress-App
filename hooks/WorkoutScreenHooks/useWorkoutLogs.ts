@@ -1,6 +1,7 @@
 import {
   getWorkoutSessionLog,
   insertSessionLog,
+  updateFinishedWorkout,
 } from "@/services/insertSessionLogs";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
@@ -19,6 +20,7 @@ export const useWorkoutLogs = () => {
     workoutLog,
     setWorkoutLog,
     setFinishedWorkouts,
+    currentWorkout,
   } = useWorkoutContext();
 
   useEffect(() => {
@@ -54,17 +56,19 @@ export const useWorkoutLogs = () => {
   const addFinishedWorkout = async (workoutId: number) => {
     console.log("Adding Finished Workout: ", workoutId);
     try {
-      // Get current saved array
       const jsonValue = await AsyncStorage.getItem(STORAGE_KEY);
       const workouts = jsonValue != null ? JSON.parse(jsonValue) : [];
 
-      // Add new workout ID if not already there
       if (!workouts.includes(workoutId)) {
         workouts.push(workoutId);
       }
-
-      // Save updated array
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(workouts));
+
+      console.log("Workouts: ", workouts.length);
+      if (workouts.length === currentWorkout.workouts_per_day.length) {
+        console.log("Finishing Session");
+        await updateFinishedWorkout(activeWorkoutSession ?? 0);
+      }
     } catch (e) {
       console.error("Error saving workout:", e);
     }
@@ -103,6 +107,10 @@ export const useWorkoutLogs = () => {
     }
   };
 
+  const handleFinishSession = async () => {
+    await updateFinishedWorkout(activeWorkoutSession ?? 0);
+  };
+
   const handleCloseWorkoutLog = () => {
     setCurrentWeight("");
     setCurrentReps("");
@@ -121,5 +129,6 @@ export const useWorkoutLogs = () => {
     loadWorkoutLogs,
     addFinishedWorkout,
     loadFinishedWorkouts,
+    handleFinishSession,
   };
 };

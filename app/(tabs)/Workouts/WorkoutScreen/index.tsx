@@ -32,7 +32,6 @@ export default function index() {
     setIsRestTimerActive,
     restTime,
     handleStartNextSet,
-    onClose,
   } = useRestTimer();
 
   const {
@@ -59,6 +58,8 @@ export default function index() {
     loadPreviousTimer();
   }, [activeWorkoutSession]);
 
+  console.log;
+
   const isFinished = finishedWorkouts.includes(displayExercise?.workout_id?.id);
 
   return (
@@ -73,19 +74,19 @@ export default function index() {
           selectedExercise={selectedExercise}
         />
 
-        {/* <Button
+        <Button
           className="z-20"
-          buttonText="Load Finished Workouts"
+          buttonText="Clear Workouts"
           // onPress={() => {
           //   AsyncStorage.removeItem("startDate");
           //   AsyncStorage.removeItem("workoutSession");
+          //   AsyncStorage.removeItem("finishedWorkouts");
           //   setShowRestTimer(false);
           //   setIsRestTimerActive(false);
+          //   setCurrentSet(1);
           // }}
-          onPress={() => {
-            // console.log("loadFinishedWorkouts", loadFinishedWorkouts());
-          }}
-        /> */}
+          onPress={() => {}}
+        />
         <Button
           className="z-20"
           buttonText={isFinished ? "Workout Finished" : "Start Workout"}

@@ -63,6 +63,8 @@ type WorkoutContextType = {
   >;
   finishedWorkouts: number[];
   setFinishedWorkouts: Dispatch<SetStateAction<number[]>>;
+  currentSessionStatus: string;
+  setCurrentSessionStatus: Dispatch<SetStateAction<string>>;
 };
 
 export type { WorkoutContextType };

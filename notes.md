@@ -1,15 +1,18 @@
 What i did today:
 
-Fixed the Timer. Everything Works Perfectly Now.
+I Did a huge chunk in the workout Screen Functionalities.
 
 Whats Next:
 
-Do this HIGH PRIORITY TO PROGRESS
-Start The Part First When the user would log their workouts.
+Figure out a way to Finish the workout.
 
-Decide how would it track the logs and sets per workout.
+Base From the Session if its in progress or completed. If Completed It Will Say at the Button Workout Complete,
+It Will Then Redirect To the old workout screen and Display All The Workouts But they would not be able to Log Any, Only View In That Session.
 
-Then proceed to how will it Detect Which Workouts have you taken yet.
+Just Set If current completed Workouts is 1/2 and its in the handle Save to session and complete the workout If both of them are met
+Then Set The Session To Complete.
+
+Then The Rest Function Should Trigger every 12am Answer How.
 
 Next Plan: (Purpose ng plan para maging flexible yung workout sessions. )
 

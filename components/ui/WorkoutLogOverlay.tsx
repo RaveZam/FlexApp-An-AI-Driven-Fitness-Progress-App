@@ -42,7 +42,8 @@ export default function WorkoutLogOverlay({
   selectedExcerciseID,
   loadFinishedWorkouts,
 }: WorkoutLogOverlayProps) {
-  const { currentSet, workoutLog } = useWorkoutContext();
+  const { currentSet, workoutLog, finishedWorkouts, currentWorkout } =
+    useWorkoutContext();
 
   return (
     <Modal
@@ -135,6 +136,16 @@ export default function WorkoutLogOverlay({
             onPress={() => {
               if (currentSet === totalSets) {
                 addFinishedWorkout(selectedExcerciseID);
+                console.log("finishedWorkouts", finishedWorkouts.length);
+                console.log(
+                  "currentWorkout",
+                  currentWorkout.workouts_per_day.length
+                );
+                if (
+                  finishedWorkouts.length ===
+                  currentWorkout.workouts_per_day.length
+                ) {
+                }
               }
               handleSaveWorkoutLog();
               setShowWorkoutLog(false);

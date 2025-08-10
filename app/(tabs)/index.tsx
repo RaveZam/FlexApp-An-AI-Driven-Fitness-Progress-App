@@ -38,8 +38,7 @@ export default function Index() {
     strict: false, // Reanimated runs in strict mode by default
   });
   const { checkWorkoutSession } = useWorkoutSession();
-  const { activeWorkoutSession } = useWorkoutContext();
-  // console.log("activeWorkoutSession", activeWorkoutSession);
+  const { activeWorkoutSession, currentSessionStatus } = useWorkoutContext();
 
   const [collapsed, setCollapsed] = useState(false);
   const [popup, setPopup] = useState(false);
@@ -103,8 +102,18 @@ export default function Index() {
         </View>
         <Button
           className="z-20"
-          buttonText={activeWorkoutSession ? "Resume Session" : "Start Session"}
-          onPress={() => setPopup(true)}
+          buttonText={
+            currentSessionStatus == "completed" && activeWorkoutSession
+              ? "Workout Finished"
+              : activeWorkoutSession && currentSessionStatus === "in_progress"
+              ? "Resume Session"
+              : "Start Session"
+          }
+          onPress={() => {
+            currentSessionStatus === "completed"
+              ? handleStartWorkout()
+              : setPopup(true);
+          }}
         />
       </View>
     </SafeAreaView>

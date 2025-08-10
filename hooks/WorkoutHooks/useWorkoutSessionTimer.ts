@@ -58,6 +58,10 @@ export const useWorkoutSessionTimer = () => {
   };
   const resetTimer = () => setTime(0);
 
+  const stopTimer = () => {
+    setIsRunning(false);
+  };
+
   return {
     time,
     isRunning,

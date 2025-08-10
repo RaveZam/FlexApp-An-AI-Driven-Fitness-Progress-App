@@ -44,7 +44,7 @@ export default function workoutContextProvider({
 
   const [selectedExercise, setSelectedExercise] = useState<any>(null);
   const [currentSet, setCurrentSet] = useState(1);
-
+  const [currentSessionStatus, setCurrentSessionStatus] = useState<string>("");
   const [workoutLog, setWorkoutLog] = useState<
     Array<{ weight: string; reps: string }>
   >([]);
@@ -148,6 +148,8 @@ export default function workoutContextProvider({
         setWorkoutLog,
         finishedWorkouts,
         setFinishedWorkouts,
+        currentSessionStatus,
+        setCurrentSessionStatus,
       }}
     >
       {children}

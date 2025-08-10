@@ -58,3 +58,28 @@ export const getWorkoutSessionLog = async (
     return null;
   }
 };
+
+export const updateFinishedWorkout = async (workout_session_id: number) => {
+  try {
+    const { data, error } = await supabase
+      .from("workout_sessions")
+      .update({ status: "completed", end_time: new Date() })
+      .eq("id", workout_session_id);
+  } catch (err) {
+    console.error("Error updating finished workout:", err);
+  }
+};
+
+export const getSessionStatus = async (session_id: number) => {
+  try {
+    const { data, error } = await supabase
+      .from("workout_sessions")
+      .select("status")
+      .eq("id", session_id);
+
+    if (error) throw error;
+    return data?.[0]?.status ?? null;
+  } catch (err) {
+    console.error("Error getting session status:", err);
+  }
+};
