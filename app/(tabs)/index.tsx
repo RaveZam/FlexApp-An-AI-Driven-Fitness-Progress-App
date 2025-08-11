@@ -12,6 +12,7 @@ import Workoutlist from "@/components/Workout/Workoutlist";
 import { useWorkoutContext } from "@/hooks/useWorkoutPlanContext";
 import { useWorkoutSession } from "@/hooks/useWorkoutSession";
 import { useStartWorkoutSession } from "@/hooks/WorkoutHooks/useStartWorkoutSession";
+import * as NavigationBar from "expo-navigation-bar";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { ScrollView, View } from "react-native";
@@ -56,6 +57,15 @@ export default function Index() {
       startWorkoutSession();
     }
   };
+
+  useEffect(() => {
+    const hideNav = async () => {
+      await NavigationBar.setVisibilityAsync("hidden");
+      await NavigationBar.setBehaviorAsync("overlay-swipe"); // makes it disappear until swipe
+    };
+
+    hideNav();
+  }, []);
 
   return (
     <SafeAreaView className="flex-1">

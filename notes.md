@@ -1,15 +1,10 @@
 What i did today:
 
-Fixed The Completition Handling.
-
 Whats Next:
-
-Get The highest Weight -> Then By Highest Reps of that Weight
-Display It. With The Time Stamp
 
 High Priority!! FIX TIMERS STOPPING WHEN PHONE IS SLEEPING
 
-Next Plan: (Purpose ng plan para maging flexible yung workout sessions. )
+Next Plan: (Purpose ng plan para maging flexible yung workout sessions.)
 
 Add an option that the user can choose what to workout on that day and not be fixed. In That the user's plan isnt stiff
 and flexible. That way the user dont have to remake their whole workout plan just to adjust for 1 day.

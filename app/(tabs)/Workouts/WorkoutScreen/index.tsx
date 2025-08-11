@@ -96,7 +96,7 @@ export default function index() {
           }}
         /> */}
         <Button
-          className="z-20"
+          className="z-20 mx-4"
           buttonText={isFinished ? "Workout Finished" : "Start Workout"}
           disabled={isFinished}
           onPress={() => setShowWorkoutLog(true)}
