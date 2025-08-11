@@ -1,4 +1,3 @@
-import { ThemedView } from "@/components/ThemedView";
 import Button from "@/components/ui/Button";
 import ExercisesModal from "@/components/ui/ExercisesModal";
 import RestTimerOverlay from "@/components/ui/RestTimerOverlay";
@@ -13,6 +12,7 @@ import { useRestTimer } from "@/hooks/WorkoutScreenHooks/useRestTimer";
 import { useSelectedWorkoutCard } from "@/hooks/WorkoutScreenHooks/useSelectedWorkoutCard";
 import { useWorkoutLogs } from "@/hooks/WorkoutScreenHooks/useWorkoutLogs";
 import React, { useEffect, useState } from "react";
+import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function index() {
@@ -72,8 +72,8 @@ export default function index() {
   const isFinished = finishedWorkouts.includes(displayExercise?.workout_id?.id);
 
   return (
-    <SafeAreaView className="flex-1">
-      <ThemedView className="flex-1">
+    <SafeAreaView className="flex-1" edges={["top"]}>
+      <View className="flex-1">
         <WorkoutScreenHeader setShowExercisesModal={setShowExercisesModal} />
 
         <WorkoutTimers formatTime={formatTime} time={time} />
@@ -95,6 +95,7 @@ export default function index() {
             setCurrentSet(1);
           }}
         /> */}
+
         <Button
           className="z-20 mx-4"
           buttonText={isFinished ? "Workout Finished" : "Start Workout"}
@@ -148,7 +149,7 @@ export default function index() {
           onSelect={(exercise: any) => setSelectedExercise(exercise)}
           selectedExercise={selectedExercise}
         />
-      </ThemedView>
+      </View>
     </SafeAreaView>
   );
 }

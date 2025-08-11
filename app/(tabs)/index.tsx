@@ -61,14 +61,13 @@ export default function Index() {
   useEffect(() => {
     const hideNav = async () => {
       await NavigationBar.setVisibilityAsync("hidden");
-      await NavigationBar.setBehaviorAsync("overlay-swipe"); // makes it disappear until swipe
+      await NavigationBar.setBehaviorAsync("overlay-swipe");
     };
-
     hideNav();
   }, []);
 
   return (
-    <SafeAreaView className="flex-1">
+    <SafeAreaView className="flex-1" edges={["top"]}>
       <View className="flex-col h-full">
         <LoadingOverlay isVisible={isLoading} />
 
