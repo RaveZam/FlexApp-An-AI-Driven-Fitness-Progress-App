@@ -100,12 +100,13 @@ export default function Index() {
         <View className="flex-1" style={{ zIndex: 2, position: "relative" }}>
           <Workoutlist collapsed={collapsed} setCollapsed={setCollapsed} />
         </View>
+
         <Button
           className="z-20"
           buttonText={
             currentSessionStatus == "completed" && activeWorkoutSession
               ? "Workout Finished"
-              : activeWorkoutSession && currentSessionStatus === "in_progress"
+              : activeWorkoutSession
               ? "Resume Session"
               : "Start Session"
           }

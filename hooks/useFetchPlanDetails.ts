@@ -24,7 +24,7 @@ export const useFetchPlanDetails = () => {
               id,
               workout_name,
               workout_description,
-              muscle_group,
+              muscle_group, 
               workout_image
             )
           )

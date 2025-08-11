@@ -69,8 +69,6 @@ export default function index() {
     loadPreviousTimer();
   }, [activeWorkoutSession]);
 
-  console.log;
-
   const isFinished = finishedWorkouts.includes(displayExercise?.workout_id?.id);
 
   return (

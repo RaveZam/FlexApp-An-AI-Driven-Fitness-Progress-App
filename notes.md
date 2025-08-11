@@ -1,15 +1,13 @@
 What i did today:
 
-I Did a huge chunk in the workout Screen Functionalities.
-
 Fixed The Completition Handling.
 
 Whats Next:
 
-Figure Out A Way To Clear The Workout Session BY Time.
-
 Get The highest Weight -> Then By Highest Reps of that Weight
 Display It. With The Time Stamp
+
+High Priority!! FIX TIMERS STOPPING WHEN PHONE IS SLEEPING
 
 Next Plan: (Purpose ng plan para maging flexible yung workout sessions. )
 
