@@ -1,10 +1,5 @@
 import { View } from "react-native";
-import {
-  VictoryAxis,
-  VictoryChart,
-  VictoryLine,
-  VictoryTheme,
-} from "victory-native";
+import { VictoryArea, VictoryChart } from "victory-native";
 
 export default function LineChart() {
   const DATA = [
@@ -19,33 +14,48 @@ export default function LineChart() {
   return (
     <View>
       <VictoryChart
-        height={100}
+        height={140}
         width={200}
-        padding={{ left: 20, right: 20, top: 30, bottom: 10 }}
-        theme={VictoryTheme.clean}
-        domainPadding={{ x: 5, y: 4 }}
+        padding={{ top: 20, bottom: 40 }}
+        domainPadding={{ y: 20 }}
       >
-        <VictoryAxis
-          dependentAxis
+        {/* <VictoryAxis
           style={{
-            axis: { stroke: "none" },
-            ticks: { stroke: "none" },
-            tickLabels: { fill: "none" },
-          }}
-        />
-
-        <VictoryLine
-          style={{
-            data: {
-              fill: "#1a472a",
-              stroke: "#10b981",
-              strokeWidth: 2,
+            tickLabels: {
+              fill: "white",
+              fontSize: 16,
+              opacity: 0.5,
+            },
+            grid: {
+              stroke: "#ffffff",
+              opacity: 0.07,
+              strokeDasharray: "4, 4",
             },
           }}
+        /> */}
+        {/* <VictoryAxis
+          dependentAxis
+          style={{
+            tickLabels: {
+              fill: "white",
+              fontSize: 12,
+              opacity: 0.3,
+            },
+            grid: {
+              opacity: 0.07,
+              strokeDasharray: "4, 4",
+            },
+          }}
+        /> */}
+        <VictoryArea
           data={DATA}
           interpolation="natural"
-          animate={{
-            duration: 800,
+          style={{
+            data: {
+              fill: "#065f46", // Emerald green fill
+
+              strokeWidth: 2,
+            },
           }}
         />
       </VictoryChart>

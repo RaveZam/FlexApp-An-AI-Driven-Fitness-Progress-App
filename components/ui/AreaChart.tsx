@@ -1,10 +1,5 @@
-import { View } from "react-native";
-import {
-  VictoryArea,
-  VictoryAxis,
-  VictoryChart,
-  VictoryTheme,
-} from "victory-native";
+import { Dimensions, View } from "react-native";
+import { VictoryArea, VictoryAxis, VictoryChart } from "victory-native";
 
 export default function MyChart() {
   const DATA = [
@@ -27,15 +22,14 @@ export default function MyChart() {
     <View>
       <VictoryChart
         height={140}
+        width={Dimensions.get("window").width - 60}
         padding={{ top: 20, bottom: 40 }}
-        theme={VictoryTheme.clean}
         domainPadding={{ y: 20 }}
       >
         <VictoryAxis
           style={{
-            axis: { stroke: "#10b981" }, // axis line
             tickLabels: {
-              fill: "white", // tick text color
+              fill: "white",
               fontSize: 16,
               opacity: 0.5,
             },
@@ -49,31 +43,26 @@ export default function MyChart() {
         <VictoryAxis
           dependentAxis
           style={{
-            axis: { stroke: "#10b981" },
             tickLabels: {
               fill: "white",
               fontSize: 12,
               opacity: 0.3,
             },
             grid: {
-              stroke: "#ffffff",
               opacity: 0.07,
               strokeDasharray: "4, 4",
             },
           }}
         />
-
         <VictoryArea
-          style={{
-            data: {
-              fill: "#1a472a",
-              stroke: "#10b981",
-            },
-          }}
           data={DATA}
           interpolation="natural"
-          animate={{
-            duration: 800,
+          style={{
+            data: {
+              fill: "#065f46", // Emerald green fill
+
+              strokeWidth: 2,
+            },
           }}
         />
       </VictoryChart>

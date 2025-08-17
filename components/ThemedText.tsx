@@ -1,21 +1,31 @@
+import { FontFamilies, FontSizes } from "@/constants";
+import { useThemeColor } from "@/hooks/useThemeColor";
 import { StyleSheet, Text, type TextProps } from "react-native";
 
-import { useThemeColor } from "@/hooks/useThemeColor";
+export type ColorToken = "text" | "mutedText" | "tint" | "icon";
 
 export type ThemedTextProps = TextProps & {
-  lightColor?: string;
-  darkColor?: string;
-  type?: "default" | "title" | "defaultSemiBold" | "subtitle" | "link";
+  colorToken?: ColorToken;
+  type?:
+    | "default"
+    | "title"
+    | "defaultSemiBold"
+    | "subtitle"
+    | "link"
+    | "muted"
+    | "primary";
 };
 
 export function ThemedText({
   style,
-  lightColor,
-  darkColor,
+  colorToken,
   type = "default",
   ...rest
 }: ThemedTextProps) {
-  const color = useThemeColor({ light: lightColor, dark: darkColor }, "text");
+  let token: ColorToken =
+    colorToken ?? (type === "muted" ? "mutedText" : "text");
+
+  const color = useThemeColor({}, token);
 
   return (
     <Text
@@ -26,6 +36,8 @@ export function ThemedText({
         type === "defaultSemiBold" ? styles.defaultSemiBold : undefined,
         type === "subtitle" ? styles.subtitle : undefined,
         type === "link" ? styles.link : undefined,
+        type === "muted" ? styles.muted : undefined,
+
         style,
       ]}
       {...rest}
@@ -35,31 +47,32 @@ export function ThemedText({
 
 const styles = StyleSheet.create({
   default: {
-    fontSize: 16,
+    fontSize: FontSizes.body,
     lineHeight: 24,
-    fontFamily: "Inter_400Regular",
+    fontFamily: FontFamilies.regular,
   },
   defaultSemiBold: {
-    fontSize: 16,
+    fontSize: FontSizes.body,
     lineHeight: 24,
-    fontWeight: "600",
-    fontFamily: "Inter_500Medium",
+    fontFamily: FontFamilies.medium,
   },
   title: {
-    fontSize: 32,
-    fontWeight: "bold",
+    fontSize: FontSizes.title,
     lineHeight: 32,
-    fontFamily: "Inter_700Bold",
+    fontFamily: FontFamilies.bold,
   },
   subtitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    fontFamily: "Inter_600SemiBold",
+    fontSize: FontSizes.subtitle,
+    fontFamily: FontFamilies.semibold,
   },
   link: {
+    fontSize: FontSizes.body,
     lineHeight: 30,
-    fontSize: 16,
-    color: "#0a7ea4",
-    fontFamily: "Inter_400Regular",
+    fontFamily: FontFamilies.regular,
+  },
+  muted: {
+    fontSize: FontSizes.body,
+    lineHeight: 24,
+    fontFamily: FontFamilies.regular,
   },
 });

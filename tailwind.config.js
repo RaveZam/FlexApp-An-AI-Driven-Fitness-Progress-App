@@ -6,13 +6,17 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        dark: "hsl(0, 0%, 5%)",
-        lightDark: "hsl(0, 0%, 8%)",
-        important: "hsl(0, 0%, 12%)",
-        rim: "hsl(0, 0%, 12%)",
-        whiteText: "hsl(0, 0%, 95%)",
-        mutedText: "hsl(0, 0%, 70%)",
-        veryMutedText: "hsl(0, 0%, 50%)",
+        light: {
+          lightBorder: "#ffffff",
+        },
+        dark: {
+          lightDark: "hsl(0, 0%, 8%)",
+          important: "hsl(0, 0%, 12%)",
+          rim: "hsl(0, 0%, 12%)",
+          whiteText: "hsl(0, 0%, 95%)",
+          mutedText: "hsl(0, 0%, 70%)",
+          veryMutedText: "hsl(0, 0%, 50%)",
+        },
       },
     },
   },

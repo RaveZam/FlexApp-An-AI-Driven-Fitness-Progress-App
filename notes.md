@@ -18,7 +18,7 @@ Refactor Soon: Make A CurrentWorkout Context, I Moved States in the WorkoutConte
 
 Here is what i moved to the context.
 selectedExercise,
-setSelectedExercise,
+setSelectedExercise,  
 currentSet,
 setCurrentSet,
 workoutLog,

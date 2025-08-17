@@ -1,22 +1,32 @@
+import { useThemeColor } from "@/hooks/useThemeColor";
 import { View, type ViewProps } from "react-native";
 
-import { useThemeColor } from "@/hooks/useThemeColor";
+export type ColorToken = "background" | "secondaryBackground" | "border";
 
 export type ThemedViewProps = ViewProps & {
-  lightColor?: string;
-  darkColor?: string;
+  colorToken?: ColorToken; // optional token
+  borderToken?: ColorToken; // optional border color token
+  borderWidth?: number; // optional border width
 };
 
 export function ThemedView({
   style,
-  lightColor,
-  darkColor,
+  colorToken = "background",
+  borderToken,
+  borderWidth = 1,
   ...otherProps
 }: ThemedViewProps) {
-  const backgroundColor = useThemeColor(
-    { light: lightColor, dark: "#000000" },
-    "background"
-  );
+  const backgroundColor = useThemeColor({}, colorToken);
+  const borderColor = borderToken ? useThemeColor({}, borderToken) : undefined;
 
-  return <View style={[{ backgroundColor }, style]} {...otherProps} />;
+  return (
+    <View
+      style={[
+        { backgroundColor },
+        borderColor ? { borderColor, borderWidth } : {},
+        style,
+      ]}
+      {...otherProps}
+    />
+  );
 }

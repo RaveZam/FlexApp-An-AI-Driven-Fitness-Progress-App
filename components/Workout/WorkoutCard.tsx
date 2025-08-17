@@ -1,6 +1,4 @@
 import { Image, Text, View } from "react-native";
-import { ThemedText } from "../ThemedText";
-import { rest } from "lodash";
 
 export default function WorkoutCard({
   workout,
@@ -35,9 +33,9 @@ export default function WorkoutCard({
         resizeMode="cover"
       />
       <View className="flex-1 flex-col items-center  justify-center p-4 ">
-        <ThemedText className="text-sm  mb-1 text-black/90">
+        <Text className="text-[1rem]  mb-1 text-white">
           {truncate(workout)}
-        </ThemedText>
+        </Text>
         <View className="flex-row items-center mb-1"></View>
 
         <View className="flex-row gap-4">

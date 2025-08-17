@@ -2,6 +2,7 @@ import "react-native-reanimated";
 
 import { useAuth } from "@/auth/useAuth";
 import HomePageChartGraph from "@/components/HomePageChartGraph";
+import { ThemedView } from "@/components/ThemedView";
 import BlurOverlay from "@/components/ui/BlurOverlay";
 import Button from "@/components/ui/Button";
 import LoadingOverlay from "@/components/ui/LoadingOverlay";
@@ -68,13 +69,12 @@ export default function Index() {
 
   return (
     <SafeAreaView className="flex-1" edges={["top"]}>
-      <View className="flex-col h-full">
+      <ThemedView className="flex-col h-full" colorToken="background">
         <LoadingOverlay isVisible={isLoading} />
 
         <Popup
           isVisible={popup}
           onClose={() => setPopup(false)}
-          // iconName="questioncircleo"
           message="Are you ready for your Workout?"
           buttons={[
             {
@@ -125,7 +125,7 @@ export default function Index() {
               : setPopup(true);
           }}
         />
-      </View>
+      </ThemedView>
     </SafeAreaView>
   );
 }
