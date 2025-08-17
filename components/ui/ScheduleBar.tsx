@@ -66,8 +66,11 @@ export default function ScheduleBar() {
   };
 
   return (
-    <ThemedView colorToken="secondaryBackground" style={{ padding: 12 }}>
-      <ThemedText className="mb-4" colorToken="text">
+    <ThemedView
+      colorToken="secondaryBackground"
+      style={{ padding: 16, paddingBottom: 0 }}
+    >
+      <ThemedText className="mb-3" colorToken="text">
         This Week
       </ThemedText>
 
@@ -75,7 +78,6 @@ export default function ScheduleBar() {
         colorToken="secondaryBackground"
         style={{
           flexDirection: "row",
-
           paddingBottom: 20,
           justifyContent: "space-between",
           gap: 8,
