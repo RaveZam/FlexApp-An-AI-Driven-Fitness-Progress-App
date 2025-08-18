@@ -13,7 +13,8 @@ export type ThemedTextProps = TextProps & {
     | "subtitle"
     | "link"
     | "muted"
-    | "primary";
+    | "primary"
+    | "cardTitle";
 };
 
 export function ThemedText({
@@ -37,6 +38,7 @@ export function ThemedText({
         type === "subtitle" ? styles.subtitle : undefined,
         type === "link" ? styles.link : undefined,
         type === "muted" ? styles.muted : undefined,
+        type === "cardTitle" ? styles.cardTitle : undefined,
 
         style,
       ]}
@@ -73,6 +75,11 @@ const styles = StyleSheet.create({
   muted: {
     fontSize: FontSizes.body,
     lineHeight: 24,
+    fontFamily: FontFamilies.regular,
+  },
+  cardTitle: {
+    fontSize: FontSizes.small,
+    lineHeight: 20,
     fontFamily: FontFamilies.regular,
   },
 });

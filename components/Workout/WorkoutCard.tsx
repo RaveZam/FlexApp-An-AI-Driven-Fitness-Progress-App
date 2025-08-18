@@ -1,4 +1,6 @@
-import { Image, Text, View } from "react-native";
+import { Image, Text } from "react-native";
+import { ThemedText } from "../ThemedText";
+import { ThemedView } from "../ThemedView";
 
 export default function WorkoutCard({
   workout,
@@ -16,8 +18,9 @@ export default function WorkoutCard({
   const truncate = (text: string, max = 20) =>
     text.length > max ? `${text.slice(0, max)}...` : text;
   return (
-    <View
-      className="flex-row  rounded-md bg-lightDark border-important border shadow-md overflow-hidden my-3"
+    <ThemedView
+      borderToken="border"
+      className="flex-row rounded-md shadow-md overflow-hidden my-3"
       style={{ minHeight: 96 }}
     >
       <Image
@@ -32,36 +35,40 @@ export default function WorkoutCard({
         }}
         resizeMode="cover"
       />
-      <View className="flex-1 flex-col items-center  justify-center p-4 ">
-        <Text className="text-[1rem]  mb-1 text-white">
+      <ThemedView className="flex-1 flex-col items-center  justify-center p-4 ">
+        <ThemedText type="cardTitle" className="  mb-1">
           {truncate(workout)}
-        </Text>
-        <View className="flex-row items-center mb-1"></View>
+        </ThemedText>
+        <ThemedView className="flex-row items-center mb-1"></ThemedView>
 
-        <View className="flex-row gap-4">
-          <View className="flex-col items-center">
-            <Text className="text-sm text-veryMutedText font-medium">
+        <ThemedView className="flex-row gap-4">
+          <ThemedView className="flex-col items-center">
+            <ThemedText className="text-sm text-veryMutedText font-medium">
               Reps:
-            </Text>
-            <Text className="text-md text-mutedText font-medium">{reps}</Text>
-          </View>
+            </ThemedText>
+            <ThemedText className="text-md text-mutedText font-medium">
+              {reps}
+            </ThemedText>
+          </ThemedView>
 
-          <View className="flex-col items-center">
-            <Text className="text-sm text-veryMutedText  font-medium">
+          <ThemedView className="flex-col items-center">
+            <ThemedText className="text-sm text-veryMutedText  font-medium">
               Sets:
-            </Text>
-            <Text className="text-md text-mutedText font-medium">{sets}</Text>
-          </View>
-          <View className="flex-col items-center">
-            <Text className="text-sm text-veryMutedText font-medium">
+            </ThemedText>
+            <ThemedText className="text-md text-mutedText font-medium">
+              {sets}
+            </ThemedText>
+          </ThemedView>
+          <ThemedView className="flex-col items-center">
+            <ThemedText className="text-sm text-veryMutedText font-medium">
               Rest:
-            </Text>
+            </ThemedText>
             <Text className="text-md text-mutedText font-medium">
               {rest_time}
             </Text>
-          </View>
-        </View>
-      </View>
-    </View>
+          </ThemedView>
+        </ThemedView>
+      </ThemedView>
+    </ThemedView>
   );
 }

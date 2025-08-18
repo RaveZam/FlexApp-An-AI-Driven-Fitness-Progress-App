@@ -6,6 +6,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  useColorScheme,
   View,
 } from "react-native";
 import Animated, {
@@ -14,6 +15,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { ThemedText } from "../ThemedText";
+import { ThemedView } from "../ThemedView";
 import WorkoutCard from "./WorkoutCard";
 
 export default function Workoutlist({
@@ -25,13 +27,14 @@ export default function Workoutlist({
 }) {
   const { loading, currentWorkout } = useGetCurrentWorkoutToday();
   useFetchWorkoutPlans();
+  const colorScheme = useColorScheme();
 
-  const height = useSharedValue(200);
+  const height = useSharedValue(160);
 
   const toggleCollapse = () => {
     setCollapsed(!collapsed);
-    height.value = withTiming(collapsed ? 200 : 500, {
-      duration: 300,
+    height.value = withTiming(collapsed ? 160 : 500, {
+      duration: 200,
     });
   };
 
@@ -39,13 +42,26 @@ export default function Workoutlist({
     height: height.value,
   }));
 
+  const styles = StyleSheet.create({
+    container: {
+      width: "100%",
+      bottom: 0,
+      position: "absolute",
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: -8 },
+      shadowOpacity: 0.8,
+      shadowRadius: 24,
+      backgroundColor: colorScheme === "dark" ? "bg-lightDark" : "#ffffff",
+    },
+  });
   return (
     <>
       <Animated.View
         style={[styles.container, animatedStyle]}
-        className="w-full bottom-0 rounded-t-[42px] z-50 bg-lightDark px-8 pt-6 flex-1"
+        className={`w-full bottom-0 rounded-t-[42px] z-50 bg-red-200 px-8 pt-6 flex-1
+           `}
       >
-        <View className="relative">
+        <ThemedView className="relative">
           <ThemedText className="text-lg text-whiteText font-medium mb-4">
             Today's Workout
           </ThemedText>
@@ -57,7 +73,7 @@ export default function Workoutlist({
             color="gray"
             onPress={toggleCollapse}
           />
-        </View>
+        </ThemedView>
 
         {loading ? (
           <View className="flex-1 justify-center items-center">
@@ -96,15 +112,3 @@ export default function Workoutlist({
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    width: "100%",
-    bottom: 0,
-    position: "absolute",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: -8 },
-    shadowOpacity: 0.8,
-    shadowRadius: 24,
-  },
-});
