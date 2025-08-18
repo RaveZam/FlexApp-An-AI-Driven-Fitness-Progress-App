@@ -9,13 +9,14 @@ import LoadingOverlay from "@/components/ui/LoadingOverlay";
 import Popup from "@/components/ui/Popup";
 import ScheduleBar from "@/components/ui/ScheduleBar";
 import UserInfoCard from "@/components/UserInfoCard";
+import Workoutlist from "@/components/Workout/Workoutlist";
 import { useWorkoutContext } from "@/hooks/useWorkoutPlanContext";
 import { useWorkoutSession } from "@/hooks/useWorkoutSession";
 import { useStartWorkoutSession } from "@/hooks/WorkoutHooks/useStartWorkoutSession";
 import * as NavigationBar from "expo-navigation-bar";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
-import { ScrollView } from "react-native";
+import { ScrollView, View } from "react-native";
 import {
   configureReanimatedLogger,
   ReanimatedLogLevel,
@@ -105,9 +106,9 @@ export default function Index() {
           <ScheduleBar />
           <HomePageChartGraph />
         </ScrollView>
-        {/* <View className="flex-1" style={{ zIndex: 2, position: "relative" }}>
+        <View className="flex-1" style={{ zIndex: 2, position: "relative" }}>
           <Workoutlist collapsed={collapsed} setCollapsed={setCollapsed} />
-        </View> */}
+        </View>
 
         <Button
           className="z-20"

@@ -55,13 +55,26 @@ export default function ScheduleBar() {
   const getBorderColor = (day: any) => {
     switch (day.type) {
       case "rest":
-        return "#D1D5DB";
+        return {
+          highlight: "#D1D5DB",
+          text: "#828894",
+        };
       case "completed":
-        return "#1F2937"; // green border
+        return {
+          highlight: "#1F2937",
+          text: "#ffffff",
+        };
       case "future":
-        return "#4B5563";
+        return {
+          highlight: "#4B5563",
+          text: "#F9FAFB",
+        };
+
       default:
-        return "#10B981";
+        return {
+          highlight: "#4B5563",
+          text: "muted",
+        };
     }
   };
 
@@ -70,7 +83,7 @@ export default function ScheduleBar() {
       colorToken="secondaryBackground"
       style={{ padding: 16, paddingBottom: 0 }}
     >
-      <ThemedText className="mb-3" colorToken="text">
+      <ThemedText className="mb-3 opacity-70" colorToken="text">
         This Week
       </ThemedText>
 
@@ -92,20 +105,22 @@ export default function ScheduleBar() {
             >
               <ThemedText colorToken="mutedText">{day.name}</ThemedText>
             </ThemedView>
-            <View
+            <ThemedView
               style={{
                 borderWidth: 2,
                 width: circleSize,
                 height: circleSize,
-                borderColor: getBorderColor(day),
+                borderColor: getBorderColor(day).highlight,
                 borderRadius: circleSize / 2,
                 alignItems: "center",
                 justifyContent: "center",
-                backgroundColor: "transparent",
+                backgroundColor: getBorderColor(day).highlight,
               }}
             >
-              <ThemedText colorToken="mutedText">{day.date}</ThemedText>
-            </View>
+              <ThemedText style={{ color: getBorderColor(day).text }}>
+                {day.date}
+              </ThemedText>
+            </ThemedView>
           </View>
         ))}
       </ThemedView>
