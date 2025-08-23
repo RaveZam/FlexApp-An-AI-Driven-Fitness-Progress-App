@@ -4,7 +4,6 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import {
   ActivityIndicator,
   ScrollView,
-  StyleSheet,
   Text,
   useColorScheme,
   View,
@@ -42,24 +41,12 @@ export default function Workoutlist({
     height: height.value,
   }));
 
-  const styles = StyleSheet.create({
-    container: {
-      width: "100%",
-      bottom: 0,
-      position: "absolute",
-      shadowColor: "#000",
-      shadowOffset: { width: 0, height: -8 },
-      shadowOpacity: 0.8,
-      shadowRadius: 24,
-      backgroundColor: colorScheme === "dark" ? "bg-lightDark" : "#ffffff",
-    },
-  });
   return (
     <>
       <Animated.View
-        style={[styles.container, animatedStyle]}
-        className={`w-full bottom-0 rounded-t-[42px] z-50 bg-red-200 px-8 pt-6 flex-1
-           `}
+        style={[animatedStyle]}
+        className={`px-8 pt-6  border-t border-gray-200
+         `}
       >
         <ThemedView className="relative">
           <ThemedText className="text-lg text-whiteText font-medium mb-4">
@@ -81,9 +68,8 @@ export default function Workoutlist({
           </View>
         ) : (
           <ScrollView
-            showsVerticalScrollIndicator={false}
-            className="h-full"
-            contentContainerStyle={{ paddingBottom: 40 }}
+            showsVerticalScrollIndicator={true}
+            contentContainerStyle={{ paddingBottom: 80 }}
           >
             {currentWorkout?.workouts_per_day === undefined ? (
               <View className=" justify-center mt-12 items-center">

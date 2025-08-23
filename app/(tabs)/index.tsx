@@ -13,6 +13,7 @@ import Workoutlist from "@/components/Workout/Workoutlist";
 import { useWorkoutContext } from "@/hooks/useWorkoutPlanContext";
 import { useWorkoutSession } from "@/hooks/useWorkoutSession";
 import { useStartWorkoutSession } from "@/hooks/WorkoutHooks/useStartWorkoutSession";
+import { Ionicons } from "@expo/vector-icons";
 import * as NavigationBar from "expo-navigation-bar";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
@@ -106,11 +107,12 @@ export default function Index() {
           <ScheduleBar />
           <HomePageChartGraph />
         </ScrollView>
-        <View className="flex-1" style={{ zIndex: 2, position: "relative" }}>
+        <View style={{ zIndex: 2, position: "relative" }}>
           <Workoutlist collapsed={collapsed} setCollapsed={setCollapsed} />
         </View>
 
         <Button
+          icon={<Ionicons name="play" size={24} color="white" />}
           className="z-20"
           buttonText={
             currentSessionStatus == "completed" && activeWorkoutSession

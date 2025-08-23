@@ -1,27 +1,35 @@
-import { Text, TouchableOpacity } from "react-native";
+import { Colors } from "@/constants/Colors";
+import { Text, TouchableOpacity, View } from "react-native";
 
 export default function Button({
   buttonText,
   onPress,
   className,
   disabled = false,
+  icon,
 }: {
   buttonText: string;
   onPress: () => void;
   className: string;
   disabled?: boolean;
+  icon?: React.ReactNode;
 }) {
   return (
     <TouchableOpacity
       onPress={onPress}
       disabled={disabled}
-      className={`px-6 py-4 rounded-md m-4 bg-emerald-800 overflow-hidden ${className} ${
+      style={{ backgroundColor: Colors.light.text }}
+      className={`px-6 py-4 rounded-md m-4  overflow-hidden ${className} ${
         disabled ? "opacity-50" : ""
       }`}
     >
-      <Text className="text-white opacity-90 text-base text-center tracking-wide font-medium">
-        {buttonText}
-      </Text>
+      <View className="flex-row items-center justify-center gap-2">
+        {icon && <View>{icon}</View>}
+
+        <Text className="text-white opacity-90 text-base text-center tracking-wide font-medium">
+          {buttonText}
+        </Text>
+      </View>
     </TouchableOpacity>
   );
 }
