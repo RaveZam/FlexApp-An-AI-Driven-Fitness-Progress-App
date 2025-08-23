@@ -12,10 +12,7 @@ export default function TabLayout() {
     <Tabs
       tabBar={(props) => <CustomTab {...props} />}
       screenOptions={{
-        // tabBarActiveTintColor: "#ffffff",
         headerShown: false,
-        // tabBarButton: CustomTab,
-        // tabBarBackground: ,
 
         tabBarStyle: Platform.select({
           ios: {
@@ -30,7 +27,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Index",
+          title: "Home",
         }}
       />
       <Tabs.Screen
@@ -42,13 +39,13 @@ export default function TabLayout() {
       <Tabs.Screen
         name="Overview"
         options={{
-          title: "Overview",
+          title: "Progress",
         }}
       />
       <Tabs.Screen
         name="Settings"
         options={{
-          title: "Settings",
+          title: "Profile",
         }}
       />
     </Tabs>

@@ -1,7 +1,6 @@
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
-import { PlatformPressable } from "@react-navigation/elements";
 import { useTheme } from "@react-navigation/native";
-import { Text, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
   withTiming,
@@ -22,36 +21,52 @@ export function CustomTab({
   const icon = {
     index: ({ color, iconAnimatedStyle }: any) => (
       <Animated.View style={iconAnimatedStyle}>
-        <IconSymbol size={32} name="house.fill" color={color} />
+        <IconSymbol size={24} name="house.fill" color={color} />
       </Animated.View>
     ),
     Workouts: ({ color, iconAnimatedStyle }: any) => (
       <Animated.View style={iconAnimatedStyle}>
-        <Ionicons name="barbell" size={32} color={color} />
+        <Ionicons name="barbell" size={24} color={color} />
       </Animated.View>
     ),
     Overview: ({ color, iconAnimatedStyle }: any) => (
       <Animated.View style={iconAnimatedStyle}>
-        <IconSymbol size={32} name="chart.bar.fill" color={color} />
+        <IconSymbol size={24} name="chart.bar.fill" color={color} />
       </Animated.View>
     ),
     Settings: ({ color, iconAnimatedStyle }: any) => (
       <Animated.View style={iconAnimatedStyle}>
-        <IconSymbol size={32} name="gearshape.fill" color={color} />
+        <IconSymbol size={22} name="gearshape.fill" color={color} />
       </Animated.View>
     ),
+  };
+
+  const getTabTitle = (routeName: string) => {
+    switch (routeName) {
+      case "index":
+        return "Home";
+      case "Workouts":
+        return "Workouts";
+      case "Overview":
+        return "Progress";
+      case "Settings":
+        return "Settings";
+      default:
+        return routeName;
+    }
   };
 
   return (
     <View
       style={{
-        backgroundColor: "#1E1E1E",
+        backgroundColor: "#FFFFFF",
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
         flexDirection: "row",
-        padding: 12,
-        paddingHorizontal: 20,
+        paddingVertical: 4,
+        borderTopWidth: 1,
+        borderTopColor: "#E5E7EB",
       }}
     >
       {state.routes.map((route, index) => {
@@ -92,17 +107,14 @@ export function CustomTab({
           return {
             transform: [
               {
-                scale: withTiming(isFocused ? 0.8 : 1, { duration: 300 }),
-              },
-              {
-                translateX: withTiming(isFocused ? 0 : 10, { duration: 300 }),
+                scale: withTiming(isFocused ? 1 : 1, { duration: 300 }),
               },
             ],
           };
         }, [isFocused]);
 
         return (
-          <PlatformPressable
+          <TouchableOpacity
             key={index}
             accessibilityState={isFocused ? { selected: true } : {}}
             accessibilityLabel={options.tabBarAccessibilityLabel}
@@ -110,32 +122,34 @@ export function CustomTab({
             onPress={onPress}
             onLongPress={onLongPress}
             style={{
-              backgroundColor: isFocused ? "#10b981" : "transparent",
-              paddingRight: 24,
-              paddingVertical: 8,
-              borderRadius: 100,
+              backgroundColor: "transparent",
+              paddingVertical: 12,
+              paddingHorizontal: 16,
+              borderRadius: 8,
+              alignItems: "center",
+              justifyContent: "center",
+              minWidth: 70,
+              flex: 1,
             }}
           >
-            <View className="flex-row items-center justify-center">
+            <View style={{ alignItems: "center", justifyContent: "center" }}>
               {icon[route.name as keyof typeof icon]?.({
-                color: isFocused ? "#000000" : colors.text,
+                color: isFocused ? "#374151" : "#9CA3AF",
                 iconAnimatedStyle,
               })}
-              {isFocused && (
-                <AnimatedText
-                  style={[
-                    animatedStyle,
-                    {
-                      fontSize: 14,
-                      marginRight: 4,
-                    },
-                  ]}
-                >
-                  {route.name === "index" ? "Home" : route.name}
-                </AnimatedText>
-              )}
+              <Text
+                style={{
+                  fontSize: 11,
+                  marginTop: route.name === "Settings" ? 8 : 6,
+                  color: isFocused ? "#374151" : "#9CA3AF",
+                  fontWeight: isFocused ? "600" : "400",
+                  textAlign: "center",
+                }}
+              >
+                {getTabTitle(route.name)}
+              </Text>
             </View>
-          </PlatformPressable>
+          </TouchableOpacity>
         );
       })}
     </View>
