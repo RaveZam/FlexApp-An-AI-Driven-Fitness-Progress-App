@@ -110,23 +110,24 @@ export default function Index() {
         <View style={{ zIndex: 2, position: "relative" }}>
           <Workoutlist collapsed={collapsed} setCollapsed={setCollapsed} />
         </View>
-
-        <Button
-          icon={<Ionicons name="play" size={24} color="white" />}
-          className="z-20"
-          buttonText={
-            currentSessionStatus == "completed" && activeWorkoutSession
-              ? "Workout Finished"
-              : activeWorkoutSession
-              ? "Resume Session"
-              : "Start Session"
-          }
-          onPress={() => {
-            currentSessionStatus === "completed"
-              ? handleStartWorkout()
-              : setPopup(true);
-          }}
-        />
+        <ThemedView>
+          <Button
+            icon={<Ionicons name="play" size={24} color="white" />}
+            className="z-20 mb-4"
+            buttonText={
+              currentSessionStatus == "completed" && activeWorkoutSession
+                ? "Workout Finished"
+                : activeWorkoutSession
+                ? "Resume Session"
+                : "Start Session"
+            }
+            onPress={() => {
+              currentSessionStatus === "completed"
+                ? handleStartWorkout()
+                : setPopup(true);
+            }}
+          />
+        </ThemedView>
       </ThemedView>
     </SafeAreaView>
   );

@@ -53,12 +53,13 @@ export default function HomePageChartGraph() {
       </ThemedView>
 
       {/* Chart Area */}
-      <ThemedView colorToken="secondaryBackground" className="rounded-lg">
+      <ThemedView colorToken="secondaryBackground" className="rounded-lg -mt-2">
         <VictoryChart
-          domainPadding={{ x: 12 }}
-          width={screenWidth - 20}
-          height={230}
+          // domainPadding={{ x: 12 }}
+          width={screenWidth - 40}
+          height={180}
           theme={VictoryTheme.material}
+          padding={{ top: 10, bottom: 40, left: 60, right: 60 }}
           style={{
             background: {
               fill: colorScheme === "dark" ? "#000000" : "#F3F4F6",

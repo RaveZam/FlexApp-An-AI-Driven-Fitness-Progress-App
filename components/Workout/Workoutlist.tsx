@@ -28,11 +28,11 @@ export default function Workoutlist({
   useFetchWorkoutPlans();
   const colorScheme = useColorScheme();
 
-  const height = useSharedValue(160);
+  const height = useSharedValue(150);
 
   const toggleCollapse = () => {
     setCollapsed(!collapsed);
-    height.value = withTiming(collapsed ? 160 : 500, {
+    height.value = withTiming(collapsed ? 150 : 500, {
       duration: 200,
     });
   };
@@ -45,7 +45,7 @@ export default function Workoutlist({
     <>
       <Animated.View
         style={[animatedStyle]}
-        className={`px-8 pt-6  border-t border-gray-200
+        className={`p-4 px-8  border-t border-gray-200
          `}
       >
         <ThemedView className="relative">

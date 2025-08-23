@@ -19,7 +19,7 @@ export default function Button({
       onPress={onPress}
       disabled={disabled}
       style={{ backgroundColor: Colors.light.text }}
-      className={`px-6 py-4 rounded-md m-4  overflow-hidden ${className} ${
+      className={`px-6 py-4 rounded-md mx-4 overflow-hidden ${className} ${
         disabled ? "opacity-50" : ""
       }`}
     >
