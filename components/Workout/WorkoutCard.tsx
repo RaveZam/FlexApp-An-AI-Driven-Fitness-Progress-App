@@ -15,13 +15,12 @@ export default function WorkoutCard({
   rest_time: string;
   workout_image: string;
 }) {
-  const truncate = (text: string, max = 20) =>
-    text.length > max ? `${text.slice(0, max)}...` : text;
+  // const truncate = (text: string, max = 20) =>
+  //   text.length > max ? `${text.slice(0, max)}...` : text;
   return (
     <ThemedView
       borderToken="border"
-      className="flex-row rounded-md shadow-md overflow-hidden my-3"
-      style={{ minHeight: 96 }}
+      className="flex-row rounded-md my-2 shadow-sm overflow-hidden "
     >
       <Image
         source={{
@@ -29,15 +28,17 @@ export default function WorkoutCard({
         }}
         style={{
           width: 160,
-          height: 100,
-          borderTopRightRadius: 0,
-          borderBottomRightRadius: 0,
+          height: 80,
         }}
         resizeMode="cover"
       />
-      <ThemedView className="flex-1 flex-col items-center justify-center ">
-        <ThemedText type="cardTitle">{truncate(workout)}</ThemedText>
-        <ThemedView className="flex-row items-center mb-1"></ThemedView>
+      <ThemedView className="flex-1 flex-col justify-center ml-4 ">
+        <ThemedText type="cardTitle">{workout}</ThemedText>
+        <ThemedView className="flex-row items-center mb-1">
+          <ThemedText type="subtitle" colorToken="mutedText">
+            {reps} reps × {sets} sets
+          </ThemedText>
+        </ThemedView>
       </ThemedView>
     </ThemedView>
   );

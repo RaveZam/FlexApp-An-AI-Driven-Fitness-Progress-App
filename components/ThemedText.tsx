@@ -61,11 +61,9 @@ const styles = StyleSheet.create({
   title: {
     fontSize: FontSizes.title,
     lineHeight: 32,
-    fontFamily: FontFamilies.bold,
   },
   subtitle: {
     fontSize: FontSizes.subtitle,
-    fontFamily: FontFamilies.semibold,
   },
   link: {
     fontSize: FontSizes.body,
@@ -79,7 +77,7 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     fontSize: FontSizes.small,
-    lineHeight: 20,
+    lineHeight: 24,
     fontFamily: FontFamilies.regular,
   },
 });

@@ -67,10 +67,7 @@ export default function Workoutlist({
             <ActivityIndicator size="large" color="#10b981" />
           </View>
         ) : (
-          <ScrollView
-            showsVerticalScrollIndicator={true}
-            contentContainerStyle={{ paddingBottom: 80 }}
-          >
+          <ScrollView showsVerticalScrollIndicator={false}>
             {currentWorkout?.workouts_per_day === undefined ? (
               <View className=" justify-center mt-12 items-center">
                 <Text className="text-veryMutedText text-[1.1rem]">
