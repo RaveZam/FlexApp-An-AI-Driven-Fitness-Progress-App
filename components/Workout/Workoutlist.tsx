@@ -28,11 +28,11 @@ export default function Workoutlist({
   useFetchWorkoutPlans();
   const colorScheme = useColorScheme();
 
-  const height = useSharedValue(150);
+  const height = useSharedValue(160);
 
   const toggleCollapse = () => {
     setCollapsed(!collapsed);
-    height.value = withTiming(collapsed ? 150 : 500, {
+    height.value = withTiming(collapsed ? 160 : 500, {
       duration: 200,
     });
   };

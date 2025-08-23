@@ -57,7 +57,7 @@ export default function HomePageChartGraph() {
         <VictoryChart
           // domainPadding={{ x: 12 }}
           width={screenWidth - 40}
-          height={180}
+          height={150}
           theme={VictoryTheme.material}
           padding={{ top: 10, bottom: 40, left: 60, right: 60 }}
           style={{

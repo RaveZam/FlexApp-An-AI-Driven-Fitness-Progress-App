@@ -9,6 +9,7 @@ import LoadingOverlay from "@/components/ui/LoadingOverlay";
 import Popup from "@/components/ui/Popup";
 import ScheduleBar from "@/components/ui/ScheduleBar";
 import UserInfoCard from "@/components/UserInfoCard";
+import WeeklyVolume from "@/components/WeeklyVolume";
 import Workoutlist from "@/components/Workout/Workoutlist";
 import { useWorkoutContext } from "@/hooks/useWorkoutPlanContext";
 import { useWorkoutSession } from "@/hooks/useWorkoutSession";
@@ -106,6 +107,7 @@ export default function Index() {
         <ScrollView showsHorizontalScrollIndicator={false} className="h-[20%]">
           <ScheduleBar />
           <HomePageChartGraph />
+          <WeeklyVolume />
         </ScrollView>
         <View style={{ zIndex: 2, position: "relative" }}>
           <Workoutlist collapsed={collapsed} setCollapsed={setCollapsed} />
