@@ -2,12 +2,12 @@ import { Colors } from "@/constants";
 import { Feather } from "@expo/vector-icons";
 import { Dimensions } from "react-native";
 import * as Progress from "react-native-progress";
-import { ThemedText } from "./ThemedText";
-import { ThemedView } from "./ThemedView";
+import { ThemedText } from "../ThemedText";
+import { ThemedView } from "../ThemedView";
 
-export default function WeeklyVolume() {
+export function WeeklyVolume() {
   return (
-    <ThemedView borderToken="border" className="m-4 p-4 rounded-lg">
+    <ThemedView borderToken="border" className="mx-4 p-4 rounded-lg">
       <ThemedView className="flex-row items-center justify-between">
         <ThemedText>Weekly Volume</ThemedText>
         <Feather name="trending-up" size={16} color={Colors.light.text} />

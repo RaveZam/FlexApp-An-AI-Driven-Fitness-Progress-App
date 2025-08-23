@@ -9,10 +9,10 @@ import {
   VictoryChart,
   VictoryTheme,
 } from "victory-native";
-import { ThemedText } from "./ThemedText";
-import { ThemedView } from "./ThemedView";
+import { ThemedText } from "../ThemedText";
+import { ThemedView } from "../ThemedView";
 
-export default function HomePageChartGraph() {
+export function HomePageChartGraph() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? "dark"];
   const screenWidth = Dimensions.get("window").width;
@@ -39,7 +39,7 @@ export default function HomePageChartGraph() {
 
   return (
     <ThemedView
-      className="m-4 p-4 rounded-xl"
+      className="mx-4 p-4 rounded-xl"
       colorToken="secondaryBackground"
       borderToken="border"
       borderWidth={1}

@@ -1,3 +1,4 @@
+import { Colors } from "@/constants";
 import Fontisto from "@expo/vector-icons/Fontisto";
 import { Image } from "react-native";
 import { ThemedText } from "./ThemedText";
@@ -14,16 +15,21 @@ export default function UserInfoCard() {
           }}
           className="w-12 h-12 rounded-md"
         />
-        <ThemedText style={{ fontSize: 28 }}>FlexLife</ThemedText>
+        <ThemedText style={{ fontSize: 28, color: Colors.light.text }}>
+          FlexLife
+        </ThemedText>
       </ThemedView>
 
-      <ThemedView className="ml-auto flex-row gap-2" colorToken="background">
+      <ThemedView
+        className="ml-auto flex-row gap-1 items-center"
+        colorToken="background"
+      >
         <ThemedView className="m-4">
-          <Fontisto name="bell" size={20} color="black" />
+          <Fontisto name="bell" size={20} color={Colors.light.text} />
         </ThemedView>
 
         <Image
-          style={{ width: 48, height: 48 }}
+          style={{ width: 36, height: 36 }}
           source={{
             uri: "https://res.cloudinary.com/dcdgu2fxc/image/upload/v1755494500/pfp_l6k1di.jpg",
           }}

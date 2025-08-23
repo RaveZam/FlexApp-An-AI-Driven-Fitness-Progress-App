@@ -1,7 +1,12 @@
 import "react-native-reanimated";
 
 import { useAuth } from "@/auth/useAuth";
-import HomePageChartGraph from "@/components/HomePageChartGraph";
+import {
+  HomePageChartGraph,
+  Insights,
+  PersonalRecord,
+  WeeklyVolume,
+} from "@/components/HomepageComponents";
 import { ThemedView } from "@/components/ThemedView";
 import BlurOverlay from "@/components/ui/BlurOverlay";
 import Button from "@/components/ui/Button";
@@ -9,8 +14,6 @@ import LoadingOverlay from "@/components/ui/LoadingOverlay";
 import Popup from "@/components/ui/Popup";
 import ScheduleBar from "@/components/ui/ScheduleBar";
 import UserInfoCard from "@/components/UserInfoCard";
-import WeeklyVolume from "@/components/WeeklyVolume";
-import Workoutlist from "@/components/Workout/Workoutlist";
 import { useWorkoutContext } from "@/hooks/useWorkoutPlanContext";
 import { useWorkoutSession } from "@/hooks/useWorkoutSession";
 import { useStartWorkoutSession } from "@/hooks/WorkoutHooks/useStartWorkoutSession";
@@ -18,7 +21,7 @@ import { Ionicons } from "@expo/vector-icons";
 import * as NavigationBar from "expo-navigation-bar";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
-import { ScrollView, View } from "react-native";
+import { ScrollView } from "react-native";
 import {
   configureReanimatedLogger,
   ReanimatedLogLevel,
@@ -104,14 +107,18 @@ export default function Index() {
         />
 
         <UserInfoCard />
-        <ScrollView showsHorizontalScrollIndicator={false} className="h-[20%]">
-          <ScheduleBar />
-          <HomePageChartGraph />
-          <WeeklyVolume />
+        <ScrollView showsHorizontalScrollIndicator={false}>
+          <ThemedView className="flex flex-col gap-4 h-[20%]">
+            <ScheduleBar />
+            <HomePageChartGraph />
+            <WeeklyVolume />
+            <PersonalRecord />
+            <Insights />
+          </ThemedView>
         </ScrollView>
-        <View style={{ zIndex: 2, position: "relative" }}>
+        {/* <View style={{ zIndex: 2, position: "relative" }}>
           <Workoutlist collapsed={collapsed} setCollapsed={setCollapsed} />
-        </View>
+        </View> */}
         <ThemedView>
           <Button
             icon={<Ionicons name="play" size={24} color="white" />}
