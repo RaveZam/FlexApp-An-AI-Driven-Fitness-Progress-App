@@ -1,5 +1,6 @@
 import { Image, View } from "react-native";
 import { ThemedText } from "../ThemedText";
+import { ThemedView } from "../ThemedView";
 
 export default function SelectedWorkoutCard({
   displayExercise,
@@ -9,7 +10,11 @@ export default function SelectedWorkoutCard({
   return (
     <View>
       {displayExercise ? (
-        <View className="border-2 border-emerald-500 rounded-lg p-4 mb-4 bg-lightDark">
+        <ThemedView
+          borderToken="text"
+          colorToken="secondaryBackground"
+          className="rounded-lg p-4 mb-4 bg-lightDark"
+        >
           <View className="flex-row items-center">
             <View className="w-32 h-24 bg-important rounded-lg mr-4 overflow-hidden flex-shrink-0">
               <Image
@@ -32,7 +37,7 @@ export default function SelectedWorkoutCard({
               </ThemedText>
             </View>
           </View>
-        </View>
+        </ThemedView>
       ) : (
         <View className="border-2 border-gray-400 rounded-lg p-4 mb-4 bg-lightDark">
           <View className="flex-row items-center">

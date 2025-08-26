@@ -10,7 +10,7 @@ export default function WorkoutScreenHeader({
 }) {
   const { finishedWorkouts, currentWorkout } = useWorkoutContext();
   return (
-    <View className="flex-row justify-between items-center ml-12 mx-8 py-8 border-b border-important">
+    <View className="flex-row justify-between items-center ml-12 mx-8 py-8 border-important">
       <TouchableOpacity onPress={() => router.back()}>
         <ThemedText className="text-whiteText">Exit</ThemedText>
       </TouchableOpacity>
