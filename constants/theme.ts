@@ -2,7 +2,7 @@ export const FontSizes = {
   small: 12,
   body: 16,
   subtitle: 12,
-  title: 16,
+  title: 20,
 };
 
 export const FontFamilies = {

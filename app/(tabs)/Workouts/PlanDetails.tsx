@@ -4,9 +4,15 @@ import Button from "@/components/ui/Button";
 import Popup from "@/components/ui/Popup";
 import WorkoutCard from "@/components/Workout/WorkoutCard";
 import { useFetchPlanDetails } from "@/hooks/useFetchPlanDetails";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, ScrollView, View } from "react-native";
+import {
+  ActivityIndicator,
+  ScrollView,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function PlanDetails() {
@@ -26,6 +32,7 @@ export default function PlanDetails() {
   } = useFetchPlanDetails();
 
   const [showPopup, setShowPopup] = useState<boolean>(false);
+
   useEffect(() => {
     if (planId) {
       fetchPlanAndWorkouts(planId);
@@ -61,48 +68,115 @@ export default function PlanDetails() {
     <SafeAreaView className="flex-1">
       <ThemedView className="flex-1">
         <View className="m-4 flex-1">
-          <ThemedText className="text-2xl font-medium mb-2">
-            {planDetails?.name || planName || "Workout Plan"}
-          </ThemedText>
-          <ThemedText className="text-sm opacity-60 mb-4">
-            {workouts
-              ? workouts.reduce(
-                  (total: number, day: any) =>
-                    total + (day.workouts_per_day?.length || 0),
-                  0
-                )
-              : 0}{" "}
-            workouts in this plan
-          </ThemedText>
+          <View className="flex-row items-center justify-between mb-2 py-4  px-1">
+            <TouchableOpacity onPress={() => router.back()}>
+              <MaterialIcons name="arrow-back" size={22} color="#555" />
+            </TouchableOpacity>
+            <ThemedText className="text-base font-medium">
+              Workout Plan
+            </ThemedText>
+            <TouchableOpacity>
+              <MaterialIcons name="more-vert" size={20} color="#555" />
+            </TouchableOpacity>
+          </View>
+          <ThemedView
+            className="rounded-md border-black px-4 py-4 mb-4 items-center"
+            borderToken="text"
+            borderWidth={1}
+          >
+            <ThemedText type="title" className=" mb-2">
+              {planDetails?.name || planName || "Workout Plan"} Workout
+            </ThemedText>
+            <View className="flex-row items-center mb-2">
+              <View className="flex-row items-center">
+                <MaterialIcons name="calendar-today" size={14} color="#999" />
+                <ThemedText className="text-xs opacity-70 ml-1">
+                  {(workouts && workouts.length) || 0} Days
+                </ThemedText>
+              </View>
+              <ThemedText className="mx-2 opacity-30">•</ThemedText>
+              <View className="flex-row items-center">
+                <MaterialIcons name="fitness-center" size={14} color="#999" />
+                <ThemedText className="text-xs opacity-70 ml-1">
+                  {workouts
+                    ? workouts.reduce(
+                        (total: number, day: any) =>
+                          total + (day.workouts_per_day?.length || 0),
+                        0
+                      )
+                    : 0}{" "}
+                  Workouts
+                </ThemedText>
+              </View>
+              <ThemedText className="mx-2 opacity-30">•</ThemedText>
+              <View className="flex-row items-center">
+                <MaterialIcons name="schedule" size={14} color="#999" />
+                <ThemedText className="text-xs opacity-70 ml-1">
+                  45-60 min
+                </ThemedText>
+              </View>
+            </View>
+            <ThemedText className="text-xs opacity-60 text-center">
+              Complete strength training program for muscle growth
+            </ThemedText>
+          </ThemedView>
 
           {workouts && workouts.length > 0 ? (
             <ScrollView
               showsVerticalScrollIndicator={false}
               className="flex-1 px-2"
             >
-              {workouts.map((day: any) => (
-                <View key={day.id}>
-                  <ThemedText className="mb-4 font-medium text-whiteText">
-                    {day.day_name}
-                  </ThemedText>
-                  {day.workouts_per_day && day.workouts_per_day.length > 0 ? (
-                    day.workouts_per_day.map((workout: any) => (
-                      <WorkoutCard
-                        key={workout.id}
-                        workout={workout.workout_id.workout_name}
-                        workout_image={workout.workout_id.workout_image}
-                        reps={workout.reps}
-                        sets={workout.sets}
-                        rest_time={workout.rest_time}
-                      />
-                    ))
-                  ) : (
-                    <ThemedText className="text-xs opacity-60 mb-2 ml-2">
-                      No workouts for this day.
-                    </ThemedText>
-                  )}
-                </View>
-              ))}
+              {workouts.map((day: any, index: number) => {
+                const exerciseCount = day.workouts_per_day?.length || 0;
+                const muscleGroups: string = Array.from(
+                  new Set(
+                    (day.workouts_per_day || [])
+                      .map((w: any) => w?.workout_id?.muscle_group)
+                      .filter(Boolean)
+                  )
+                ).join(", ");
+
+                return (
+                  <ThemedView
+                    key={day.id || `${index}`}
+                    className="mb-3 rounded-md"
+                  >
+                    <View className="flex-row items-center justify-between px-3 pt-3">
+                      <View className="flex-1 pr-2">
+                        <ThemedText className="text-base font-medium">
+                          Day {index + 1} - {day.day_name}
+                        </ThemedText>
+                        <ThemedText className="text-xs opacity-60 mt-0.5">
+                          {day.day}
+                          {muscleGroups ? ` • ${muscleGroups}` : ""}
+                        </ThemedText>
+                      </View>
+                      <View className="px-2 py-1 rounded-full bg-black/5 dark:bg-white/10">
+                        <ThemedText className="text-[10px] opacity-70">
+                          {exerciseCount}{" "}
+                          {exerciseCount === 1 ? "exercise" : "exercises"}
+                        </ThemedText>
+                      </View>
+                    </View>
+                    {day.workouts_per_day && day.workouts_per_day.length > 0 ? (
+                      day.workouts_per_day.map((workout: any) => (
+                        <WorkoutCard
+                          key={workout.id}
+                          workout={workout.workout_id.workout_name}
+                          workout_image={workout.workout_id.workout_image}
+                          reps={workout.reps}
+                          sets={workout.sets}
+                          rest_time={workout.rest_time}
+                        />
+                      ))
+                    ) : (
+                      <ThemedText className="text-xs opacity-60 mb-2 ml-2">
+                        No workouts for this day.
+                      </ThemedText>
+                    )}
+                  </ThemedView>
+                );
+              })}
               <Button
                 className=""
                 buttonText="Set Active Workout"

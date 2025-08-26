@@ -36,12 +36,9 @@ export default function index() {
               className="flex-1 mx-4"
             >
               {workoutPlans.map((plan: any, index) => (
-                <>
+                <ThemedView key={index}>
                   {plan.is_active && (
-                    <Text
-                      key={index}
-                      className="text-emerald-600 font-medium text-center"
-                    >
+                    <Text className="text-black font-medium text-center">
                       Currently Active Plan:
                     </Text>
                   )}
@@ -55,7 +52,7 @@ export default function index() {
                       });
                     }}
                   />
-                </>
+                </ThemedView>
               ))}
             </ScrollView>
           ) : (

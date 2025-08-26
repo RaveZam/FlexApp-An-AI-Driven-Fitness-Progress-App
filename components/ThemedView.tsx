@@ -1,7 +1,11 @@
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { View, type ViewProps } from "react-native";
 
-export type ColorToken = "background" | "secondaryBackground" | "border";
+export type ColorToken =
+  | "background"
+  | "secondaryBackground"
+  | "border"
+  | "text";
 
 export type ThemedViewProps = ViewProps & {
   colorToken?: ColorToken; // optional token

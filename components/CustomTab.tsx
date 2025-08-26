@@ -31,7 +31,7 @@ export function CustomTab({
     ),
     Overview: ({ color, iconAnimatedStyle }: any) => (
       <Animated.View style={iconAnimatedStyle}>
-        <IconSymbol size={24} name="chart.bar.fill" color={color} />
+        <IconSymbol size={28} name="chart.bar.fill" color={color} />
       </Animated.View>
     ),
     Settings: ({ color, iconAnimatedStyle }: any) => (
