@@ -1,3 +1,4 @@
+import { Colors } from "@/constants/Colors";
 import { useFetchWorkoutPlans } from "@/hooks/useFetchWorkoutPlans";
 import { useGetCurrentWorkoutToday } from "@/hooks/useGetCurrentWorkoutToday";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -44,8 +45,11 @@ export default function Workoutlist({
   return (
     <>
       <Animated.View
-        style={[animatedStyle]}
-        className={`p-4 px-8  border-t border-gray-200
+        style={[
+          animatedStyle,
+          { backgroundColor: Colors.light.secondaryBackground },
+        ]}
+        className={`p-4 px-8  border-t border-gray-300
          `}
       >
         <ThemedView className="relative">

@@ -14,6 +14,8 @@ import LoadingOverlay from "@/components/ui/LoadingOverlay";
 import Popup from "@/components/ui/Popup";
 import ScheduleBar from "@/components/ui/ScheduleBar";
 import UserInfoCard from "@/components/UserInfoCard";
+import Workoutlist from "@/components/Workout/Workoutlist";
+import { Colors } from "@/constants/Colors";
 import { useWorkoutContext } from "@/hooks/useWorkoutPlanContext";
 import { useWorkoutSession } from "@/hooks/useWorkoutSession";
 import { useStartWorkoutSession } from "@/hooks/WorkoutHooks/useStartWorkoutSession";
@@ -21,7 +23,7 @@ import { Ionicons } from "@expo/vector-icons";
 import * as NavigationBar from "expo-navigation-bar";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
-import { ScrollView } from "react-native";
+import { ScrollView, View } from "react-native";
 import {
   configureReanimatedLogger,
   ReanimatedLogLevel,
@@ -107,7 +109,10 @@ export default function Index() {
         />
 
         <UserInfoCard />
-        <ScrollView showsHorizontalScrollIndicator={false}>
+        <ScrollView
+          style={{ backgroundColor: Colors.light.secondaryBackground }}
+          showsHorizontalScrollIndicator={false}
+        >
           <ThemedView className="flex flex-col gap-4 h-[20%]">
             <ScheduleBar />
             <HomePageChartGraph />
@@ -116,9 +121,9 @@ export default function Index() {
             <Insights />
           </ThemedView>
         </ScrollView>
-        {/* <View style={{ zIndex: 2, position: "relative" }}>
+        <View style={{ zIndex: 2, position: "relative" }}>
           <Workoutlist collapsed={collapsed} setCollapsed={setCollapsed} />
-        </View> */}
+        </View>
         <ThemedView>
           <Button
             icon={<Ionicons name="play" size={24} color="white" />}
