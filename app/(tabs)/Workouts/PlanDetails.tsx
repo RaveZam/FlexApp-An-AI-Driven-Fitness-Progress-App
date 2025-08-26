@@ -31,6 +31,7 @@ export default function PlanDetails() {
     selectActiveWorkout,
   } = useFetchPlanDetails();
 
+  console.log(workouts);
   const [showPopup, setShowPopup] = useState<boolean>(false);
 
   useEffect(() => {
@@ -66,7 +67,7 @@ export default function PlanDetails() {
 
   return (
     <SafeAreaView className="flex-1">
-      <ThemedView className="flex-1">
+      <ThemedView colorToken="secondaryBackground" className="flex-1">
         <View className="m-4 flex-1">
           <View className="flex-row items-center justify-between mb-2 py-4  px-1">
             <TouchableOpacity onPress={() => router.back()}>
@@ -79,11 +80,7 @@ export default function PlanDetails() {
               <MaterialIcons name="more-vert" size={20} color="#555" />
             </TouchableOpacity>
           </View>
-          <ThemedView
-            className="rounded-md border-black px-4 py-4 mb-4 items-center"
-            borderToken="text"
-            borderWidth={1}
-          >
+          <ThemedView className="rounded-md border-black px-4 py-4 mb-4 items-center">
             <ThemedText type="title" className=" mb-2">
               {planDetails?.name || planName || "Workout Plan"} Workout
             </ThemedText>
@@ -139,10 +136,10 @@ export default function PlanDetails() {
                 return (
                   <ThemedView
                     key={day.id || `${index}`}
-                    className="mb-3 rounded-md"
+                    className="mb-3 rounded-md pb-4"
                   >
-                    <View className="flex-row items-center justify-between px-3 pt-3">
-                      <View className="flex-1 pr-2">
+                    <View className="flex-row items-center justify-between px-3 pt-3 ">
+                      <View className="flex-1 pr-2 ">
                         <ThemedText className="text-base font-medium">
                           Day {index + 1} - {day.day_name}
                         </ThemedText>
@@ -151,10 +148,10 @@ export default function PlanDetails() {
                           {muscleGroups ? ` • ${muscleGroups}` : ""}
                         </ThemedText>
                       </View>
-                      <View className="px-2 py-1 rounded-full bg-black/5 dark:bg-white/10">
-                        <ThemedText className="text-[10px] opacity-70">
+                      <View className="px-3 py-2 rounded-full bg-black/5 dark:bg-white/10">
+                        <ThemedText colorToken="text" type="subtitle">
                           {exerciseCount}{" "}
-                          {exerciseCount === 1 ? "exercise" : "exercises"}
+                          {exerciseCount === 1 ? "Workout" : "Workouts"}
                         </ThemedText>
                       </View>
                     </View>

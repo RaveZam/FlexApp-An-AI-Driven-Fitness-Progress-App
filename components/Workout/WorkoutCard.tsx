@@ -34,7 +34,7 @@ export default function WorkoutCard({
       />
       <ThemedView className="flex-1 flex-col justify-center ml-4 ">
         <ThemedText type="cardTitle">{workout}</ThemedText>
-        <ThemedView className="flex-row items-center mb-1">
+        <ThemedView className="flex-row gap-2  mb-1">
           <ThemedText type="subtitle" colorToken="mutedText">
             {reps} reps × {sets} sets
           </ThemedText>

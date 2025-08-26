@@ -25,7 +25,7 @@ export default function index() {
     <SafeAreaView className="flex-1">
       <ThemedView className="flex-1">
         <View className="m-4 mt-12 flex-1">
-          <ThemedText className="text-2xl font-medium text-center mb-4">
+          <ThemedText type="title" className="text-center mb-4">
             Your Workout Plans
           </ThemedText>
 

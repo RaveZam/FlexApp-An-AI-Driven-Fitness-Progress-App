@@ -21,22 +21,22 @@ export function CustomTab({
   const icon = {
     index: ({ color, iconAnimatedStyle }: any) => (
       <Animated.View style={iconAnimatedStyle}>
-        <IconSymbol size={24} name="house.fill" color={color} />
+        <IconSymbol size={32} name="house.fill" color={color} />
       </Animated.View>
     ),
     Workouts: ({ color, iconAnimatedStyle }: any) => (
       <Animated.View style={iconAnimatedStyle}>
-        <Ionicons name="barbell" size={24} color={color} />
+        <Ionicons name="barbell" size={32} color={color} />
       </Animated.View>
     ),
     Overview: ({ color, iconAnimatedStyle }: any) => (
       <Animated.View style={iconAnimatedStyle}>
-        <IconSymbol size={28} name="chart.bar.fill" color={color} />
+        <IconSymbol size={32} name="chart.bar.fill" color={color} />
       </Animated.View>
     ),
     Settings: ({ color, iconAnimatedStyle }: any) => (
       <Animated.View style={iconAnimatedStyle}>
-        <IconSymbol size={22} name="gearshape.fill" color={color} />
+        <IconSymbol size={32} name="gearshape.fill" color={color} />
       </Animated.View>
     ),
   };
