@@ -73,7 +73,7 @@ export default function index() {
 
   return (
     <SafeAreaView className="flex-1" edges={["top"]}>
-      <ThemedView className="flex-1">
+      <ThemedView colorToken={"background"} className="flex-1">
         <WorkoutScreenHeader setShowExercisesModal={setShowExercisesModal} />
 
         <WorkoutTimers formatTime={formatTime} time={time} />

@@ -3,6 +3,7 @@ import Button from "@/components/ui/Button";
 import { useWorkoutContext } from "@/hooks/useWorkoutPlanContext";
 import React from "react";
 import { Modal, TextInput, TouchableOpacity, View } from "react-native";
+import { ThemedView } from "../ThemedView";
 
 interface WorkoutLogOverlayProps {
   visible: boolean;
@@ -56,7 +57,7 @@ export default function WorkoutLogOverlay({
       }}
     >
       <View className="flex-1 bg-black/50 justify-center items-center">
-        <View className="bg-lightDark rounded-2xl p-6 mx-4 w-full max-w-sm">
+        <ThemedView className="bg-lightDark rounded-2xl p-6 mx-4 w-full max-w-sm">
           <TouchableOpacity
             onPress={() => {
               handleCloseWorkoutLog();
@@ -155,7 +156,7 @@ export default function WorkoutLogOverlay({
             disabled={disabled || !currentWeight || !currentReps}
             className=""
           />
-        </View>
+        </ThemedView>
       </View>
     </Modal>
   );

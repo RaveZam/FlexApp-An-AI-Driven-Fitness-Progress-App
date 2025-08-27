@@ -1,14 +1,15 @@
 import { ThemedText } from "@/components/ThemedText";
-import LineChart from "@/components/ui/LineChart";
+import { ThemedView } from "@/components/ThemedView";
+import BarGraph from "@/components/ui/BarGraph";
 import { View } from "react-native";
 
 export default function HistoryCard() {
   return (
-    <View className="flex-1 items-center">
-      <ThemedText className="text-mutedText text-sm mb-2">History</ThemedText>
+    <ThemedView className="flex-1 items-center">
+      <ThemedText className="text-mutedText text-sm ">History</ThemedText>
       <View className="bg-lightDark rounded-lg w-full justify-center items-center">
-        <LineChart />
+        <BarGraph />
       </View>
-    </View>
+    </ThemedView>
   );
 }

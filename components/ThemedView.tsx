@@ -5,7 +5,8 @@ export type ColorToken =
   | "background"
   | "secondaryBackground"
   | "border"
-  | "text";
+  | "text"
+  | "primary";
 
 export type ThemedViewProps = ViewProps & {
   colorToken?: ColorToken; // optional token

@@ -1,5 +1,7 @@
 import { ThemedText } from "@/components/ThemedText";
+import { ThemedView } from "@/components/ThemedView";
 import { useWorkoutContext } from "@/hooks/useWorkoutPlanContext";
+import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { ScrollView, Text, View } from "react-native";
 import HistoryCard from "../PersonalRecordAndHistoryComponents/HistoryCard";
@@ -20,35 +22,65 @@ export default function WorkoutSets({
         <SelectedWorkoutCard displayExercise={selectedExercise} />
 
         {/* Personal Record and History */}
-        <View className="flex-row justify-around w-full m-4 ">
+        <ThemedView
+          colorToken={"secondaryBackground"}
+          borderToken={"border"}
+          borderWidth={1}
+          className="flex-row w-full p-4 pb-0 gap-2 rounded-2xl"
+        >
           <PersonalRecordsCard />
           <HistoryCard />
-        </View>
+        </ThemedView>
       </View>
 
       {/* Workout Sets */}
-      <View className="m-4">
+      <ThemedView
+        colorToken={"secondaryBackground"}
+        borderToken={"border"}
+        borderWidth={1}
+        className="m-4 rounded-2xl p-4"
+      >
         <ThemedText className="text-whiteText text-lg font-medium mb-3">
           Sets
         </ThemedText>
 
         {/* Previous Sets */}
         {workoutLog.map((set: any, index: any) => (
-          <View
+          <ThemedView
             key={index}
-            className="flex-row items-center bg-lightDark rounded-2xl p-4 mb-2"
+            colorToken={"primary"}
+            className="flex-row items-center bg-lightDark rounded-lg p-4 mb-2"
           >
-            <View className="flex-row items-center justify-center min-w-24">
-              <Text className="text-whiteText font-medium">{set.weight}lb</Text>
-            </View>
-            <View className="w-px h-6 bg-mutedText mx-4" />
-            <View className="flex-row items-center justify-center min-w-24">
-              <Text className="text-whiteText font-medium">
+            <ThemedView
+              colorToken={"primary"}
+              className="flex-row items-center justify-center min-w-24"
+            >
+              <ThemedText
+                type="subtitle"
+                colorToken={"background"}
+                className="font-medium"
+              >
+                {set.weight}lb
+              </ThemedText>
+            </ThemedView>
+            <ThemedView className="w-px h-6  mx-4" />
+            <ThemedView
+              colorToken={"primary"}
+              className="flex-row items-center justify-center min-w-24"
+            >
+              <ThemedText
+                type="subtitle"
+                colorToken={"background"}
+                className="font-medium"
+              >
                 {set.reps} Reps
-              </Text>
-            </View>
-            <View className="w-px h-6 bg-mutedText mx-4" />
-          </View>
+              </ThemedText>
+            </ThemedView>
+            <ThemedView className="w-px h-6  mx-4" />
+            <ThemedView colorToken={"primary"} className="flex-1 items-center">
+              <Ionicons name="checkmark" size={24} color="white" />
+            </ThemedView>
+          </ThemedView>
         ))}
 
         {/* Current Set Input */}
@@ -68,7 +100,7 @@ export default function WorkoutSets({
             <View className="w-px h-6 bg-mutedText mx-4" />
           </View>
         )}
-      </View>
+      </ThemedView>
     </ScrollView>
   );
 }

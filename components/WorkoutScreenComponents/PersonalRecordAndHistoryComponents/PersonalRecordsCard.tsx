@@ -18,21 +18,21 @@ export default function PersonalRecordsCard() {
 
   return (
     <View>
-      <ThemedText className="text-mutedText font-medium text-md mb-2">
-        Personal Record:
+      <ThemedText className="text-mutedText font-medium mb-2">
+        Personal Record
       </ThemedText>
       <View className="">
         <View className="flex-row gap-1">
           <Text className="text-sm text-veryMutedText">Weight:</Text>
-          <Text className="text-emerald-500 font-semibold text-sm">
+          <ThemedText colorToken="text" type="subtitle">
             {personalRecord ? personalRecord[0]?.weight : 0}lb
-          </Text>
+          </ThemedText>
         </View>
         <View className="flex-row gap-1 ">
           <Text className="text-sm text-veryMutedText">Reps:</Text>
-          <Text className="text-sm text-emerald-500">
+          <ThemedText colorToken="text" type="subtitle">
             {personalRecord ? personalRecord[0]?.reps : 0}
-          </Text>
+          </ThemedText>
         </View>
         <View className="flex-row ">
           <Text className="text-sm text-mutedText">

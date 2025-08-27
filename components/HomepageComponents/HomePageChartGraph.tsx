@@ -24,8 +24,8 @@ export function HomePageChartGraph() {
     { week: "W4", value: 170, isCurrentMax: false },
     { week: "W5", value: 200, isCurrentMax: false },
     { week: "W6", value: 210, isCurrentMax: false },
-    { week: "W7", value: 225, isCurrentMax: false },
-    { week: "W8", value: 230, isCurrentMax: true },
+    { week: "W7", value: 235, isCurrentMax: true },
+    { week: "W8", value: 230, isCurrentMax: false },
   ];
 
   // Filter out weeks with no data for Victory

@@ -1,8 +1,10 @@
 import { ThemedText } from "@/components/ThemedText";
 import Button from "@/components/ui/Button";
+import { Colors } from "@/constants/Colors";
 import React from "react";
 import { Modal, Text, View } from "react-native";
 import { AnimatedCircularProgress } from "react-native-circular-progress";
+import { ThemedView } from "../ThemedView";
 
 interface RestTimerOverlayProps {
   visible: boolean;
@@ -36,7 +38,10 @@ export default function RestTimerOverlay({
       animationType="fade"
       onRequestClose={onClose}
     >
-      <View className="flex-1 bg-black justify-center items-center">
+      <ThemedView
+        colorToken={"background"}
+        className="flex-1 bg-black justify-center items-center"
+      >
         <View className="flex-1 justify-center items-center w-full">
           <ThemedText className="text-whiteText text-3xl font-bold text-center mb-8">
             Rest Time
@@ -46,10 +51,10 @@ export default function RestTimerOverlay({
           <View className="relative items-center justify-center mb-8">
             {/* Outer rotating ring */}
             <AnimatedCircularProgress
-              size={120}
-              width={10}
+              size={200}
+              width={16}
               fill={progressPercentage} // 0 to 100
-              tintColor="#10b981"
+              tintColor={Colors.light.primary}
               backgroundColor="#e5e7eb"
               duration={1000}
             />
@@ -72,7 +77,7 @@ export default function RestTimerOverlay({
             className=""
           />
         </View>
-      </View>
+      </ThemedView>
     </Modal>
   );
 }

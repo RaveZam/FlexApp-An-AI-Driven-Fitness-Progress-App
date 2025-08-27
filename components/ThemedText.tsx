@@ -15,7 +15,8 @@ export type ThemedTextProps = TextProps & {
     | "link"
     | "muted"
     | "primary"
-    | "cardTitle";
+    | "cardTitle"
+    | "background";
 };
 
 export function ThemedText({
@@ -40,7 +41,6 @@ export function ThemedText({
         type === "link" ? styles.link : undefined,
         type === "muted" ? styles.muted : undefined,
         type === "cardTitle" ? styles.cardTitle : undefined,
-
         style,
       ]}
       {...rest}
