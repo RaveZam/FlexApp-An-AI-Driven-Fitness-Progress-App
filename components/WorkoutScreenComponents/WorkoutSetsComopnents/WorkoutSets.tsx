@@ -3,7 +3,7 @@ import { ThemedView } from "@/components/ThemedView";
 import { useWorkoutContext } from "@/hooks/useWorkoutPlanContext";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { ScrollView, Text, View } from "react-native";
+import { ScrollView, View } from "react-native";
 import HistoryCard from "../PersonalRecordAndHistoryComponents/HistoryCard";
 import PersonalRecordsCard from "../PersonalRecordAndHistoryComponents/PersonalRecordsCard";
 import SelectedWorkoutCard from "../SelectedWorkoutCard";
@@ -87,18 +87,24 @@ export default function WorkoutSets({
         {isFinished ? (
           ""
         ) : (
-          <View className="flex-row items-center bg-lightDark rounded-2xl p-4 mb-2">
-            <View className="flex-row items-center justify-center min-w-24">
-              <Text className="text-whiteText font-medium">
+          <ThemedView
+            borderToken={"border"}
+            borderWidth={1}
+            className="flex-row items-center  rounded-2xl p-4 mb-2"
+          >
+            <ThemedView className="flex-row items-center justify-center min-w-24">
+              <ThemedText type="subtitle" className="font-medium">
                 Set {currentSet}
-              </Text>
-            </View>
-            <View className="w-px h-6 bg-mutedText mx-4" />
-            <View className="flex-row items-center justify-center min-w-24">
-              <Text className="text-whiteText font-medium">Input</Text>
-            </View>
-            <View className="w-px h-6 bg-mutedText mx-4" />
-          </View>
+              </ThemedText>
+            </ThemedView>
+            <ThemedView className="w-px h-6 bg-mutedText mx-4" />
+            <ThemedView className="flex-row items-center justify-center min-w-24">
+              <ThemedText type="subtitle" className="font-medium">
+                Input
+              </ThemedText>
+            </ThemedView>
+            <ThemedView className="w-px h-6 bg-mutedText mx-4" />
+          </ThemedView>
         )}
       </ThemedView>
     </ScrollView>

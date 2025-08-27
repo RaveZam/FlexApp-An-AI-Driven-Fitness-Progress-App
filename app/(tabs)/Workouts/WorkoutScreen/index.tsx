@@ -12,6 +12,7 @@ import { useWorkoutSessionTimer } from "@/hooks/WorkoutHooks/useWorkoutSessionTi
 import { useRestTimer } from "@/hooks/WorkoutScreenHooks/useRestTimer";
 import { useSelectedWorkoutCard } from "@/hooks/WorkoutScreenHooks/useSelectedWorkoutCard";
 import { useWorkoutLogs } from "@/hooks/WorkoutScreenHooks/useWorkoutLogs";
+import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -100,6 +101,13 @@ export default function index() {
           className="z-20 m-4"
           buttonText={isFinished ? "Workout Finished" : "Start Workout"}
           disabled={isFinished}
+          icon={
+            isFinished ? (
+              <Ionicons name="checkmark" size={24} color="white" />
+            ) : (
+              <Ionicons name="play-circle" size={24} color="white" />
+            )
+          }
           onPress={() => setShowWorkoutLog(true)}
         />
 
