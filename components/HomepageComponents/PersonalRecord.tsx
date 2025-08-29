@@ -10,7 +10,7 @@ export function PersonalRecord() {
         <ThemedView className="flex-row items-center flex-1">
           <ThemedView
             style={{ backgroundColor: Colors.light.text }}
-            className="w-10 h-10 rounded-full items-center justify-center p-3 mr-4"
+            className="w-16 h-16 rounded-full items-center justify-center p-4 mr-4"
           >
             <Ionicons name="trophy" size={28} color="white" />
           </ThemedView>

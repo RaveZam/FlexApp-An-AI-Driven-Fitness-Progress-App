@@ -14,7 +14,7 @@ export function InsightCard({ icon, mainText, subText }: InsightCardProps) {
       colorToken="secondaryBackground"
       className="flex-row gap-2 p-4 rounded-lg"
     >
-      <ThemedView className="w-10 h-10 rounded-full items-center justify-center p-3 mr-4">
+      <ThemedView className="w-12 h-12 rounded-full items-center justify-center mr-4">
         {icon}
       </ThemedView>
       <ThemedView colorToken="secondaryBackground" className="flex-1">
