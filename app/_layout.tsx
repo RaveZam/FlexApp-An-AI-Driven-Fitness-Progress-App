@@ -1,5 +1,5 @@
-import { AuthProvider } from "@/auth/useAuth";
-import WorkoutContextProvider from "@/context/workoutContext"; // ✅ use the default export (which is the provider)
+import { AuthProvider } from "@/src/features/auth/hooks/useAuth";
+import WorkoutContextProvider from "@/src/features/workouts/context/workoutContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useStorageCleaner } from "@/hooks/useStorageCleaner";
 import {
