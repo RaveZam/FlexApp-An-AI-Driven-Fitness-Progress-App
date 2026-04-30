@@ -3,7 +3,15 @@
     "allow": [
       "Bash(ls:*)",
       "Bash(find:*)",
-      "Bash(npx expo:*)"
+      "Bash(npx expo:*)",
+      "mcp__plugin_context7_context7__resolve-library-id",
+      "mcp__plugin_context7_context7__query-docs",
+      "Bash(node:*)",
+      "mcp__plugin_supabase_supabase__list_projects",
+      "mcp__plugin_supabase_supabase__list_tables",
+      "Bash(grep:*)",
+      "mcp__plugin_supabase_supabase__execute_sql",
+      "Bash(npx tsc:*)"
     ]
   }
 }

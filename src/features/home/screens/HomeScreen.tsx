@@ -7,23 +7,25 @@ import {
   PersonalRecord,
   WeeklyVolume,
 } from "@/src/features/home/components";
-import { ThemedView } from "@/components/ThemedView";
 import BlurOverlay from "@/components/ui/BlurOverlay";
-import Button from "@/components/ui/Button";
 import LoadingOverlay from "@/components/ui/LoadingOverlay";
 import Popup from "@/components/ui/Popup";
 import ScheduleBar from "@/components/ui/ScheduleBar";
 import UserInfoCard from "@/components/UserInfoCard";
-import Workoutlist from "@/src/features/workouts/components/Workoutlist";
-import { Colors } from "@/constants/Colors";
-import { useWorkoutContext } from "@/src/features/workouts/hooks/useWorkoutPlanContext";
-import { useWorkoutSession } from "@/src/features/workouts/hooks/useWorkoutSession";
-import { useStartWorkoutSession } from "@/src/features/workouts/hooks/useStartWorkoutSession";
+
 import { Ionicons } from "@expo/vector-icons";
 import * as NavigationBar from "expo-navigation-bar";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
-import { ScrollView, View } from "react-native";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import Animated, {
+  FadeInDown,
+  useAnimatedStyle,
+  useSharedValue,
+  withDelay,
+  withSpring,
+  withTiming,
+} from "react-native-reanimated";
 import {
   configureReanimatedLogger,
   ReanimatedLogLevel,
@@ -37,34 +39,17 @@ export default function Index() {
   useEffect(() => {
     if (!session) {
       router.replace("/login");
-    } else if (user) {
     }
-  }, [session, user]);
+  }, [session]);
 
-  // This is the default configuration
   configureReanimatedLogger({
     level: ReanimatedLogLevel.warn,
-    strict: false, // Reanimated runs in strict mode by default
+    strict: false,
   });
-  const { checkWorkoutSession } = useWorkoutSession();
-  const { activeWorkoutSession, currentSessionStatus } = useWorkoutContext();
 
   const [collapsed, setCollapsed] = useState(false);
   const [popup, setPopup] = useState(false);
   const [isLoading, setisLoading] = useState(false);
-
-  const { startWorkoutSession, resumeWorkoutSession } =
-    useStartWorkoutSession();
-
-  checkWorkoutSession();
-
-  const handleStartWorkout = async () => {
-    if (activeWorkoutSession) {
-      resumeWorkoutSession();
-    } else {
-      startWorkoutSession();
-    }
-  };
 
   useEffect(() => {
     const hideNav = async () => {
@@ -74,9 +59,15 @@ export default function Index() {
     hideNav();
   }, []);
 
+  // Animated start button
+  const btnScale = useSharedValue(1);
+  const btnStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: btnScale.value }],
+  }));
+
   return (
-    <SafeAreaView className="flex-1" edges={["top"]}>
-      <ThemedView className="flex-col h-full" colorToken="background">
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#0f0f0f" }} edges={["top"]}>
+      <View style={{ flex: 1, backgroundColor: "#0f0f0f" }}>
         <LoadingOverlay isVisible={isLoading} />
 
         <Popup
@@ -91,7 +82,7 @@ export default function Index() {
             },
             {
               text: "Yes",
-              onPress: handleStartWorkout,
+              onPress: () => {},
               style: "default",
             },
           ]}
@@ -109,40 +100,109 @@ export default function Index() {
         />
 
         <UserInfoCard />
+
         <ScrollView
-          style={{ backgroundColor: Colors.light.secondaryBackground }}
-          showsHorizontalScrollIndicator={false}
+          style={{ backgroundColor: "#0f0f0f" }}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 16 }}
         >
-          <ThemedView className="flex flex-col gap-4 h-[20%]">
-            <ScheduleBar />
+          {/* Schedule section */}
+          <ScheduleBar />
+
+          {/* Stats section header */}
+          <Animated.View
+            entering={FadeInDown.delay(200).duration(400)}
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 8,
+              paddingHorizontal: 20,
+              marginTop: 8,
+              marginBottom: 14,
+            }}
+          >
+            <View
+              style={{
+                width: 4,
+                height: 18,
+                borderRadius: 2,
+                backgroundColor: "#10b981",
+              }}
+            />
+            <Text
+              style={{
+                color: "#ffffff",
+                fontSize: 16,
+                fontFamily: "Inter_600SemiBold",
+                letterSpacing: 0.3,
+              }}
+            >
+              Your Progress
+            </Text>
+          </Animated.View>
+
+          <View style={{ gap: 12 }}>
             <HomePageChartGraph />
             <WeeklyVolume />
             <PersonalRecord />
-            <Insights />
-          </ThemedView>
-        </ScrollView>
-        <View style={{ zIndex: 2, position: "relative" }}>
-          <Workoutlist collapsed={collapsed} setCollapsed={setCollapsed} />
-        </View>
-        <ThemedView>
-          <Button
-            icon={<Ionicons name="play" size={24} color="white" />}
-            className="z-20 mb-4"
-            buttonText={
-              currentSessionStatus == "completed" && activeWorkoutSession
-                ? "Workout Finished"
-                : activeWorkoutSession
-                ? "Resume Session"
-                : "Start Session"
-            }
-            onPress={() => {
-              currentSessionStatus === "completed"
-                ? handleStartWorkout()
-                : setPopup(true);
+          </View>
+
+          {/* Divider */}
+          <View
+            style={{
+              marginHorizontal: 20,
+              marginVertical: 20,
+              height: 1,
+              backgroundColor: "rgba(255,255,255,0.04)",
             }}
           />
-        </ThemedView>
-      </ThemedView>
+
+          <Insights />
+        </ScrollView>
+
+        {/* Start Workout CTA */}
+        <Animated.View
+          entering={FadeInDown.delay(600).springify().damping(18)}
+          style={{ paddingHorizontal: 16, paddingBottom: 12 }}
+        >
+          <TouchableOpacity
+            activeOpacity={0.85}
+            onPress={() => {}}
+            style={{
+              backgroundColor: "#10b981",
+              borderRadius: 14,
+              paddingVertical: 16,
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 10,
+            }}
+          >
+            <View
+              style={{
+                width: 28,
+                height: 28,
+                borderRadius: 8,
+                backgroundColor: "rgba(255,255,255,0.2)",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Ionicons name="play" size={16} color="#ffffff" />
+            </View>
+            <Text
+              style={{
+                color: "#ffffff",
+                fontSize: 16,
+                fontFamily: "Inter_700Bold",
+                letterSpacing: 0.5,
+              }}
+            >
+              Start Workout
+            </Text>
+          </TouchableOpacity>
+        </Animated.View>
+      </View>
     </SafeAreaView>
   );
 }

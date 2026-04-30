@@ -1,129 +1,172 @@
+import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-import { Dimensions, View } from "react-native";
-import { ThemedText } from "../ThemedText";
-import { ThemedView } from "../ThemedView";
+import { Dimensions, Text, View } from "react-native";
+import Animated, { FadeInDown } from "react-native-reanimated";
 
 export default function ScheduleBar() {
-  const [days, useDays] = useState([
-    {
-      name: "Sun",
-      isActive: false,
-      date: 17,
-      type: "rest", // rest day
-    },
-    {
-      name: "Mon",
-      isActive: false,
-      date: 11,
-      type: "completed", // completed workout
-    },
-    {
-      name: "Tue",
-      isActive: false,
-      date: 12,
-      type: "completed", // completed workout
-    },
-    {
-      name: "Wed",
-      isActive: false,
-      date: 13,
-      type: "rest", // rest day
-    },
-    {
-      name: "Thu",
-      isActive: false,
-      date: 14,
-      type: "future", // future workout
-    },
-    {
-      name: "Fri",
-      isActive: false,
-      date: 15,
-      type: "future", // future workout
-    },
-    {
-      name: "Sat",
-      isActive: false,
-      date: 16,
-      type: "rest", // rest day
-    },
+  const [days] = useState([
+    { name: "Sun", date: 17, type: "rest" },
+    { name: "Mon", date: 11, type: "completed" },
+    { name: "Tue", date: 12, type: "completed" },
+    { name: "Wed", date: 13, type: "rest" },
+    { name: "Thu", date: 14, type: "future" },
+    { name: "Fri", date: 15, type: "future" },
+    { name: "Sat", date: 16, type: "rest" },
   ]);
 
   const screenWidth = Dimensions.get("window").width;
-  const circleSize = (screenWidth - 40 - 6 * 12) / 7; // 40 is padding, 6*8 is 6 gaps of 8px
+  const circleSize = (screenWidth - 48 - 6 * 10) / 7;
 
-  const getBorderColor = (day: any) => {
+  const getDayStyle = (day: any) => {
     switch (day.type) {
       case "rest":
         return {
-          highlight: "#D1D5DB",
-          text: "#828894",
+          bg: "#191919",
+          border: "rgba(255,255,255,0.04)",
+          text: "#555",
+          nameFill: "#444",
         };
       case "completed":
         return {
-          highlight: "#1F2937",
+          bg: "#10b981",
+          border: "#10b981",
           text: "#ffffff",
+          nameFill: "#10b981",
         };
       case "future":
         return {
-          highlight: "#4B5563",
-          text: "#F9FAFB",
+          bg: "transparent",
+          border: "rgba(16, 185, 129, 0.2)",
+          text: "#888",
+          nameFill: "#666",
         };
-
       default:
         return {
-          highlight: "#4B5563",
-          text: "muted",
+          bg: "#191919",
+          border: "rgba(255,255,255,0.04)",
+          text: "#555",
+          nameFill: "#444",
         };
     }
   };
 
   return (
-    <ThemedView
-      colorToken="secondaryBackground"
-      style={{ padding: 16, paddingBottom: 0 }}
+    <Animated.View
+      entering={FadeInDown.delay(100).duration(400)}
+      style={{
+        paddingHorizontal: 20,
+        paddingTop: 16,
+        paddingBottom: 8,
+        backgroundColor: "#0f0f0f",
+      }}
     >
-      <ThemedText className="mb-3 opacity-70" colorToken="text">
-        This Week
-      </ThemedText>
-
-      <ThemedView
-        colorToken="secondaryBackground"
+      <View
         style={{
           flexDirection: "row",
-          paddingBottom: 20,
+          alignItems: "center",
           justifyContent: "space-between",
-          gap: 8,
+          marginBottom: 14,
         }}
       >
-        {days.map((day) => (
-          <View className="items-center justify-center" key={day.name}>
-            <ThemedView
-              style={{
-                marginBottom: 12,
-              }}
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+          <View
+            style={{
+              width: 4,
+              height: 18,
+              borderRadius: 2,
+              backgroundColor: "#f59e0b",
+            }}
+          />
+          <Text
+            style={{
+              color: "#ffffff",
+              fontSize: 16,
+              fontFamily: "Inter_600SemiBold",
+              letterSpacing: 0.3,
+            }}
+          >
+            This Week
+          </Text>
+        </View>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+          <View
+            style={{
+              width: 8,
+              height: 8,
+              borderRadius: 4,
+              backgroundColor: "#10b981",
+            }}
+          />
+          <Text
+            style={{
+              color: "#555",
+              fontSize: 11,
+              fontFamily: "Inter_400Regular",
+            }}
+          >
+            2 of 4 done
+          </Text>
+        </View>
+      </View>
+
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          gap: 6,
+          paddingBottom: 8,
+        }}
+      >
+        {days.map((day, index) => {
+          const style = getDayStyle(day);
+          return (
+            <Animated.View
+              key={day.name}
+              entering={FadeInDown.delay(140 + index * 40)
+                .springify()
+                .damping(20)}
+              style={{ alignItems: "center", justifyContent: "center" }}
             >
-              <ThemedText colorToken="mutedText">{day.name}</ThemedText>
-            </ThemedView>
-            <ThemedView
-              style={{
-                borderWidth: 2,
-                width: circleSize,
-                height: circleSize,
-                borderColor: getBorderColor(day).highlight,
-                borderRadius: circleSize / 2,
-                alignItems: "center",
-                justifyContent: "center",
-                backgroundColor: getBorderColor(day).highlight,
-              }}
-            >
-              <ThemedText style={{ color: getBorderColor(day).text }}>
-                {day.date}
-              </ThemedText>
-            </ThemedView>
-          </View>
-        ))}
-      </ThemedView>
-    </ThemedView>
+              <Text
+                style={{
+                  color: style.nameFill,
+                  fontSize: 11,
+                  fontFamily: "Inter_500Medium",
+                  marginBottom: 8,
+                }}
+              >
+                {day.name}
+              </Text>
+              <View
+                style={{
+                  width: circleSize,
+                  height: circleSize,
+                  borderRadius: circleSize / 2,
+                  borderWidth: 1.5,
+                  borderColor: style.border,
+                  backgroundColor: style.bg,
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                {day.type === "completed" ? (
+                  <Ionicons name="checkmark" size={16} color="#ffffff" />
+                ) : (
+                  <Text
+                    style={{
+                      color: style.text,
+                      fontSize: 13,
+                      fontFamily: "Inter_600SemiBold",
+                    }}
+                  >
+                    {day.date}
+                  </Text>
+                )}
+              </View>
+            </Animated.View>
+          );
+        })}
+      </View>
+    </Animated.View>
   );
 }

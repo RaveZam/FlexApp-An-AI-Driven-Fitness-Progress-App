@@ -1,5 +1,4 @@
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
-import { useTheme } from "@react-navigation/native";
 import { Text, TouchableOpacity, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
@@ -16,8 +15,6 @@ export function CustomTab({
   descriptors,
   navigation,
 }: BottomTabBarProps) {
-  const { colors } = useTheme();
-
   const icon = {
     index: ({ color, iconAnimatedStyle }: any) => (
       <Animated.View style={iconAnimatedStyle}>
@@ -59,14 +56,14 @@ export function CustomTab({
   return (
     <View
       style={{
-        backgroundColor: "#FFFFFF",
+        backgroundColor: "#0f0f0f",
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
         flexDirection: "row",
         paddingVertical: 4,
         borderTopWidth: 1,
-        borderTopColor: "#E5E7EB",
+        borderTopColor: "rgba(26, 71, 42, 0.2)",
       }}
     >
       {state.routes.map((route, index) => {
@@ -134,14 +131,14 @@ export function CustomTab({
           >
             <View style={{ alignItems: "center", justifyContent: "center" }}>
               {icon[route.name as keyof typeof icon]?.({
-                color: isFocused ? "#374151" : "#9CA3AF",
+                color: isFocused ? "#10b981" : "#4B5563",
                 iconAnimatedStyle,
               })}
               <Text
                 style={{
                   fontSize: 11,
                   marginTop: route.name === "Settings" ? 8 : 6,
-                  color: isFocused ? "#374151" : "#9CA3AF",
+                  color: isFocused ? "#10b981" : "#4B5563",
                   fontWeight: isFocused ? "600" : "400",
                   textAlign: "center",
                 }}

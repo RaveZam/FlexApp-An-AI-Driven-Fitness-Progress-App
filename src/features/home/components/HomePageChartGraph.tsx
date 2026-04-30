@@ -1,20 +1,15 @@
-import { Colors } from "@/constants/Colors";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import Feather from "@expo/vector-icons/Feather";
 import React from "react";
-import { Dimensions, View } from "react-native";
+import { Dimensions, Text, TouchableOpacity, View } from "react-native";
+import Animated, { FadeInDown } from "react-native-reanimated";
 import {
   VictoryAxis,
   VictoryBar,
   VictoryChart,
   VictoryTheme,
 } from "victory-native";
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
 
 export function HomePageChartGraph() {
-  const colorScheme = useColorScheme();
-  const colors = Colors[colorScheme ?? "dark"];
   const screenWidth = Dimensions.get("window").width;
 
   const weekData = [
@@ -28,7 +23,6 @@ export function HomePageChartGraph() {
     { week: "W8", value: 230, isCurrentMax: false },
   ];
 
-  // Filter out weeks with no data for Victory
   const chartData = weekData
     .filter((week) => week.value > 0)
     .map((week) => ({
@@ -38,72 +32,152 @@ export function HomePageChartGraph() {
     }));
 
   return (
-    <ThemedView
-      className="mx-4 p-4 rounded-xl"
-      colorToken="secondaryBackground"
-      borderToken="border"
-      borderWidth={1}
+    <Animated.View
+      entering={FadeInDown.delay(250).springify().damping(18)}
+      style={{
+        marginHorizontal: 16,
+        borderRadius: 16,
+        backgroundColor: "#191919",
+        overflow: "hidden",
+        borderWidth: 1,
+        borderColor: "rgba(255,255,255,0.04)",
+      }}
     >
-      <ThemedView className="flex-row justify-between items-center">
-        <ThemedText colorToken="text">Bench Press Progress</ThemedText>
-        <View className="flex-row items-center gap-2">
-          <ThemedText colorToken="mutedText">Last 8 weeks</ThemedText>
-          <Feather name="chevron-down" size={16} color={colors.mutedText} />
-        </View>
-      </ThemedView>
+      {/* Top accent strip */}
+      <View
+        style={{
+          height: 3,
+          backgroundColor: "#10b981",
+          opacity: 0.6,
+        }}
+      />
 
-      {/* Chart Area */}
-      <ThemedView colorToken="secondaryBackground" className="rounded-lg -mt-2">
-        <VictoryChart
-          // domainPadding={{ x: 12 }}
-          width={screenWidth - 40}
-          height={150}
-          theme={VictoryTheme.material}
-          padding={{ top: 10, bottom: 40, left: 60, right: 60 }}
+      <View style={{ padding: 16 }}>
+        <View
           style={{
-            background: {
-              fill: colorScheme === "dark" ? "#000000" : "#F3F4F6",
-            },
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
           }}
         >
-          <VictoryAxis
-            dependentAxis
-            tickFormat={(t) => `${t} lbs`}
+          <Text
             style={{
-              axis: { stroke: colors.mutedText },
-              tickLabels: { fill: colors.mutedText, fontSize: 12 },
+              color: "#ffffff",
+              fontSize: 15,
+              fontFamily: "Inter_600SemiBold",
             }}
-          />
-          <VictoryAxis
+          >
+            Bench Press Progress
+          </Text>
+          <TouchableOpacity
             style={{
-              axis: { stroke: colors.mutedText },
-              tickLabels: { fill: colors.mutedText, fontSize: 12 },
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 4,
+              backgroundColor: "rgba(255,255,255,0.04)",
+              paddingHorizontal: 10,
+              paddingVertical: 5,
+              borderRadius: 8,
             }}
-          />
-          <VictoryBar
-            data={chartData}
-            style={{
-              data: {
-                fill: ({ datum }) =>
-                  datum.isCurrentMax
-                    ? colorScheme === "dark"
-                      ? "#d1d5db"
-                      : "#374151"
-                    : colorScheme === "dark"
-                      ? "#6b7280"
-                      : "#9ca3af",
-                stroke: colors.text,
-              },
-            }}
-            cornerRadius={4}
-            barWidth={20}
-          />
-        </VictoryChart>
-      </ThemedView>
+          >
+            <Text
+              style={{
+                color: "#666",
+                fontSize: 12,
+                fontFamily: "Inter_400Regular",
+              }}
+            >
+              8 weeks
+            </Text>
+            <Feather name="chevron-down" size={12} color="#666" />
+          </TouchableOpacity>
+        </View>
 
-      <View className="items-center">
-        <ThemedText colorToken="text">225 lbs Current Max</ThemedText>
+        <View style={{ marginTop: -4 }}>
+          <VictoryChart
+            width={screenWidth - 72}
+            height={150}
+            theme={VictoryTheme.material}
+            padding={{ top: 10, bottom: 40, left: 55, right: 20 }}
+            style={{
+              background: { fill: "transparent" },
+            }}
+          >
+            <VictoryAxis
+              dependentAxis
+              tickFormat={(t: number) => `${t}`}
+              style={{
+                axis: { stroke: "transparent" },
+                tickLabels: {
+                  fill: "#444",
+                  fontSize: 10,
+                  fontFamily: "Inter_400Regular",
+                },
+                grid: { stroke: "rgba(255,255,255,0.03)" },
+              }}
+            />
+            <VictoryAxis
+              style={{
+                axis: { stroke: "rgba(255,255,255,0.04)" },
+                tickLabels: {
+                  fill: "#555",
+                  fontSize: 10,
+                  fontFamily: "Inter_400Regular",
+                },
+              }}
+            />
+            <VictoryBar
+              data={chartData}
+              style={{
+                data: {
+                  fill: ({ datum }: any) =>
+                    datum.isCurrentMax ? "#10b981" : "#1a472a",
+                  stroke: "transparent",
+                },
+              }}
+              cornerRadius={4}
+              barWidth={18}
+            />
+          </VictoryChart>
+        </View>
+
+        {/* Current max indicator */}
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 8,
+          }}
+        >
+          <View
+            style={{
+              width: 8,
+              height: 8,
+              borderRadius: 4,
+              backgroundColor: "#10b981",
+            }}
+          />
+          <Text
+            style={{
+              color: "#888",
+              fontSize: 13,
+              fontFamily: "Inter_400Regular",
+            }}
+          >
+            225 lbs
+          </Text>
+          <Text
+            style={{
+              color: "#10b981",
+              fontSize: 13,
+              fontFamily: "Inter_600SemiBold",
+            }}
+          >
+            Current Max
+          </Text>
+        </View>
       </View>
-    </ThemedView>
+    </Animated.View>
   );
 }
