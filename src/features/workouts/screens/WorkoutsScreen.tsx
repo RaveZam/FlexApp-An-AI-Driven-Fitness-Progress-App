@@ -1,8 +1,7 @@
-import { Feather, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
-import { useCallback, useEffect } from "react";
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import { useEffect } from "react";
 import {
-  Dimensions,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -19,83 +18,6 @@ import Animated, {
 } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import "@/global.css";
-
-const { width: SCREEN_WIDTH } = Dimensions.get("window");
-const CARD_WIDTH = (SCREEN_WIDTH - 48 - 12) / 2;
-
-type TemplateSplit = {
-  id: string;
-  name: string;
-  shortName: string;
-  days: number;
-  accent: string;
-  accentBg: string;
-  icon: keyof typeof Ionicons.glyphMap;
-  muscles: string;
-};
-
-const TEMPLATE_SPLITS: TemplateSplit[] = [
-  {
-    id: "ppl",
-    name: "Push Pull Legs",
-    shortName: "PPL",
-    days: 6,
-    accent: "#10b981",
-    accentBg: "#1a472a",
-    icon: "fitness",
-    muscles: "Chest, Back, Legs",
-  },
-  {
-    id: "upper-lower",
-    name: "Upper / Lower",
-    shortName: "U/L",
-    days: 4,
-    accent: "#3b82f6",
-    accentBg: "#1e3a5f",
-    icon: "body",
-    muscles: "Upper & Lower Body",
-  },
-  {
-    id: "bro-split",
-    name: "Bro Split",
-    shortName: "BRO",
-    days: 5,
-    accent: "#f59e0b",
-    accentBg: "#5c3d0e",
-    icon: "barbell",
-    muscles: "One muscle per day",
-  },
-  {
-    id: "full-body",
-    name: "Full Body",
-    shortName: "FULL",
-    days: 3,
-    accent: "#ef4444",
-    accentBg: "#5c1a1a",
-    icon: "flame",
-    muscles: "All major groups",
-  },
-  {
-    id: "arnold",
-    name: "Arnold Split",
-    shortName: "ARNI",
-    days: 6,
-    accent: "#a855f7",
-    accentBg: "#3b1f5c",
-    icon: "trophy",
-    muscles: "Chest/Back, Shoulders/Arms, Legs",
-  },
-  {
-    id: "phul",
-    name: "PHUL",
-    shortName: "PHUL",
-    days: 4,
-    accent: "#06b6d4",
-    accentBg: "#0e3d4a",
-    icon: "flash",
-    muscles: "Power + Hypertrophy",
-  },
-];
 
 type UserWorkout = {
   id: string;
@@ -129,117 +51,6 @@ const PLACEHOLDER_USER_WORKOUTS: UserWorkout[] = [
   },
 ];
 
-function TemplateCard({
-  template,
-  index,
-}: {
-  template: TemplateSplit;
-  index: number;
-}) {
-  return (
-    <Animated.View
-      entering={FadeInDown.delay(100 + index * 80)
-        .springify()
-        .damping(18)}
-      style={{ width: CARD_WIDTH }}
-    >
-      <TouchableOpacity activeOpacity={0.7}>
-        <View
-          style={{
-            backgroundColor: "#191919",
-            borderRadius: 16,
-            overflow: "hidden",
-            borderWidth: 1,
-            borderColor: "rgba(255,255,255,0.04)",
-          }}
-        >
-          {/* Accent strip */}
-          <View
-            style={{
-              height: 3,
-              backgroundColor: template.accent,
-              opacity: 0.8,
-            }}
-          />
-
-          <View style={{ padding: 14 }}>
-            {/* Icon + short name */}
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-                marginBottom: 10,
-              }}
-            >
-              <View
-                style={{
-                  width: 38,
-                  height: 38,
-                  borderRadius: 10,
-                  backgroundColor: template.accentBg,
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Ionicons
-                  name={template.icon}
-                  size={20}
-                  color={template.accent}
-                />
-              </View>
-              <View
-                style={{
-                  backgroundColor: template.accentBg,
-                  paddingHorizontal: 8,
-                  paddingVertical: 3,
-                  borderRadius: 6,
-                }}
-              >
-                <Text
-                  style={{
-                    color: template.accent,
-                    fontSize: 10,
-                    fontFamily: "Inter_700Bold",
-                    letterSpacing: 1.2,
-                  }}
-                >
-                  {template.days}x/WK
-                </Text>
-              </View>
-            </View>
-
-            {/* Name */}
-            <Text
-              style={{
-                color: "#ffffff",
-                fontSize: 14,
-                fontFamily: "Inter_600SemiBold",
-                marginBottom: 4,
-              }}
-              numberOfLines={1}
-            >
-              {template.name}
-            </Text>
-
-            {/* Muscle targets */}
-            <Text
-              style={{
-                color: "#666",
-                fontSize: 11,
-                fontFamily: "Inter_400Regular",
-              }}
-              numberOfLines={1}
-            >
-              {template.muscles}
-            </Text>
-          </View>
-        </View>
-      </TouchableOpacity>
-    </Animated.View>
-  );
-}
-
 function UserWorkoutCard({
   workout,
   index,
@@ -249,7 +60,7 @@ function UserWorkoutCard({
 }) {
   return (
     <Animated.View
-      entering={FadeInRight.delay(400 + index * 100)
+      entering={FadeInRight.delay(200 + index * 100)
         .springify()
         .damping(18)}
     >
@@ -336,6 +147,7 @@ function UserWorkoutCard({
 }
 
 export default function WorkoutsScreen() {
+  const router = useRouter();
   const headerOpacity = useSharedValue(0);
   const headerTranslateY = useSharedValue(-10);
 
@@ -388,12 +200,13 @@ export default function WorkoutsScreen() {
                 marginTop: 2,
               }}
             >
-              Choose a template or build your own
+              Your saved workout plans
             </Text>
           </View>
 
           <TouchableOpacity
             activeOpacity={0.7}
+            onPress={() => router.push("/(tabs)/Workouts/templates")}
             style={{
               width: 42,
               height: 42,
@@ -413,91 +226,10 @@ export default function WorkoutsScreen() {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 32 }}
         >
-          {/* ── Workout Templates ── */}
-          <View style={{ paddingHorizontal: 20, marginBottom: 8 }}>
-            <Animated.View
-              entering={FadeInDown.delay(60).duration(400)}
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-                marginBottom: 14,
-              }}
-            >
-              <View
-                style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
-              >
-                <View
-                  style={{
-                    width: 4,
-                    height: 18,
-                    borderRadius: 2,
-                    backgroundColor: "#10b981",
-                  }}
-                />
-                <Text
-                  style={{
-                    color: "#ffffff",
-                    fontSize: 16,
-                    fontFamily: "Inter_600SemiBold",
-                    letterSpacing: 0.3,
-                  }}
-                >
-                  Workout Templates
-                </Text>
-              </View>
-              <TouchableOpacity
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  gap: 4,
-                }}
-              >
-                <Text
-                  style={{
-                    color: "#10b981",
-                    fontSize: 12,
-                    fontFamily: "Inter_500Medium",
-                  }}
-                >
-                  See all
-                </Text>
-                <Ionicons name="chevron-forward" size={14} color="#10b981" />
-              </TouchableOpacity>
-            </Animated.View>
-
-            {/* Template grid */}
-            <View
-              style={{
-                flexDirection: "row",
-                flexWrap: "wrap",
-                gap: 12,
-              }}
-            >
-              {TEMPLATE_SPLITS.map((template, index) => (
-                <TemplateCard
-                  key={template.id}
-                  template={template}
-                  index={index}
-                />
-              ))}
-            </View>
-          </View>
-
-          {/* ── Divider ── */}
-          <View
-            style={{
-              marginHorizontal: 20,
-              marginVertical: 20,
-              height: 1,
-              backgroundColor: "rgba(255,255,255,0.04)",
-            }}
-          />
-
           {/* ── Your Workouts ── */}
           <View style={{ paddingHorizontal: 20 }}>
             <Animated.View
-              entering={FadeInDown.delay(350).duration(400)}
+              entering={FadeInDown.delay(60).duration(400)}
               style={{
                 flexDirection: "row",
                 alignItems: "center",
@@ -547,7 +279,7 @@ export default function WorkoutsScreen() {
               </TouchableOpacity>
             </Animated.View>
 
-            {/* User workout list */}
+            {/* Workout list */}
             <View style={{ gap: 10 }}>
               {PLACEHOLDER_USER_WORKOUTS.map((workout, index) => (
                 <UserWorkoutCard
@@ -557,56 +289,6 @@ export default function WorkoutsScreen() {
                 />
               ))}
             </View>
-
-            {/* Create custom workout CTA */}
-            <Animated.View
-              entering={FadeInDown.delay(700).springify().damping(18)}
-              style={{ marginTop: 16 }}
-            >
-              <TouchableOpacity activeOpacity={0.7}>
-                <View
-                  style={{
-                    borderRadius: 14,
-                    overflow: "hidden",
-                    borderWidth: 1,
-                    borderColor: "rgba(16, 185, 129, 0.15)",
-                    borderStyle: "dashed",
-                  }}
-                >
-                  <View
-                    style={{
-                      padding: 18,
-                      flexDirection: "row",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      gap: 10,
-                    }}
-                  >
-                    <View
-                      style={{
-                        width: 32,
-                        height: 32,
-                        borderRadius: 8,
-                        backgroundColor: "#1a472a",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <Ionicons name="add" size={18} color="#10b981" />
-                    </View>
-                    <Text
-                      style={{
-                        color: "#10b981",
-                        fontSize: 14,
-                        fontFamily: "Inter_600SemiBold",
-                      }}
-                    >
-                      Create Custom Workout
-                    </Text>
-                  </View>
-                </View>
-              </TouchableOpacity>
-            </Animated.View>
           </View>
         </ScrollView>
       </View>
