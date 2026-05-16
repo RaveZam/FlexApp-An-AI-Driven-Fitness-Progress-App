@@ -48,7 +48,7 @@ export default function Settings() {
   };
 
   return (
-    <SafeAreaView className="flex-1">
+    <SafeAreaView className="flex-1 bg-[#0f0f0f]">
       <View className="flex-1 bg-[#0f0f0f] px-5 pt-10">
         <Text className="text-white text-2xl font-bold mb-6">Settings</Text>
 

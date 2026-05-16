@@ -1,6 +1,6 @@
-import { AuthProvider } from "@/src/features/auth/hooks/useAuth";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useStorageCleaner } from "@/hooks/useStorageCleaner";
+import { AuthProvider } from "@/src/features/auth/hooks/useAuth";
 import {
   Inter_400Regular,
   Inter_500Medium,
@@ -10,8 +10,7 @@ import {
 } from "@expo-google-fonts/inter";
 import {
   DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
+  ThemeProvider
 } from "@react-navigation/native";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -35,7 +34,7 @@ export default function RootLayout() {
   return (
     <AuthProvider>
       <ThemeProvider
-        value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+        value={colorScheme === "dark" ? DarkTheme : DarkTheme}
       >
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />

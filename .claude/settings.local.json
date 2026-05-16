@@ -13,7 +13,13 @@
       "mcp__plugin_supabase_supabase__execute_sql",
       "Bash(npx tsc:*)",
       "Bash(rm:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(npm --version)",
+      "Bash(watchman --version)",
+      "Bash(xcrun simctl *)",
+      "Bash(xcode-select -p)",
+      "Bash(xcodebuild -version)",
+      "Bash(adb --version)"
     ]
   }
 }
