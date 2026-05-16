@@ -159,9 +159,9 @@ function TemplateCard({
                 <Text
                   style={{
                     color: template.accent,
-                    fontSize: 10,
-                    fontFamily: "Inter_700Bold",
-                    letterSpacing: 1.2,
+                    fontSize: 9,
+                    fontFamily: "Inter_600SemiBold",
+                    letterSpacing: 1.4,
                   }}
                 >
                   {template.days}x/WK
@@ -173,9 +173,10 @@ function TemplateCard({
             <Text
               style={{
                 color: "#ffffff",
-                fontSize: 14,
-                fontFamily: "Inter_600SemiBold",
-                marginBottom: 4,
+                fontSize: 13,
+                fontFamily: "Inter_500Medium",
+                marginBottom: 3,
+                letterSpacing: 0.1,
               }}
               numberOfLines={1}
             >
@@ -185,9 +186,10 @@ function TemplateCard({
             {/* Muscle targets */}
             <Text
               style={{
-                color: "#666",
-                fontSize: 11,
+                color: "#555",
+                fontSize: 10,
                 fontFamily: "Inter_400Regular",
+                letterSpacing: 0.2,
               }}
               numberOfLines={1}
             >
@@ -256,19 +258,20 @@ export default function WorkoutTemplatesScreen() {
             <Text
               style={{
                 color: "#ffffff",
-                fontSize: 22,
-                fontFamily: "Inter_700Bold",
-                letterSpacing: -0.5,
+                fontSize: 20,
+                fontFamily: "Inter_600SemiBold",
+                letterSpacing: -0.2,
               }}
             >
-              Workout Templates
+              Templates
             </Text>
             <Text
               style={{
-                color: "#555",
-                fontSize: 13,
+                color: "#4d4d4d",
+                fontSize: 12,
                 fontFamily: "Inter_400Regular",
                 marginTop: 2,
+                letterSpacing: 0.2,
               }}
             >
               Pick a split to get started
@@ -349,8 +352,9 @@ export default function WorkoutTemplatesScreen() {
                     <Text
                       style={{
                         color: "#10b981",
-                        fontSize: 14,
-                        fontFamily: "Inter_600SemiBold",
+                        fontSize: 13,
+                        fontFamily: "Inter_500Medium",
+                        letterSpacing: 0.3,
                       }}
                     >
                       Create Custom Workout

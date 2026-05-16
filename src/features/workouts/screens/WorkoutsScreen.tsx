@@ -99,9 +99,10 @@ function UserWorkoutCard({
               <Text
                 style={{
                   color: "#ffffff",
-                  fontSize: 15,
-                  fontFamily: "Inter_600SemiBold",
-                  marginBottom: 4,
+                  fontSize: 14,
+                  fontFamily: "Inter_500Medium",
+                  marginBottom: 5,
+                  letterSpacing: 0.1,
                 }}
               >
                 {workout.name}
@@ -110,12 +111,13 @@ function UserWorkoutCard({
                 <View
                   style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
                 >
-                  <Ionicons name="barbell-outline" size={12} color="#555" />
+                  <Ionicons name="barbell-outline" size={11} color="#444" />
                   <Text
                     style={{
-                      color: "#555",
-                      fontSize: 12,
+                      color: "#444",
+                      fontSize: 11,
                       fontFamily: "Inter_400Regular",
+                      letterSpacing: 0.2,
                     }}
                   >
                     {workout.exerciseCount} exercises
@@ -124,12 +126,13 @@ function UserWorkoutCard({
                 <View
                   style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
                 >
-                  <Ionicons name="time-outline" size={12} color="#555" />
+                  <Ionicons name="time-outline" size={11} color="#444" />
                   <Text
                     style={{
-                      color: "#555",
-                      fontSize: 12,
+                      color: "#444",
+                      fontSize: 11,
                       fontFamily: "Inter_400Regular",
+                      letterSpacing: 0.2,
                     }}
                   >
                     {workout.lastPerformed}
@@ -176,50 +179,46 @@ export default function WorkoutsScreen() {
               paddingBottom: 16,
               flexDirection: "row",
               alignItems: "center",
-              justifyContent: "space-between",
             },
             headerStyle,
           ]}
         >
-          <View>
+          {/* Left — placeholder to balance the right button */}
+          <View style={{ flex: 1 }} />
+
+          {/* Center — title */}
+          <View style={{ flex: 1, alignItems: "center" }}>
             <Text
               style={{
                 color: "#ffffff",
-                fontSize: 26,
-                fontFamily: "Inter_700Bold",
-                letterSpacing: -0.5,
+                fontSize: 18,
+                fontFamily: "Inter_600SemiBold",
+                letterSpacing: -0.3,
               }}
             >
               Workouts
             </Text>
-            <Text
-              style={{
-                color: "#555",
-                fontSize: 13,
-                fontFamily: "Inter_400Regular",
-                marginTop: 2,
-              }}
-            >
-              Your saved workout plans
-            </Text>
           </View>
 
-          <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={() => router.push("/(tabs)/Workouts/templates")}
-            style={{
-              width: 42,
-              height: 42,
-              borderRadius: 12,
-              backgroundColor: "#1a472a",
-              alignItems: "center",
-              justifyContent: "center",
-              borderWidth: 1,
-              borderColor: "rgba(16, 185, 129, 0.15)",
-            }}
-          >
-            <Ionicons name="add" size={24} color="#10b981" />
-          </TouchableOpacity>
+          {/* Right — add button */}
+          <View style={{ flex: 1, alignItems: "flex-end" }}>
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={() => router.push("/(tabs)/Workouts/templates")}
+              style={{
+                width: 42,
+                height: 42,
+                borderRadius: 12,
+                backgroundColor: "#1a472a",
+                alignItems: "center",
+                justifyContent: "center",
+                borderWidth: 1,
+                borderColor: "rgba(16, 185, 129, 0.15)",
+              }}
+            >
+              <Ionicons name="add" size={24} color="#10b981" />
+            </TouchableOpacity>
+          </View>
         </Animated.View>
 
         <ScrollView
@@ -245,15 +244,16 @@ export default function WorkoutsScreen() {
                     width: 4,
                     height: 18,
                     borderRadius: 2,
-                    backgroundColor: "#3b82f6",
+                    backgroundColor: "#10b981",
                   }}
                 />
                 <Text
                   style={{
                     color: "#ffffff",
-                    fontSize: 16,
-                    fontFamily: "Inter_600SemiBold",
-                    letterSpacing: 0.3,
+                    fontSize: 13,
+                    fontFamily: "Inter_500Medium",
+                    letterSpacing: 0.8,
+                    textTransform: "uppercase",
                   }}
                 >
                   Your Workouts
@@ -268,14 +268,15 @@ export default function WorkoutsScreen() {
               >
                 <Text
                   style={{
-                    color: "#3b82f6",
-                    fontSize: 12,
+                    color: "#10b981",
+                    fontSize: 11,
                     fontFamily: "Inter_500Medium",
+                    letterSpacing: 0.5,
                   }}
                 >
                   Manage
                 </Text>
-                <Ionicons name="chevron-forward" size={14} color="#3b82f6" />
+                <Ionicons name="chevron-forward" size={14} color="#10b981" />
               </TouchableOpacity>
             </Animated.View>
 

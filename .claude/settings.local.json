@@ -19,7 +19,13 @@
       "Bash(xcrun simctl *)",
       "Bash(xcode-select -p)",
       "Bash(xcodebuild -version)",
-      "Bash(adb --version)"
+      "Bash(adb --version)",
+      "Skill(frontend-design)",
+      "Bash(git -C /Users/raven/Projects/FlexApp show cd2c8be --stat)",
+      "Bash(git -C /Users/raven/Projects/FlexApp show cd2c8be:src/features/workouts/screens/WorkoutSessionScreen.tsx)",
+      "Bash(git *)",
+      "Bash(kill %1)",
+      "Bash(npm install *)"
     ]
   }
 }

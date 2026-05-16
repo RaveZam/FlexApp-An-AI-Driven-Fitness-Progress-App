@@ -82,7 +82,10 @@ export default function Index() {
             },
             {
               text: "Yes",
-              onPress: () => {},
+              onPress: () => {
+                setPopup(false);
+                router.push("/(tabs)/Workouts/session" as any);
+              },
               style: "default",
             },
           ]}
@@ -167,7 +170,7 @@ export default function Index() {
         >
           <TouchableOpacity
             activeOpacity={0.85}
-            onPress={() => {}}
+            onPress={() => setPopup(true)}
             style={{
               backgroundColor: "#10b981",
               borderRadius: 14,
