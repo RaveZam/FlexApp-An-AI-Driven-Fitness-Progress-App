@@ -10,18 +10,148 @@ import { router } from "expo-router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   Modal,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
-import Animated, { FadeIn, FadeInDown } from "react-native-reanimated";
+import Animated, {
+  FadeIn,
+  FadeInDown,
+  FadeOut,
+} from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const ACCENT = "#10b981";
 
+type AlternateWorkout = {
+  id: string;
+  name: string;
+  exerciseCount: number;
+  accent: string;
+  exercises: Exercise[];
+};
+
+// Placeholder alternate workouts — swap these out with real data when wired to Supabase
+const ALTERNATE_WORKOUTS: AlternateWorkout[] = [
+  {
+    id: "alt-1",
+    name: "Wednesday Legs",
+    exerciseCount: 5,
+    accent: "#3b82f6",
+    exercises: JSON.parse(JSON.stringify(MOCK_WORKOUT_SESSION.exercises)),
+  },
+  {
+    id: "alt-2",
+    name: "Friday Pull Day",
+    exerciseCount: 7,
+    accent: "#f59e0b",
+    exercises: JSON.parse(JSON.stringify(MOCK_WORKOUT_SESSION.exercises)),
+  },
+];
+
+function SwapWorkoutSheet({
+  visible,
+  currentName,
+  onSelect,
+  onClose,
+}: {
+  visible: boolean;
+  currentName: string;
+  onSelect: (workout: AlternateWorkout) => void;
+  onClose: () => void;
+}) {
+  return (
+    <Modal visible={visible} transparent animationType="none" onRequestClose={onClose}>
+      <Animated.View
+        entering={FadeIn.duration(200)}
+        exiting={FadeOut.duration(150)}
+        style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.65)", justifyContent: "flex-end" }}
+      >
+        <Pressable style={{ flex: 1 }} onPress={onClose} />
+        <Animated.View
+          entering={FadeInDown.duration(280).springify().damping(22)}
+          style={{
+            backgroundColor: "#141414",
+            borderTopLeftRadius: 20,
+            borderTopRightRadius: 20,
+            borderTopWidth: 1,
+            borderColor: "rgba(255,255,255,0.06)",
+            paddingBottom: 40,
+          }}
+        >
+          {/* Handle */}
+          <View style={{ alignItems: "center", paddingTop: 12, paddingBottom: 4 }}>
+            <View style={{ width: 36, height: 4, borderRadius: 2, backgroundColor: "#333" }} />
+          </View>
+
+          {/* Header */}
+          <View style={{ paddingHorizontal: 20, paddingTop: 12, paddingBottom: 20 }}>
+            <Text style={{ color: "#fff", fontSize: 16, fontFamily: "Inter_600SemiBold", letterSpacing: -0.2 }}>
+              Swap Workout
+            </Text>
+            <Text style={{ color: "#555", fontSize: 12, fontFamily: "Inter_400Regular", marginTop: 4, letterSpacing: 0.1 }}>
+              Currently:{" "}
+              <Text style={{ color: "#888" }}>{currentName}</Text>
+            </Text>
+          </View>
+
+          {/* Options */}
+          <View style={{ paddingHorizontal: 20, gap: 10 }}>
+            {ALTERNATE_WORKOUTS.map((workout) => (
+              <TouchableOpacity
+                key={workout.id}
+                activeOpacity={0.7}
+                onPress={() => onSelect(workout)}
+              >
+                <View
+                  style={{
+                    backgroundColor: "#1a1a1a",
+                    borderRadius: 14,
+                    overflow: "hidden",
+                    borderWidth: 1,
+                    borderColor: "rgba(255,255,255,0.05)",
+                    flexDirection: "row",
+                    alignItems: "center",
+                  }}
+                >
+                  <View style={{ width: 3, alignSelf: "stretch", backgroundColor: workout.accent, opacity: 0.7 }} />
+                  <View
+                    style={{
+                      flex: 1,
+                      padding: 14,
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <View>
+                      <Text style={{ color: "#fff", fontSize: 14, fontFamily: "Inter_500Medium", marginBottom: 4, letterSpacing: 0.1 }}>
+                        {workout.name}
+                      </Text>
+                      <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                        <Ionicons name="barbell-outline" size={11} color="#444" />
+                        <Text style={{ color: "#444", fontSize: 11, fontFamily: "Inter_400Regular" }}>
+                          {workout.exerciseCount} exercises
+                        </Text>
+                      </View>
+                    </View>
+                    <Ionicons name="arrow-forward-circle-outline" size={20} color={workout.accent} style={{ opacity: 0.8 }} />
+                  </View>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </Animated.View>
+      </Animated.View>
+    </Modal>
+  );
+}
+
 export default function WorkoutSessionScreen() {
+  const [workoutName, setWorkoutName] = useState(MOCK_WORKOUT_SESSION.name ?? "Today's Workout");
   const [exercises, setExercises] = useState<Exercise[]>(
     JSON.parse(JSON.stringify(MOCK_WORKOUT_SESSION.exercises))
   );
@@ -29,6 +159,7 @@ export default function WorkoutSessionScreen() {
   const [showLogModal, setShowLogModal] = useState(false);
   const [showRestTimer, setShowRestTimer] = useState(false);
   const [showExercisesList, setShowExercisesList] = useState(false);
+  const [showSwapSheet, setShowSwapSheet] = useState(false);
 
   // Timer
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
@@ -59,6 +190,13 @@ export default function WorkoutSessionScreen() {
   const allExercisesComplete = exercises.every((ex) =>
     ex.sets.every((s) => s.completed)
   );
+
+  const handleSwapWorkout = useCallback((workout: AlternateWorkout) => {
+    setWorkoutName(workout.name);
+    setExercises(JSON.parse(JSON.stringify(workout.exercises)));
+    setActiveExerciseIndex(0);
+    setShowSwapSheet(false);
+  }, []);
 
   const handleLogSet = useCallback(
     (weight: number, reps: number) => {
@@ -129,12 +267,21 @@ export default function WorkoutSessionScreen() {
           <Text style={styles.headerTitle}>
             Workout {activeExerciseIndex + 1}/{totalExercises}
           </Text>
-          <TouchableOpacity
-            onPress={() => setShowExercisesList(true)}
-            activeOpacity={0.7}
-          >
-            <Text style={styles.headerAction}>Exercises</Text>
-          </TouchableOpacity>
+          <View style={styles.headerRight}>
+            <TouchableOpacity
+              onPress={() => setShowSwapSheet(true)}
+              activeOpacity={0.7}
+              style={styles.headerIconBtn}
+            >
+              <Ionicons name="swap-horizontal-outline" size={18} color="#aaa" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setShowExercisesList(true)}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.headerAction}>Exercises</Text>
+            </TouchableOpacity>
+          </View>
         </Animated.View>
 
         {/* Timer Bar */}
@@ -322,6 +469,14 @@ export default function WorkoutSessionScreen() {
             </View>
           </View>
         </Modal>
+
+        {/* Swap Workout Sheet */}
+        <SwapWorkoutSheet
+          visible={showSwapSheet}
+          currentName={workoutName}
+          onSelect={handleSwapWorkout}
+          onClose={() => setShowSwapSheet(false)}
+        />
       </View>
     </SafeAreaView>
   );
@@ -357,6 +512,17 @@ const styles = StyleSheet.create({
     fontFamily: "Inter_500Medium",
     letterSpacing: 0.5,
     paddingLeft: 32,
+  },
+  headerRight: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 14,
+  },
+  headerIconBtn: {
+    width: 30,
+    height: 30,
+    alignItems: "center",
+    justifyContent: "center",
   },
 
   // Timer

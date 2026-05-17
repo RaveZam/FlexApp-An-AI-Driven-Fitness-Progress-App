@@ -25,7 +25,11 @@
       "Bash(git -C /Users/raven/Projects/FlexApp show cd2c8be:src/features/workouts/screens/WorkoutSessionScreen.tsx)",
       "Bash(git *)",
       "Bash(kill %1)",
-      "Bash(npm install *)"
+      "Bash(npm install *)",
+      "Skill(frontend-design:frontend-design)",
+      "Skill(supabase:supabase)",
+      "mcp__plugin_supabase_supabase__get_advisors",
+      "mcp__plugin_supabase_supabase__apply_migration"
     ]
   }
 }

@@ -5,6 +5,7 @@ import {
   HomePageChartGraph,
   Insights,
   PersonalRecord,
+  ProgressiveOverload,
   WeeklyVolume,
 } from "@/src/features/home/components";
 import BlurOverlay from "@/components/ui/BlurOverlay";
@@ -148,6 +149,7 @@ export default function Index() {
             <HomePageChartGraph />
             <WeeklyVolume />
             <PersonalRecord />
+            <ProgressiveOverload />
           </View>
 
           {/* Divider */}

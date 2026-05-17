@@ -6,6 +6,7 @@ export default function WorkoutsLayout() {
       <Stack.Screen name="index" />
       <Stack.Screen name="templates" />
       <Stack.Screen name="session" />
+      <Stack.Screen name="create" />
     </Stack>
   );
 }

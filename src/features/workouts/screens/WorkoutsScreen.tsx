@@ -2,6 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useEffect } from "react";
 import {
+  ActivityIndicator,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -17,47 +18,11 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useWorkouts } from "../hooks/useWorkouts";
+import type { Workout } from "../types";
 import "@/global.css";
 
-type UserWorkout = {
-  id: string;
-  name: string;
-  lastPerformed: string;
-  exerciseCount: number;
-  accent: string;
-};
-
-const PLACEHOLDER_USER_WORKOUTS: UserWorkout[] = [
-  {
-    id: "1",
-    name: "Monday Push Day",
-    lastPerformed: "2 days ago",
-    exerciseCount: 6,
-    accent: "#10b981",
-  },
-  {
-    id: "2",
-    name: "Wednesday Legs",
-    lastPerformed: "4 days ago",
-    exerciseCount: 5,
-    accent: "#3b82f6",
-  },
-  {
-    id: "3",
-    name: "Friday Pull Day",
-    lastPerformed: "6 days ago",
-    exerciseCount: 7,
-    accent: "#f59e0b",
-  },
-];
-
-function UserWorkoutCard({
-  workout,
-  index,
-}: {
-  workout: UserWorkout;
-  index: number;
-}) {
+function WorkoutCard({ workout, index }: { workout: Workout; index: number }) {
   return (
     <Animated.View
       entering={FadeInRight.delay(200 + index * 100)
@@ -76,12 +41,11 @@ function UserWorkoutCard({
             alignItems: "center",
           }}
         >
-          {/* Left accent bar */}
           <View
             style={{
               width: 3,
               alignSelf: "stretch",
-              backgroundColor: workout.accent,
+              backgroundColor: "#10b981",
               opacity: 0.7,
             }}
           />
@@ -107,37 +71,18 @@ function UserWorkoutCard({
               >
                 {workout.name}
               </Text>
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
-                <View
-                  style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                <Ionicons name="barbell-outline" size={11} color="#444" />
+                <Text
+                  style={{
+                    color: "#444",
+                    fontSize: 11,
+                    fontFamily: "Inter_400Regular",
+                    letterSpacing: 0.2,
+                  }}
                 >
-                  <Ionicons name="barbell-outline" size={11} color="#444" />
-                  <Text
-                    style={{
-                      color: "#444",
-                      fontSize: 11,
-                      fontFamily: "Inter_400Regular",
-                      letterSpacing: 0.2,
-                    }}
-                  >
-                    {workout.exerciseCount} exercises
-                  </Text>
-                </View>
-                <View
-                  style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
-                >
-                  <Ionicons name="time-outline" size={11} color="#444" />
-                  <Text
-                    style={{
-                      color: "#444",
-                      fontSize: 11,
-                      fontFamily: "Inter_400Regular",
-                      letterSpacing: 0.2,
-                    }}
-                  >
-                    {workout.lastPerformed}
-                  </Text>
-                </View>
+                  {workout.exercises.length} exercise{workout.exercises.length !== 1 ? "s" : ""}
+                </Text>
               </View>
             </View>
 
@@ -151,6 +96,8 @@ function UserWorkoutCard({
 
 export default function WorkoutsScreen() {
   const router = useRouter();
+  const { workouts, loading } = useWorkouts();
+
   const headerOpacity = useSharedValue(0);
   const headerTranslateY = useSharedValue(-10);
 
@@ -183,10 +130,8 @@ export default function WorkoutsScreen() {
             headerStyle,
           ]}
         >
-          {/* Left — placeholder to balance the right button */}
           <View style={{ flex: 1 }} />
 
-          {/* Center — title */}
           <View style={{ flex: 1, alignItems: "center" }}>
             <Text
               style={{
@@ -200,11 +145,10 @@ export default function WorkoutsScreen() {
             </Text>
           </View>
 
-          {/* Right — add button */}
           <View style={{ flex: 1, alignItems: "flex-end" }}>
             <TouchableOpacity
               activeOpacity={0.7}
-              onPress={() => router.push("/(tabs)/Workouts/templates")}
+              onPress={() => router.push("/(tabs)/Workouts/create")}
               style={{
                 width: 42,
                 height: 42,
@@ -225,7 +169,6 @@ export default function WorkoutsScreen() {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 32 }}
         >
-          {/* ── Your Workouts ── */}
           <View style={{ paddingHorizontal: 20 }}>
             <Animated.View
               entering={FadeInDown.delay(60).duration(400)}
@@ -236,9 +179,7 @@ export default function WorkoutsScreen() {
                 marginBottom: 14,
               }}
             >
-              <View
-                style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
-              >
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
                 <View
                   style={{
                     width: 4,
@@ -259,37 +200,47 @@ export default function WorkoutsScreen() {
                   Your Workouts
                 </Text>
               </View>
-              <TouchableOpacity
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  gap: 4,
-                }}
-              >
+              {workouts.length > 0 && (
                 <Text
                   style={{
-                    color: "#10b981",
+                    color: "#444",
                     fontSize: 11,
-                    fontFamily: "Inter_500Medium",
-                    letterSpacing: 0.5,
+                    fontFamily: "Inter_400Regular",
                   }}
                 >
-                  Manage
+                  {workouts.length} total
                 </Text>
-                <Ionicons name="chevron-forward" size={14} color="#10b981" />
-              </TouchableOpacity>
+              )}
             </Animated.View>
 
-            {/* Workout list */}
-            <View style={{ gap: 10 }}>
-              {PLACEHOLDER_USER_WORKOUTS.map((workout, index) => (
-                <UserWorkoutCard
-                  key={workout.id}
-                  workout={workout}
-                  index={index}
-                />
-              ))}
-            </View>
+            {loading && workouts.length === 0 ? (
+              <View style={{ paddingTop: 40, alignItems: "center" }}>
+                <ActivityIndicator color="#10b981" />
+              </View>
+            ) : workouts.length === 0 ? (
+              <Animated.View
+                entering={FadeInDown.delay(120).duration(400)}
+                style={{ paddingTop: 40, alignItems: "center", gap: 8 }}
+              >
+                <Ionicons name="barbell-outline" size={32} color="#333" />
+                <Text
+                  style={{
+                    color: "#444",
+                    fontSize: 13,
+                    fontFamily: "Inter_400Regular",
+                    textAlign: "center",
+                  }}
+                >
+                  No workouts yet.{"\n"}Tap + to create your first one.
+                </Text>
+              </Animated.View>
+            ) : (
+              <View style={{ gap: 10 }}>
+                {workouts.map((workout, index) => (
+                  <WorkoutCard key={workout.id} workout={workout} index={index} />
+                ))}
+              </View>
+            )}
           </View>
         </ScrollView>
       </View>

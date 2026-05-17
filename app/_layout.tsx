@@ -1,6 +1,7 @@
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useStorageCleaner } from "@/hooks/useStorageCleaner";
 import { AuthProvider } from "@/src/features/auth/hooks/useAuth";
+import { initDb } from "@/src/lib/db";
 import {
   Inter_400Regular,
   Inter_500Medium,
@@ -14,6 +15,7 @@ import {
 } from "@react-navigation/native";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { useEffect, useState } from "react";
 import "react-native-reanimated";
 
 export default function RootLayout() {
@@ -27,7 +29,13 @@ export default function RootLayout() {
     Inter_700Bold,
   });
 
-  if (!loaded) {
+  const [dbReady, setDbReady] = useState(false);
+
+  useEffect(() => {
+    initDb().then(() => setDbReady(true));
+  }, []);
+
+  if (!loaded || !dbReady) {
     return null;
   }
 
