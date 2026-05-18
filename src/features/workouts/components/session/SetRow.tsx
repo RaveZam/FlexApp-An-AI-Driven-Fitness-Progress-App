@@ -1,4 +1,4 @@
-import { WorkoutSet } from "@/src/features/workouts/data/mockWorkoutSession";
+import { SessionSetView } from "@/src/features/workouts/types/sessionView";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
@@ -7,7 +7,7 @@ import Animated, { FadeInDown, ZoomIn } from "react-native-reanimated";
 const ACCENT = "#10b981";
 
 type SetRowProps = {
-  set: WorkoutSet;
+  set: SessionSetView;
   isCurrent: boolean;
   index: number;
 };

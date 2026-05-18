@@ -11,8 +11,8 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { fetchExerciseCatalog } from "../services/workoutSupabaseService";
-import type { CatalogExercise } from "../types";
+import { fetchExerciseCatalog } from "../../services/workoutSupabaseService";
+import type { CatalogExercise } from "../../types";
 
 type Props = {
   visible: boolean;

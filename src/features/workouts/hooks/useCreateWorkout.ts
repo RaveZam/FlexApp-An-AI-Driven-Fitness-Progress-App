@@ -2,7 +2,7 @@ import { generateUUID } from "@/src/lib/uuid";
 import { useState } from "react";
 import { useAuth } from "@/src/features/auth/hooks/useAuth";
 import { insertWorkoutLocal } from "../services/workoutLocalService";
-import { enqueueOutbox } from "../services/outboxService";
+import { enqueueOutbox } from "@/src/features/outbox";
 import type { Workout, WorkoutInput } from "../types";
 
 export function useCreateWorkout() {

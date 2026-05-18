@@ -1,7 +1,7 @@
 import { useAuth } from "@/src/features/auth/hooks/useAuth";
 import { generateUUID } from "@/src/lib/uuid";
 import { useState } from "react";
-import { enqueueOutbox } from "../services/outboxService";
+import { enqueueOutbox } from "@/src/features/outbox";
 import { insertPlanLocal } from "../services/workoutLocalService";
 import type { WorkoutPlan, WorkoutPlanInput } from "../types";
 

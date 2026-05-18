@@ -30,15 +30,18 @@ src/features/
     components/
     screens/
   workouts/                   # Core workout feature (plans, sessions, tracking)
-    components/               # Workout UI components
-    components/workout-screen/ # Active session UI components
-    constants/
+    components/
+      create/                 # Create-workout form pieces (DayPicker, ExerciseEditorRow, ExercisePickerModal)
+      session/                # Active session UI (SetRow, RestTimerModal, WorkoutLogModal, ExercisesListSheet)
     context/workoutContext.tsx
-    helpers/
     hooks/                    # All workout hooks (flattened)
-    screens/
-    services/
+    screens/                  # Layout-only screens; logic lives in hooks
+    services/                 # SQLite (*LocalService) + Supabase (*SupabaseService) reads/writes
     types/
+  outbox/                     # Offline-first write queue + Supabase sync (cross-feature)
+    services/outbox.ts        # enqueueOutbox()
+    services/sync.ts          # runOutboxSync() — drains pending rows, dispatches to Supabase
+    index.ts                  # barrel — import via `@/src/features/outbox`
   overview/                   # Progress/stats screen
     screens/
   settings/                   # User settings
@@ -73,9 +76,10 @@ Workouts has a nested Stack: `index → PlanDetails → CreatePlanScreen → Wor
 1. **`src/features/auth/hooks/useAuth.tsx`** — Supabase session, `signIn()`, `signUp()`, `signOut()`.
 2. **`src/features/workouts/context/workoutContext.tsx`** — Plan creation flow + active workout session state. Consumed via `useWorkoutContext()` hook.
 
-### Data Fetching
+### Data Fetching & Writes
 
-Custom hooks in `src/features/workouts/hooks/` fetch from Supabase. Services in `src/features/workouts/services/` handle writes.
+- **Reads**: hooks in `src/features/workouts/hooks/` call services in `services/` (SQLite for local-first data, Supabase for catalog/remote).
+- **Writes**: mutations write to SQLite immediately, then `enqueueOutbox(...)` queues a row for `runOutboxSync()` to push to Supabase. The outbox lives in its own feature (`src/features/outbox`) so other features can use it.
 
 ### Key Technologies
 

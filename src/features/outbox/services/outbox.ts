@@ -1,5 +1,5 @@
-import { generateUUID } from "@/src/lib/uuid";
 import { getDb } from "@/src/lib/db";
+import { generateUUID } from "@/src/lib/uuid";
 
 type OutboxOperation = "create" | "update" | "delete";
 

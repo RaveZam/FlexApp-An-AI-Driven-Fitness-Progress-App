@@ -1,4 +1,4 @@
-import { enqueueOutbox } from "../services/outboxService";
+import { enqueueOutbox } from "@/src/features/outbox";
 import { updateWorkoutDays } from "../services/workoutLocalService";
 
 export function useUpdateWorkoutDays() {

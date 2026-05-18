@@ -87,7 +87,6 @@ async function dispatchRow(row: OutboxRow): Promise<void> {
         );
       if (error) throw error;
 
-      // Sync exercises and sets (read current state from SQLite at dispatch time)
       const db = getDb();
       const exerciseRows = db.getAllSync<{
         id: string; session_id: string; source_exercise_id: string | null;

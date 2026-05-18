@@ -2,7 +2,7 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { useStorageCleaner } from "@/hooks/useStorageCleaner";
 import { AuthProvider } from "@/src/features/auth/hooks/useAuth";
 import { initDb } from "@/src/lib/db";
-import { runOutboxSync } from "@/src/features/workouts/services/syncService";
+import { runOutboxSync } from "@/src/features/outbox";
 import {
   Inter_400Regular,
   Inter_500Medium,
