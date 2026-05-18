@@ -11,6 +11,13 @@ import {
   useFonts,
 } from "@expo-google-fonts/inter";
 import {
+  Outfit_200ExtraLight,
+  Outfit_300Light,
+  Outfit_400Regular,
+  Outfit_500Medium,
+  Outfit_600SemiBold,
+} from "@expo-google-fonts/outfit";
+import {
   DarkTheme,
   ThemeProvider
 } from "@react-navigation/native";
@@ -31,6 +38,11 @@ export default function RootLayout() {
     Inter_500Medium,
     Inter_600SemiBold,
     Inter_700Bold,
+    Outfit_200ExtraLight,
+    Outfit_300Light,
+    Outfit_400Regular,
+    Outfit_500Medium,
+    Outfit_600SemiBold,
   });
 
   const [dbReady, setDbReady] = useState(false);
