@@ -6,7 +6,7 @@ import * as Progress from "react-native-progress";
 export function WeeklyVolume() {
   return (
     <Animated.View
-      entering={FadeInDown.delay(330).springify().damping(18)}
+      entering={FadeInDown.delay(330).duration(400)}
       style={{
         marginHorizontal: 16,
         borderRadius: 16,

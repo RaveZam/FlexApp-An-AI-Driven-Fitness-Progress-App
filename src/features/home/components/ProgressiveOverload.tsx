@@ -87,7 +87,7 @@ function ExerciseRow({
   delay: number;
 }) {
   return (
-    <ReAnimated.View entering={FadeInDown.delay(delay).springify().damping(20)}>
+    <ReAnimated.View entering={FadeInDown.delay(delay).duration(400)}>
       <View
         style={{
           paddingVertical: 14,
@@ -239,7 +239,7 @@ export function ProgressiveOverload() {
 
   return (
     <ReAnimated.View
-      entering={FadeInDown.delay(390).springify().damping(18)}
+      entering={FadeInDown.delay(390).duration(400)}
       style={{
         marginHorizontal: 16,
         borderRadius: 16,

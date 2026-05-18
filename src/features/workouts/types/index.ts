@@ -20,18 +20,80 @@ export type Exercise = {
 export type Workout = {
   id: string;
   userId: string;
+  planId: string;
   name: string;
+  daysOfWeek: number[]; // 0=Sun … 6=Sat
   createdAt: string;
   updatedAt: string;
   exercises: Exercise[];
 };
 
-export type WorkoutInput = {
+export type WorkoutPlan = {
+  id: string;
+  userId: string;
   name: string;
-  exercises: Array<{
+  createdAt: string;
+  updatedAt: string;
+  workouts: Workout[];
+};
+
+export type WorkoutInput = {
+  planId: string;
+  name: string;
+  daysOfWeek: number[];
+  exercises: {
     catalogExerciseId: string;
     name: string;
     targetSets: number;
     targetReps: number;
-  }>;
+  }[];
+};
+
+export type WorkoutPlanInput = {
+  name: string;
+};
+
+export type SessionStatus = "in_progress" | "completed" | "cancelled";
+
+export type SessionSet = {
+  id: string;
+  sessionExerciseId: string;
+  setIndex: number;
+  targetReps: number;
+  actualReps: number | null;
+  weight: number | null;
+  completed: boolean;
+  completedAt: string | null;
+};
+
+export type SessionExercise = {
+  id: string;
+  sessionId: string;
+  sourceExerciseId: string | null;
+  catalogExerciseId: string | null;
+  name: string;
+  targetSets: number;
+  targetReps: number;
+  position: number;
+  sets: SessionSet[];
+};
+
+export type WorkoutSession = {
+  id: string;
+  userId: string;
+  workoutId: string;
+  planId: string | null;
+  name: string;
+  status: SessionStatus;
+  startedAt: string;
+  completedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  exercises: SessionExercise[];
+};
+
+export type UserPreferences = {
+  userId: string;
+  activePlanId: string | null;
+  updatedAt: string;
 };

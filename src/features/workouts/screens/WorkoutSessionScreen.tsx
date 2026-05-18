@@ -5,8 +5,10 @@ import {
   Exercise,
   MOCK_WORKOUT_SESSION,
 } from "@/src/features/workouts/data/mockWorkoutSession";
+import { completeSession, getSessionById, updateSet } from "@/src/features/workouts/services/sessionLocalService";
+import type { WorkoutSession as RealWorkoutSession } from "@/src/features/workouts/types";
 import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   Modal,
@@ -72,7 +74,7 @@ function SwapWorkoutSheet({
       >
         <Pressable style={{ flex: 1 }} onPress={onClose} />
         <Animated.View
-          entering={FadeInDown.duration(280).springify().damping(22)}
+          entering={FadeInDown.duration(280).duration(400)}
           style={{
             backgroundColor: "#141414",
             borderTopLeftRadius: 20,
@@ -150,10 +152,34 @@ function SwapWorkoutSheet({
   );
 }
 
+function sessionToExercises(session: RealWorkoutSession): Exercise[] {
+  return session.exercises.map((ex) => ({
+    id: ex.id,
+    name: ex.name,
+    restSeconds: 90,
+    sets: ex.sets.map((s, i) => ({
+      id: s.id,
+      setNumber: s.setIndex + 1,
+      targetReps: s.targetReps,
+      weight: s.weight,
+      actualReps: s.actualReps,
+      completed: s.completed,
+    })),
+  }));
+}
+
 export default function WorkoutSessionScreen() {
-  const [workoutName, setWorkoutName] = useState(MOCK_WORKOUT_SESSION.name ?? "Today's Workout");
+  const { id: sessionId } = useLocalSearchParams<{ id?: string }>();
+
+  const realSession = sessionId ? getSessionById(sessionId) : null;
+
+  const [workoutName, setWorkoutName] = useState(
+    realSession?.name ?? MOCK_WORKOUT_SESSION.name ?? "Today's Workout"
+  );
   const [exercises, setExercises] = useState<Exercise[]>(
-    JSON.parse(JSON.stringify(MOCK_WORKOUT_SESSION.exercises))
+    realSession
+      ? sessionToExercises(realSession)
+      : JSON.parse(JSON.stringify(MOCK_WORKOUT_SESSION.exercises))
   );
   const [activeExerciseIndex, setActiveExerciseIndex] = useState(0);
   const [showLogModal, setShowLogModal] = useState(false);
@@ -208,6 +234,7 @@ export default function WorkoutSessionScreen() {
       );
       const isLastSet = totalIncomplete === 1;
 
+      const setId = exercises[activeExerciseIndex].sets[currentSetIndex].id;
       setExercises((prev) => {
         const updated = [...prev];
         const exercise = { ...updated[activeExerciseIndex] };
@@ -222,6 +249,9 @@ export default function WorkoutSessionScreen() {
         updated[activeExerciseIndex] = exercise;
         return updated;
       });
+      if (sessionId) {
+        updateSet(setId, { actualReps: reps, weight, completed: true });
+      }
       setShowLogModal(false);
       if (!isLastSet) setShowRestTimer(true);
     },
@@ -243,8 +273,9 @@ export default function WorkoutSessionScreen() {
   }, [exercises, activeExerciseIndex]);
 
   const handleFinish = useCallback(() => {
+    if (sessionId) completeSession(sessionId);
     router.back();
-  }, []);
+  }, [sessionId]);
 
   let bottomButtonText = "Log Set";
   let bottomButtonAction = () => setShowLogModal(true);
@@ -309,7 +340,7 @@ export default function WorkoutSessionScreen() {
         >
           {/* Exercise Card */}
           <Animated.View
-            entering={FadeInDown.delay(120).springify().damping(20)}
+            entering={FadeInDown.delay(120).duration(400)}
             style={styles.exerciseCard}
           >
             <View style={styles.exerciseImagePlaceholder}>
@@ -320,7 +351,7 @@ export default function WorkoutSessionScreen() {
 
           {/* Personal Record + History */}
           <Animated.View
-            entering={FadeInDown.delay(180).springify().damping(20)}
+            entering={FadeInDown.delay(180).duration(400)}
             style={styles.prHistoryRow}
           >
             <View style={styles.prSection}>
@@ -359,7 +390,7 @@ export default function WorkoutSessionScreen() {
 
           {allSetsComplete && !allExercisesComplete && (
             <Animated.View
-              entering={FadeInDown.delay(100).springify()}
+              entering={FadeInDown.delay(100).duration(400)}
               style={styles.doneCard}
             >
               <Ionicons name="checkmark-circle" size={32} color={ACCENT} />
@@ -369,7 +400,7 @@ export default function WorkoutSessionScreen() {
 
           {allExercisesComplete && (
             <Animated.View
-              entering={FadeInDown.delay(100).springify()}
+              entering={FadeInDown.delay(100).duration(400)}
               style={styles.doneCard}
             >
               <Ionicons name="trophy" size={36} color={ACCENT} />
@@ -380,7 +411,7 @@ export default function WorkoutSessionScreen() {
 
         {/* Bottom Button */}
         <Animated.View
-          entering={FadeInDown.delay(300).springify().damping(18)}
+          entering={FadeInDown.delay(300).duration(400)}
           style={styles.bottomArea}
         >
           <TouchableOpacity

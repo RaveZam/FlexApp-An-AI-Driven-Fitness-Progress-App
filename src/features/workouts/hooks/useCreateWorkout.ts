@@ -24,7 +24,9 @@ export function useCreateWorkout() {
       const workout: Workout = {
         id: workoutId,
         userId,
+        planId: input.planId,
         name: input.name.trim(),
+        daysOfWeek: input.daysOfWeek,
         createdAt: now,
         updatedAt: now,
         exercises: input.exercises.map((ex, index) => ({
@@ -51,10 +53,12 @@ export function useCreateWorkout() {
           workout: {
             id: workout.id,
             user_id: workout.userId,
+            plan_id: workout.planId,
             name: workout.name,
             created_at: workout.createdAt,
             updated_at: workout.updatedAt,
           },
+          days: workout.daysOfWeek,
           exercises: workout.exercises.map((e) => ({
             id: e.id,
             workout_id: e.workoutId,

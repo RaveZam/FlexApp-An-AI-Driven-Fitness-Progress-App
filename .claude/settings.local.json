@@ -29,7 +29,9 @@
       "Skill(frontend-design:frontend-design)",
       "Skill(supabase:supabase)",
       "mcp__plugin_supabase_supabase__get_advisors",
-      "mcp__plugin_supabase_supabase__apply_migration"
+      "mcp__plugin_supabase_supabase__apply_migration",
+      "Bash(npm uninstall *)",
+      "Bash(npm run *)"
     ]
   }
 }

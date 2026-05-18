@@ -18,18 +18,16 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useWorkouts } from "../hooks/useWorkouts";
-import type { Workout } from "../types";
+import { usePlans } from "../hooks/usePlans";
+import type { WorkoutPlan } from "../types";
 import "@/global.css";
 
-function WorkoutCard({ workout, index }: { workout: Workout; index: number }) {
+function PlanCard({ plan, index, onPress }: { plan: WorkoutPlan; index: number; onPress: () => void }) {
   return (
     <Animated.View
-      entering={FadeInRight.delay(200 + index * 100)
-        .springify()
-        .damping(18)}
+      entering={FadeInRight.delay(200 + index * 100).duration(400)}
     >
-      <TouchableOpacity activeOpacity={0.7}>
+      <TouchableOpacity activeOpacity={0.7} onPress={onPress}>
         <View
           style={{
             backgroundColor: "#191919",
@@ -69,10 +67,10 @@ function WorkoutCard({ workout, index }: { workout: Workout; index: number }) {
                   letterSpacing: 0.1,
                 }}
               >
-                {workout.name}
+                {plan.name}
               </Text>
               <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-                <Ionicons name="barbell-outline" size={11} color="#444" />
+                <Ionicons name="calendar-outline" size={11} color="#444" />
                 <Text
                   style={{
                     color: "#444",
@@ -81,7 +79,7 @@ function WorkoutCard({ workout, index }: { workout: Workout; index: number }) {
                     letterSpacing: 0.2,
                   }}
                 >
-                  {workout.exercises.length} exercise{workout.exercises.length !== 1 ? "s" : ""}
+                  {plan.workouts.length} day{plan.workouts.length !== 1 ? "s" : ""}
                 </Text>
               </View>
             </View>
@@ -96,7 +94,7 @@ function WorkoutCard({ workout, index }: { workout: Workout; index: number }) {
 
 export default function WorkoutsScreen() {
   const router = useRouter();
-  const { workouts, loading } = useWorkouts();
+  const { plans, loading } = usePlans();
 
   const headerOpacity = useSharedValue(0);
   const headerTranslateY = useSharedValue(-10);
@@ -148,7 +146,7 @@ export default function WorkoutsScreen() {
           <View style={{ flex: 1, alignItems: "flex-end" }}>
             <TouchableOpacity
               activeOpacity={0.7}
-              onPress={() => router.push("/(tabs)/Workouts/create")}
+              onPress={() => router.push("/(tabs)/Workouts/create-plan")}
               style={{
                 width: 42,
                 height: 42,
@@ -197,10 +195,10 @@ export default function WorkoutsScreen() {
                     textTransform: "uppercase",
                   }}
                 >
-                  Your Workouts
+                  Your Plans
                 </Text>
               </View>
-              {workouts.length > 0 && (
+              {plans.length > 0 && (
                 <Text
                   style={{
                     color: "#444",
@@ -208,16 +206,16 @@ export default function WorkoutsScreen() {
                     fontFamily: "Inter_400Regular",
                   }}
                 >
-                  {workouts.length} total
+                  {plans.length} total
                 </Text>
               )}
             </Animated.View>
 
-            {loading && workouts.length === 0 ? (
+            {loading && plans.length === 0 ? (
               <View style={{ paddingTop: 40, alignItems: "center" }}>
                 <ActivityIndicator color="#10b981" />
               </View>
-            ) : workouts.length === 0 ? (
+            ) : plans.length === 0 ? (
               <Animated.View
                 entering={FadeInDown.delay(120).duration(400)}
                 style={{ paddingTop: 40, alignItems: "center", gap: 8 }}
@@ -231,13 +229,20 @@ export default function WorkoutsScreen() {
                     textAlign: "center",
                   }}
                 >
-                  No workouts yet.{"\n"}Tap + to create your first one.
+                  No plans yet.{"\n"}Tap + to create your first one.
                 </Text>
               </Animated.View>
             ) : (
               <View style={{ gap: 10 }}>
-                {workouts.map((workout, index) => (
-                  <WorkoutCard key={workout.id} workout={workout} index={index} />
+                {plans.map((plan, index) => (
+                  <PlanCard
+                    key={plan.id}
+                    plan={plan}
+                    index={index}
+                    onPress={() =>
+                      router.push({ pathname: "/(tabs)/Workouts/plan", params: { planId: plan.id } })
+                    }
+                  />
                 ))}
               </View>
             )}

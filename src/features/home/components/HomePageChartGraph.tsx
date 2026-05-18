@@ -56,7 +56,7 @@ export function HomePageChartGraph() {
 
   return (
     <Animated.View
-      entering={FadeInDown.delay(250).springify().damping(18)}
+      entering={FadeInDown.delay(250).duration(400)}
       style={{
         marginHorizontal: 16,
         borderRadius: 20,
@@ -128,7 +128,7 @@ export function HomePageChartGraph() {
 
           {/* Trend badge */}
           <Animated.View
-            entering={FadeInUp.delay(600).springify()}
+            entering={FadeInUp.delay(600).duration(400)}
             style={{
               flexDirection: "row",
               alignItems: "center",

@@ -122,9 +122,7 @@ export default function ScheduleBar() {
           return (
             <Animated.View
               key={day.name}
-              entering={FadeInDown.delay(140 + index * 40)
-                .springify()
-                .damping(20)}
+              entering={FadeInDown.delay(140 + index * 40).duration(400)}
               style={{ alignItems: "center", justifyContent: "center" }}
             >
               <Text

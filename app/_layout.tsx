@@ -2,6 +2,7 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { useStorageCleaner } from "@/hooks/useStorageCleaner";
 import { AuthProvider } from "@/src/features/auth/hooks/useAuth";
 import { initDb } from "@/src/lib/db";
+import { runOutboxSync } from "@/src/features/workouts/services/syncService";
 import {
   Inter_400Regular,
   Inter_500Medium,
@@ -15,8 +16,11 @@ import {
 } from "@react-navigation/native";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { AppState, type AppStateStatus } from "react-native";
 import "react-native-reanimated";
+
+const SYNC_INTERVAL_MS = 30_000;
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -30,9 +34,36 @@ export default function RootLayout() {
   });
 
   const [dbReady, setDbReady] = useState(false);
+  const appState = useRef(AppState.currentState);
 
   useEffect(() => {
-    initDb().then(() => setDbReady(true));
+    initDb().then(() => {
+      setDbReady(true);
+      runOutboxSync();
+    });
+
+    // Sync when app returns to foreground
+    const subscription = AppState.addEventListener(
+      "change",
+      (next: AppStateStatus) => {
+        if (appState.current.match(/inactive|background/) && next === "active") {
+          runOutboxSync();
+        }
+        appState.current = next;
+      }
+    );
+
+    // Periodic sync while app is active
+    const interval = setInterval(() => {
+      if (AppState.currentState === "active") {
+        runOutboxSync();
+      }
+    }, SYNC_INTERVAL_MS);
+
+    return () => {
+      subscription.remove();
+      clearInterval(interval);
+    };
   }, []);
 
   if (!loaded || !dbReady) {

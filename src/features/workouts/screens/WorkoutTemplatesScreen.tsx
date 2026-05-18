@@ -98,9 +98,7 @@ function TemplateCard({
 }) {
   return (
     <Animated.View
-      entering={FadeInDown.delay(100 + index * 80)
-        .springify()
-        .damping(18)}
+      entering={FadeInDown.delay(100 + index * 80).duration(400)}
       style={{ width: CARD_WIDTH }}
     >
       <TouchableOpacity activeOpacity={0.7}>
@@ -316,7 +314,7 @@ export default function WorkoutTemplatesScreen() {
           {/* Create Custom Workout CTA */}
           <View style={{ paddingHorizontal: 20 }}>
             <Animated.View
-              entering={FadeInDown.delay(700).springify().damping(18)}
+              entering={FadeInDown.delay(700).duration(400)}
             >
               <TouchableOpacity activeOpacity={0.7}>
                 <View

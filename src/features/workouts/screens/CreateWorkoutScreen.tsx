@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import {
   Alert,
@@ -25,6 +25,8 @@ type ExerciseRow = {
   targetReps: string;
 };
 
+const DAY_LABELS = ["S", "M", "T", "W", "T", "F", "S"];
+
 let keyCounter = 0;
 function newKey() {
   return String(++keyCounter);
@@ -32,11 +34,19 @@ function newKey() {
 
 export default function CreateWorkoutScreen() {
   const router = useRouter();
+  const { planId } = useLocalSearchParams<{ planId: string }>();
   const { createWorkout, saving } = useCreateWorkout();
 
   const [workoutName, setWorkoutName] = useState("");
+  const [daysOfWeek, setDaysOfWeek] = useState<number[]>([]);
   const [exercises, setExercises] = useState<ExerciseRow[]>([]);
   const [pickerVisible, setPickerVisible] = useState(false);
+
+  function toggleDay(day: number) {
+    setDaysOfWeek((prev) =>
+      prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]
+    );
+  }
 
   function handleSelectExercise(catalog: CatalogExercise) {
     setExercises((prev) => [
@@ -56,6 +66,10 @@ export default function CreateWorkoutScreen() {
   }
 
   async function handleSave() {
+    if (!planId) {
+      Alert.alert("Error", "No plan selected.");
+      return;
+    }
     const name = workoutName.trim();
     if (!name) {
       Alert.alert("Name required", "Please enter a workout name.");
@@ -75,7 +89,9 @@ export default function CreateWorkoutScreen() {
     }
 
     await createWorkout({
+      planId,
       name,
+      daysOfWeek,
       exercises: exercises.map((e) => ({
         catalogExerciseId: e.catalogExercise.id,
         name: e.catalogExercise.name,
@@ -172,7 +188,7 @@ export default function CreateWorkoutScreen() {
             <TextInput
               value={workoutName}
               onChangeText={setWorkoutName}
-              placeholder="e.g. Monday Push Day"
+              placeholder="e.g. Push Day, Legs"
               placeholderTextColor="#333"
               style={{
                 backgroundColor: "#191919",
@@ -187,8 +203,56 @@ export default function CreateWorkoutScreen() {
             />
           </Animated.View>
 
+          {/* Days of week */}
+          <Animated.View entering={FadeInDown.delay(140).duration(350)}>
+            <Text
+              style={{
+                color: "#666",
+                fontSize: 11,
+                fontFamily: "Inter_500Medium",
+                letterSpacing: 0.8,
+                textTransform: "uppercase",
+                marginBottom: 10,
+              }}
+            >
+              Days
+            </Text>
+            <View style={{ flexDirection: "row", gap: 8 }}>
+              {DAY_LABELS.map((label, i) => {
+                const selected = daysOfWeek.includes(i);
+                return (
+                  <TouchableOpacity
+                    key={i}
+                    onPress={() => toggleDay(i)}
+                    activeOpacity={0.7}
+                    style={{
+                      flex: 1,
+                      aspectRatio: 1,
+                      borderRadius: 10,
+                      backgroundColor: selected ? "rgba(16,185,129,0.15)" : "#191919",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      borderWidth: 1,
+                      borderColor: selected ? "rgba(16,185,129,0.5)" : "rgba(255,255,255,0.06)",
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: selected ? "#10b981" : "#555",
+                        fontSize: 12,
+                        fontFamily: selected ? "Inter_600SemiBold" : "Inter_400Regular",
+                      }}
+                    >
+                      {label}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </Animated.View>
+
           {/* Exercises */}
-          <Animated.View entering={FadeInDown.delay(160).duration(350)}>
+          <Animated.View entering={FadeInDown.delay(180).duration(350)}>
             <View
               style={{
                 flexDirection: "row",
@@ -224,7 +288,7 @@ export default function CreateWorkoutScreen() {
               {exercises.map((row, index) => (
                 <Animated.View
                   key={row.key}
-                  entering={FadeInRight.delay(index * 50).springify().damping(18)}
+                  entering={FadeInRight.delay(index * 50).duration(400)}
                 >
                   <View
                     style={{

@@ -19,9 +19,7 @@ export default function SetRow({ set, isCurrent, index }: SetRowProps) {
 
   return (
     <Animated.View
-      entering={FadeInDown.delay(200 + index * 60)
-        .springify()
-        .damping(20)}
+      entering={FadeInDown.delay(200 + index * 60).duration(400)}
       style={[
         styles.row,
         isCompleted && styles.completedRow,
