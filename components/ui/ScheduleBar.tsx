@@ -1,170 +1,186 @@
+import { FontFamilies, Palette } from "@/constants/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-import { Dimensions, Text, View } from "react-native";
+import { Dimensions, StyleSheet, Text, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
+type DayType = "rest" | "completed" | "future" | "today";
+
 export default function ScheduleBar() {
+  const todayIdx = new Date().getDay();
   const [days] = useState([
-    { name: "Sun", date: 17, type: "rest" },
-    { name: "Mon", date: 11, type: "completed" },
-    { name: "Tue", date: 12, type: "completed" },
-    { name: "Wed", date: 13, type: "rest" },
-    { name: "Thu", date: 14, type: "future" },
-    { name: "Fri", date: 15, type: "future" },
-    { name: "Sat", date: 16, type: "rest" },
+    { name: "Sun", date: 17, type: "rest" as DayType },
+    { name: "Mon", date: 11, type: "completed" as DayType },
+    { name: "Tue", date: 12, type: "completed" as DayType },
+    { name: "Wed", date: 13, type: "rest" as DayType },
+    { name: "Thu", date: 14, type: "future" as DayType },
+    { name: "Fri", date: 15, type: "future" as DayType },
+    { name: "Sat", date: 16, type: "rest" as DayType },
   ]);
 
   const screenWidth = Dimensions.get("window").width;
   const circleSize = (screenWidth - 48 - 6 * 10) / 7;
 
-  const getDayStyle = (day: any) => {
-    switch (day.type) {
-      case "rest":
-        return {
-          bg: "#191919",
-          border: "rgba(255,255,255,0.04)",
-          text: "#555",
-          nameFill: "#444",
-        };
-      case "completed":
-        return {
-          bg: "#10b981",
-          border: "#10b981",
-          text: "#ffffff",
-          nameFill: "#10b981",
-        };
-      case "future":
-        return {
-          bg: "transparent",
-          border: "rgba(16, 185, 129, 0.2)",
-          text: "#888",
-          nameFill: "#666",
-        };
-      default:
-        return {
-          bg: "#191919",
-          border: "rgba(255,255,255,0.04)",
-          text: "#555",
-          nameFill: "#444",
-        };
-    }
-  };
-
   return (
-    <Animated.View
-      entering={FadeInDown.delay(100).duration(400)}
-      style={{
-        paddingHorizontal: 20,
-        paddingTop: 16,
-        paddingBottom: 8,
-        backgroundColor: "#0f0f0f",
-      }}
-    >
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "space-between",
-          marginBottom: 14,
-        }}
-      >
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-          <View
-            style={{
-              width: 4,
-              height: 18,
-              borderRadius: 2,
-              backgroundColor: "#f59e0b",
-            }}
-          />
-          <Text
-            style={{
-              color: "#ffffff",
-              fontSize: 16,
-              fontFamily: "Inter_600SemiBold",
-              letterSpacing: 0.3,
-            }}
-          >
-            This Week
-          </Text>
+    <Animated.View entering={FadeInDown.delay(60).duration(400)} style={styles.wrap}>
+      <View style={styles.header}>
+        <View>
+          <Text style={styles.eyebrow}>This Week</Text>
+          <Text style={styles.title}>Rhythm</Text>
         </View>
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-          <View
-            style={{
-              width: 8,
-              height: 8,
-              borderRadius: 4,
-              backgroundColor: "#10b981",
-            }}
-          />
-          <Text
-            style={{
-              color: "#555",
-              fontSize: 11,
-              fontFamily: "Inter_400Regular",
-            }}
-          >
-            2 of 4 done
-          </Text>
+        <View style={styles.legend}>
+          <View style={styles.legendDot} />
+          <Text style={styles.legendText}>2 / 4 done</Text>
         </View>
       </View>
 
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          gap: 6,
-          paddingBottom: 8,
-        }}
-      >
-        {days.map((day, index) => {
-          const style = getDayStyle(day);
-          return (
-            <Animated.View
-              key={day.name}
-              entering={FadeInDown.delay(140 + index * 40).duration(400)}
-              style={{ alignItems: "center", justifyContent: "center" }}
-            >
-              <Text
-                style={{
-                  color: style.nameFill,
-                  fontSize: 11,
-                  fontFamily: "Inter_500Medium",
-                  marginBottom: 8,
-                }}
+      <View style={styles.weekTrack}>
+        <View style={styles.baseline} />
+        <View style={styles.weekRow}>
+          {days.map((day, index) => {
+            const isToday = index === todayIdx;
+            const isCompleted = day.type === "completed";
+            const isFuture = day.type === "future";
+
+            return (
+              <Animated.View
+                key={day.name}
+                entering={FadeInDown.delay(120 + index * 36).duration(400)}
+                style={styles.dayCol}
               >
-                {day.name}
-              </Text>
-              <View
-                style={{
-                  width: circleSize,
-                  height: circleSize,
-                  borderRadius: circleSize / 2,
-                  borderWidth: 1.5,
-                  borderColor: style.border,
-                  backgroundColor: style.bg,
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                {day.type === "completed" ? (
-                  <Ionicons name="checkmark" size={16} color="#ffffff" />
-                ) : (
-                  <Text
-                    style={{
-                      color: style.text,
-                      fontSize: 13,
-                      fontFamily: "Inter_600SemiBold",
-                    }}
-                  >
-                    {day.date}
-                  </Text>
-                )}
-              </View>
-            </Animated.View>
-          );
-        })}
+                <Text
+                  style={[
+                    styles.dayName,
+                    {
+                      color: isToday
+                        ? Palette.accent
+                        : isCompleted
+                        ? Palette.bone
+                        : Palette.mutedSoft,
+                    },
+                  ]}
+                >
+                  {day.name.toUpperCase()}
+                </Text>
+                <View
+                  style={[
+                    styles.dayCircle,
+                    {
+                      width: circleSize,
+                      height: circleSize,
+                      borderRadius: circleSize / 2,
+                      backgroundColor: isCompleted ? Palette.accent : "transparent",
+                      borderColor: isToday
+                        ? Palette.accent
+                        : isCompleted
+                        ? Palette.accent
+                        : isFuture
+                        ? Palette.hairlineStrong
+                        : Palette.hairline,
+                    },
+                  ]}
+                >
+                  {isCompleted ? (
+                    <Ionicons name="checkmark" size={14} color={Palette.ink} />
+                  ) : (
+                    <Text
+                      style={[
+                        styles.dayNum,
+                        {
+                          color: isToday
+                            ? Palette.accent
+                            : isFuture
+                            ? Palette.muted
+                            : Palette.mutedSoft,
+                        },
+                      ]}
+                    >
+                      {day.date}
+                    </Text>
+                  )}
+                </View>
+                {isToday && <View style={styles.todayDot} />}
+              </Animated.View>
+            );
+          })}
+        </View>
       </View>
     </Animated.View>
   );
 }
+
+const styles = StyleSheet.create({
+  wrap: {
+    paddingHorizontal: 20,
+    paddingTop: 18,
+    paddingBottom: 4,
+    backgroundColor: "transparent",
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "flex-end",
+    justifyContent: "space-between",
+    marginBottom: 18,
+  },
+  eyebrow: {
+    color: Palette.accent,
+    fontSize: 9,
+    fontFamily: FontFamilies.medium,
+    letterSpacing: 2.4,
+    textTransform: "uppercase",
+    marginBottom: 4,
+  },
+  title: {
+    color: Palette.bone,
+    fontSize: 22,
+    fontFamily: FontFamilies.displayMedium,
+    letterSpacing: -0.4,
+  },
+  legend: { flexDirection: "row", alignItems: "center", gap: 8, paddingBottom: 4 },
+  legendDot: { width: 5, height: 5, borderRadius: 2.5, backgroundColor: Palette.accent },
+  legendText: {
+    color: Palette.muted,
+    fontSize: 10,
+    fontFamily: FontFamilies.regular,
+    letterSpacing: 1.4,
+    textTransform: "uppercase",
+  },
+  weekTrack: { position: "relative", paddingBottom: 6 },
+  baseline: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: 18,
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: Palette.hairline,
+  },
+  weekRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 6,
+  },
+  dayCol: { alignItems: "center", justifyContent: "center" },
+  dayName: {
+    fontSize: 9,
+    fontFamily: FontFamilies.medium,
+    letterSpacing: 1.6,
+    marginBottom: 10,
+  },
+  dayCircle: {
+    borderWidth: StyleSheet.hairlineWidth,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  dayNum: {
+    fontSize: 12,
+    fontFamily: FontFamilies.displayMedium,
+    fontVariant: ["tabular-nums"],
+  },
+  todayDot: {
+    width: 3,
+    height: 3,
+    borderRadius: 1.5,
+    backgroundColor: Palette.accent,
+    marginTop: 6,
+  },
+});

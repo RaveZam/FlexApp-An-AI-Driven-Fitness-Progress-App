@@ -1,10 +1,8 @@
+import { FontFamilies, Palette } from "@/constants/theme";
 import { Feather } from "@expo/vector-icons";
 import { useState } from "react";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import ReAnimated, { FadeInDown } from "react-native-reanimated";
-import * as Progress from "react-native-progress";
-
-// ─── Types ────────────────────────────────────────────────────────────────────
 
 type BodyPart = "All" | "Chest" | "Back" | "Shoulders" | "Biceps" | "Triceps" | "Legs";
 
@@ -16,10 +14,8 @@ interface ExerciseProgress {
   unit: "kg" | "lbs";
   deltaWeight: number;
   deltaReps: number;
-  progress: number; // 0–1, relative to personal best
+  progress: number;
 }
-
-// ─── Mock Data ────────────────────────────────────────────────────────────────
 
 const EXERCISES: ExerciseProgress[] = [
   { name: "Bench Press",      bodyPart: "Chest",     currentWeight: 95,    currentReps: 8,  unit: "kg", deltaWeight: 7.5, deltaReps: 1,  progress: 0.72 },
@@ -39,8 +35,7 @@ const EXERCISES: ExerciseProgress[] = [
 ];
 
 const FILTERS: BodyPart[] = ["All", "Chest", "Back", "Shoulders", "Biceps", "Triceps", "Legs"];
-
-// ─── Sub-components ───────────────────────────────────────────────────────────
+const PAGE_SIZE = 5;
 
 function FilterChip({
   label,
@@ -52,183 +47,69 @@ function FilterChip({
   onPress: () => void;
 }) {
   return (
-    <TouchableOpacity
-      onPress={onPress}
-      activeOpacity={0.75}
-      style={{
-        paddingHorizontal: 14,
-        paddingVertical: 6,
-        borderRadius: 20,
-        backgroundColor: selected ? "#10b981" : "#242424",
-        borderWidth: 1,
-        borderColor: selected ? "#10b981" : "rgba(255,255,255,0.06)",
-        marginRight: 8,
-      }}
-    >
+    <TouchableOpacity onPress={onPress} activeOpacity={0.7} hitSlop={6} style={styles.chip}>
       <Text
-        style={{
-          color: selected ? "#ffffff" : "#888",
-          fontSize: 12,
-          fontFamily: selected ? "Inter_700Bold" : "Inter_500Medium",
-          letterSpacing: 0.2,
-        }}
+        style={[
+          styles.chipText,
+          {
+            color: selected ? Palette.accent : Palette.muted,
+            fontFamily: selected ? FontFamilies.medium : FontFamilies.regular,
+          },
+        ]}
       >
         {label}
       </Text>
+      {selected && <View style={styles.chipUnderline} />}
     </TouchableOpacity>
   );
 }
 
-function ExerciseRow({
-  item,
-  delay,
-}: {
-  item: ExerciseProgress;
-  delay: number;
-}) {
+function ExerciseRow({ item, delay }: { item: ExerciseProgress; delay: number }) {
   return (
-    <ReAnimated.View entering={FadeInDown.delay(delay).duration(400)}>
-      <View
-        style={{
-          paddingVertical: 14,
-          borderBottomWidth: 1,
-          borderBottomColor: "rgba(255,255,255,0.04)",
-        }}
-      >
-        {/* Top row: name + weight */}
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "flex-start",
-            justifyContent: "space-between",
-            marginBottom: 8,
-          }}
-        >
-          {/* Left: exercise info */}
-          <View style={{ flex: 1 }}>
-            <Text
-              style={{
-                color: "#ffffff",
-                fontSize: 15,
-                fontFamily: "Inter_600SemiBold",
-                marginBottom: 2,
-              }}
-            >
-              {item.name}
-            </Text>
-            <Text
-              style={{
-                color: "#555",
-                fontSize: 12,
-                fontFamily: "Inter_400Regular",
-              }}
-            >
-              last 4 weeks
-            </Text>
-          </View>
-
-          {/* Right: weight + reps + deltas */}
-          <View style={{ alignItems: "flex-end", gap: 5 }}>
-            {/* Current stats */}
-            <View style={{ flexDirection: "row", alignItems: "baseline", gap: 6 }}>
-              <Text
-                style={{
-                  color: "#ffffff",
-                  fontSize: 17,
-                  fontFamily: "Inter_700Bold",
-                  letterSpacing: -0.3,
-                }}
-              >
-                {item.currentWeight} {item.unit}
-              </Text>
-              <Text
-                style={{
-                  color: "#666",
-                  fontSize: 12,
-                  fontFamily: "Inter_500Medium",
-                }}
-              >
-                × {item.currentReps}
-              </Text>
-            </View>
-
-            {/* Delta badges */}
-            <View style={{ flexDirection: "row", gap: 5 }}>
-              <View
-                style={{
-                  backgroundColor: "#0d2e1a",
-                  paddingHorizontal: 8,
-                  paddingVertical: 3,
-                  borderRadius: 20,
-                  borderWidth: 1,
-                  borderColor: "rgba(16,185,129,0.2)",
-                }}
-              >
-                <Text
-                  style={{
-                    color: "#10b981",
-                    fontSize: 11,
-                    fontFamily: "Inter_700Bold",
-                  }}
-                >
-                  +{item.deltaWeight} {item.unit}
-                </Text>
-              </View>
-              {item.deltaReps > 0 && (
-                <View
-                  style={{
-                    backgroundColor: "#0d2e1a",
-                    paddingHorizontal: 8,
-                    paddingVertical: 3,
-                    borderRadius: 20,
-                    borderWidth: 1,
-                    borderColor: "rgba(16,185,129,0.2)",
-                  }}
-                >
-                  <Text
-                    style={{
-                      color: "#10b981",
-                      fontSize: 11,
-                      fontFamily: "Inter_700Bold",
-                    }}
-                  >
-                    +{item.deltaReps} rep{item.deltaReps > 1 ? "s" : ""}
-                  </Text>
-                </View>
-              )}
-            </View>
-          </View>
+    <ReAnimated.View entering={FadeInDown.delay(delay).duration(400)} style={styles.exerciseRow}>
+      <View style={styles.exerciseTop}>
+        <View style={{ flex: 1, paddingRight: 12 }}>
+          <Text style={styles.exerciseName}>{item.name}</Text>
+          <Text style={styles.exerciseMeta}>{item.bodyPart.toUpperCase()}</Text>
         </View>
 
-        {/* Progress bar */}
-        <Progress.Bar
-          progress={item.progress}
-          width={null}
-          height={5}
-          color="#10b981"
-          unfilledColor="rgba(16,185,129,0.08)"
-          borderColor="transparent"
-          borderRadius={3}
-          animationConfig={{ bounciness: 0 }}
-        />
+        <View style={{ alignItems: "flex-end" }}>
+          <View style={styles.weightRow}>
+            <Text style={styles.weightValue}>{item.currentWeight}</Text>
+            <Text style={styles.weightUnit}>{item.unit}</Text>
+            <Text style={styles.weightReps}>× {item.currentReps}</Text>
+          </View>
+          <View style={styles.deltaRow}>
+            <Text style={styles.deltaText}>
+              +{item.deltaWeight}
+              <Text style={styles.deltaUnit}> {item.unit}</Text>
+            </Text>
+            {item.deltaReps > 0 && (
+              <>
+                <View style={styles.deltaDot} />
+                <Text style={styles.deltaText}>
+                  +{item.deltaReps}
+                  <Text style={styles.deltaUnit}> rep{item.deltaReps > 1 ? "s" : ""}</Text>
+                </Text>
+              </>
+            )}
+          </View>
+        </View>
+      </View>
+
+      <View style={styles.progressTrack}>
+        <View style={[styles.progressFill, { width: `${item.progress * 100}%` }]} />
       </View>
     </ReAnimated.View>
   );
 }
-
-// ─── Main Component ───────────────────────────────────────────────────────────
-
-const PAGE_SIZE = 5;
 
 export function ProgressiveOverload() {
   const [activeFilter, setActiveFilter] = useState<BodyPart>("All");
   const [page, setPage] = useState(0);
 
   const filtered =
-    activeFilter === "All"
-      ? EXERCISES
-      : EXERCISES.filter((e) => e.bodyPart === activeFilter);
-
+    activeFilter === "All" ? EXERCISES : EXERCISES.filter((e) => e.bodyPart === activeFilter);
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
   const paginated = filtered.slice(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE);
 
@@ -238,198 +119,233 @@ export function ProgressiveOverload() {
   };
 
   return (
-    <ReAnimated.View
-      entering={FadeInDown.delay(390).duration(400)}
-      style={{
-        marginHorizontal: 16,
-        borderRadius: 16,
-        backgroundColor: "#191919",
-        overflow: "hidden",
-        borderWidth: 1,
-        borderColor: "rgba(255,255,255,0.04)",
-      }}
-    >
-      {/* Top accent strip */}
-      <View style={{ height: 3, backgroundColor: "#10b981", opacity: 0.7 }} />
-
-      <View style={{ paddingTop: 16 }}>
-        {/* Header */}
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-            paddingHorizontal: 16,
-            marginBottom: 4,
-          }}
-        >
-          <Text
-            style={{
-              color: "#ffffff",
-              fontSize: 15,
-              fontFamily: "Inter_600SemiBold",
-            }}
-          >
-            Progressive Overload
-          </Text>
-
-          <View
-            style={{
-              backgroundColor: "#0d2e1a",
-              paddingHorizontal: 10,
-              paddingVertical: 4,
-              borderRadius: 20,
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 5,
-              borderWidth: 1,
-              borderColor: "rgba(16,185,129,0.2)",
-            }}
-          >
-            <Feather name="trending-up" size={11} color="#10b981" />
-            <Text
-              style={{
-                color: "#10b981",
-                fontSize: 11,
-                fontFamily: "Inter_700Bold",
-              }}
-            >
-              trending up
-            </Text>
-          </View>
+    <ReAnimated.View entering={FadeInDown.delay(390).duration(400)} style={styles.card}>
+      <View style={styles.header}>
+        <View>
+          <Text style={styles.eyebrow}>Compared to last session</Text>
+          <Text style={styles.title}>Progressive Overload</Text>
         </View>
-
-        {/* Subtitle */}
-        <Text
-          style={{
-            color: "#444",
-            fontSize: 11,
-            fontFamily: "Inter_400Regular",
-            paddingHorizontal: 16,
-            marginBottom: 14,
-          }}
-        >
-          Compared to your last session
-        </Text>
-
-        {/* Filter chips */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{
-            paddingHorizontal: 16,
-            paddingBottom: 14,
-          }}
-        >
-          {FILTERS.map((f) => (
-            <FilterChip
-              key={f}
-              label={f}
-              selected={activeFilter === f}
-              onPress={() => handleFilterChange(f)}
-            />
-          ))}
-        </ScrollView>
-
-        {/* Divider */}
-        <View
-          style={{
-            height: 1,
-            backgroundColor: "rgba(255,255,255,0.04)",
-            marginHorizontal: 16,
-          }}
-        />
-
-        {/* Exercise list */}
-        <View style={{ paddingHorizontal: 16 }}>
-          {paginated.map((item, index) => (
-            <ExerciseRow
-              key={item.name}
-              item={item}
-              delay={index * 40}
-            />
-          ))}
+        <View style={styles.trendChip}>
+          <Feather name="trending-up" size={11} color={Palette.accent} />
+          <Text style={styles.trendText}>Trending up</Text>
         </View>
-
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-              paddingHorizontal: 16,
-              paddingTop: 12,
-              paddingBottom: 4,
-            }}
-          >
-            <TouchableOpacity
-              onPress={() => setPage((p) => Math.max(0, p - 1))}
-              disabled={page === 0}
-              activeOpacity={0.7}
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 4,
-                opacity: page === 0 ? 0.3 : 1,
-              }}
-            >
-              <Feather name="chevron-left" size={14} color="#10b981" />
-              <Text
-                style={{
-                  color: "#10b981",
-                  fontSize: 12,
-                  fontFamily: "Inter_600SemiBold",
-                }}
-              >
-                Prev
-              </Text>
-            </TouchableOpacity>
-
-            {/* Dots */}
-            <View style={{ flexDirection: "row", gap: 5, alignItems: "center" }}>
-              {Array.from({ length: totalPages }).map((_, i) => (
-                <TouchableOpacity key={i} onPress={() => setPage(i)} activeOpacity={0.7}>
-                  <View
-                    style={{
-                      width: i === page ? 16 : 5,
-                      height: 5,
-                      borderRadius: 3,
-                      backgroundColor: i === page ? "#10b981" : "rgba(16,185,129,0.25)",
-                    }}
-                  />
-                </TouchableOpacity>
-              ))}
-            </View>
-
-            <TouchableOpacity
-              onPress={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
-              disabled={page === totalPages - 1}
-              activeOpacity={0.7}
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 4,
-                opacity: page === totalPages - 1 ? 0.3 : 1,
-              }}
-            >
-              <Text
-                style={{
-                  color: "#10b981",
-                  fontSize: 12,
-                  fontFamily: "Inter_600SemiBold",
-                }}
-              >
-                Next
-              </Text>
-              <Feather name="chevron-right" size={14} color="#10b981" />
-            </TouchableOpacity>
-          </View>
-        )}
-
-        {/* Bottom padding */}
-        <View style={{ height: 8 }} />
       </View>
+
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.chipRow}
+      >
+        {FILTERS.map((f) => (
+          <FilterChip
+            key={f}
+            label={f}
+            selected={activeFilter === f}
+            onPress={() => handleFilterChange(f)}
+          />
+        ))}
+      </ScrollView>
+
+      <View style={styles.divider} />
+
+      <View style={styles.list}>
+        {paginated.map((item, index) => (
+          <ExerciseRow key={item.name} item={item} delay={index * 40} />
+        ))}
+      </View>
+
+      {totalPages > 1 && (
+        <View style={styles.pagination}>
+          <TouchableOpacity
+            onPress={() => setPage((p) => Math.max(0, p - 1))}
+            disabled={page === 0}
+            activeOpacity={0.7}
+            style={[styles.pageBtn, page === 0 && { opacity: 0.3 }]}
+          >
+            <Feather name="chevron-left" size={13} color={Palette.accent} />
+            <Text style={styles.pageBtnText}>Prev</Text>
+          </TouchableOpacity>
+
+          <View style={styles.dots}>
+            {Array.from({ length: totalPages }).map((_, i) => (
+              <TouchableOpacity key={i} onPress={() => setPage(i)} activeOpacity={0.7} hitSlop={6}>
+                <View
+                  style={{
+                    width: i === page ? 14 : 4,
+                    height: 4,
+                    borderRadius: 2,
+                    backgroundColor: i === page ? Palette.accent : Palette.hairlineStrong,
+                  }}
+                />
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          <TouchableOpacity
+            onPress={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+            disabled={page === totalPages - 1}
+            activeOpacity={0.7}
+            style={[styles.pageBtn, page === totalPages - 1 && { opacity: 0.3 }]}
+          >
+            <Text style={styles.pageBtnText}>Next</Text>
+            <Feather name="chevron-right" size={13} color={Palette.accent} />
+          </TouchableOpacity>
+        </View>
+      )}
     </ReAnimated.View>
   );
 }
+
+const styles = StyleSheet.create({
+  card: {
+    marginHorizontal: 20,
+    borderRadius: 18,
+    backgroundColor: Palette.inkSunken,
+    overflow: "hidden",
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: Palette.hairline,
+    paddingVertical: 20,
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "flex-end",
+    justifyContent: "space-between",
+    paddingHorizontal: 20,
+    marginBottom: 16,
+  },
+  eyebrow: {
+    color: Palette.muted,
+    fontSize: 9,
+    fontFamily: FontFamilies.medium,
+    letterSpacing: 2,
+    textTransform: "uppercase",
+    marginBottom: 6,
+  },
+  title: {
+    color: Palette.bone,
+    fontSize: 18,
+    fontFamily: FontFamilies.displayMedium,
+    letterSpacing: -0.3,
+  },
+  trendChip: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 20,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: Palette.accentBorderSoft,
+  },
+  trendText: {
+    color: Palette.accent,
+    fontSize: 10,
+    fontFamily: FontFamilies.medium,
+    letterSpacing: 0.5,
+  },
+  chipRow: { paddingHorizontal: 20, gap: 18, paddingBottom: 14 },
+  chip: { alignItems: "center", paddingVertical: 4 },
+  chipText: {
+    fontSize: 11,
+    letterSpacing: 1.6,
+    textTransform: "uppercase",
+  },
+  chipUnderline: {
+    height: 1,
+    width: 16,
+    backgroundColor: Palette.accent,
+    marginTop: 6,
+  },
+  divider: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: Palette.hairline,
+    marginHorizontal: 20,
+  },
+  list: { paddingHorizontal: 20 },
+  exerciseRow: {
+    paddingVertical: 16,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: Palette.hairline,
+  },
+  exerciseTop: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
+    marginBottom: 10,
+  },
+  exerciseName: {
+    color: Palette.bone,
+    fontSize: 14,
+    fontFamily: FontFamilies.displayMedium,
+    letterSpacing: -0.2,
+    marginBottom: 4,
+  },
+  exerciseMeta: {
+    color: Palette.mutedSoft,
+    fontSize: 9,
+    fontFamily: FontFamilies.medium,
+    letterSpacing: 1.6,
+  },
+  weightRow: { flexDirection: "row", alignItems: "baseline", gap: 4 },
+  weightValue: {
+    color: Palette.bone,
+    fontSize: 18,
+    fontFamily: FontFamilies.displayMedium,
+    letterSpacing: -0.4,
+    fontVariant: ["tabular-nums"],
+  },
+  weightUnit: {
+    color: Palette.muted,
+    fontSize: 11,
+    fontFamily: FontFamilies.regular,
+  },
+  weightReps: {
+    color: Palette.muted,
+    fontSize: 12,
+    fontFamily: FontFamilies.regular,
+    marginLeft: 4,
+    fontVariant: ["tabular-nums"],
+  },
+  deltaRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    marginTop: 4,
+  },
+  deltaText: {
+    color: Palette.accent,
+    fontSize: 10,
+    fontFamily: FontFamilies.medium,
+    letterSpacing: 0.4,
+    fontVariant: ["tabular-nums"],
+  },
+  deltaUnit: { color: Palette.muted, fontFamily: FontFamilies.regular },
+  deltaDot: {
+    width: 2,
+    height: 2,
+    borderRadius: 1,
+    backgroundColor: Palette.mutedSoft,
+  },
+  progressTrack: {
+    height: 1,
+    backgroundColor: Palette.hairline,
+    overflow: "hidden",
+  },
+  progressFill: { height: "100%", backgroundColor: Palette.accent },
+  pagination: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 20,
+    paddingTop: 16,
+  },
+  pageBtn: { flexDirection: "row", alignItems: "center", gap: 5 },
+  pageBtnText: {
+    color: Palette.accent,
+    fontSize: 10,
+    fontFamily: FontFamilies.medium,
+    letterSpacing: 1.6,
+    textTransform: "uppercase",
+  },
+  dots: { flexDirection: "row", gap: 5, alignItems: "center" },
+});

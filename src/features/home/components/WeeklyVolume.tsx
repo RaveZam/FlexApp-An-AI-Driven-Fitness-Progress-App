@@ -1,118 +1,133 @@
+import { FontFamilies, Palette } from "@/constants/theme";
 import { Feather } from "@expo/vector-icons";
-import { Dimensions, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
-import * as Progress from "react-native-progress";
+
+const GOAL = 60000;
+const CURRENT = 47250;
 
 export function WeeklyVolume() {
+  const progress = Math.min(1, CURRENT / GOAL);
+  const pct = Math.round(progress * 100);
+
   return (
-    <Animated.View
-      entering={FadeInDown.delay(330).duration(400)}
-      style={{
-        marginHorizontal: 16,
-        borderRadius: 16,
-        backgroundColor: "#191919",
-        overflow: "hidden",
-        borderWidth: 1,
-        borderColor: "rgba(255,255,255,0.04)",
-      }}
-    >
-      {/* Accent strip */}
-      <View
-        style={{
-          height: 3,
-          backgroundColor: "#3b82f6",
-          opacity: 0.6,
-        }}
-      />
-
-      <View style={{ padding: 16 }}>
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-            marginBottom: 12,
-          }}
-        >
-          <Text
-            style={{
-              color: "#ffffff",
-              fontSize: 15,
-              fontFamily: "Inter_600SemiBold",
-            }}
-          >
-            Weekly Volume
-          </Text>
-          <View
-            style={{
-              backgroundColor: "#1e3a5f",
-              paddingHorizontal: 8,
-              paddingVertical: 3,
-              borderRadius: 6,
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 4,
-            }}
-          >
-            <Feather name="trending-up" size={11} color="#3b82f6" />
-            <Text
-              style={{
-                color: "#3b82f6",
-                fontSize: 11,
-                fontFamily: "Inter_700Bold",
-              }}
-            >
-              +12%
-            </Text>
+    <Animated.View entering={FadeInDown.delay(330).duration(400)} style={styles.card}>
+      <View style={styles.row}>
+        <View>
+          <Text style={styles.eyebrow}>Weekly Goal</Text>
+          <View style={styles.valueRow}>
+            <Text style={styles.pct}>{pct}</Text>
+            <Text style={styles.pctUnit}>%</Text>
           </View>
         </View>
-
-        {/* Progress bar */}
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            gap: 12,
-            marginBottom: 8,
-          }}
-        >
-          <View style={{ flex: 1 }}>
-            <Progress.Bar
-              progress={0.66}
-              width={null}
-              height={8}
-              color="#3b82f6"
-              unfilledColor="rgba(59, 130, 246, 0.1)"
-              borderColor="transparent"
-              borderRadius={4}
-              animationConfig={{
-                bounciness: 1,
-              }}
-            />
-          </View>
-          <Text
-            style={{
-              color: "#3b82f6",
-              fontSize: 14,
-              fontFamily: "Inter_700Bold",
-              minWidth: 38,
-              textAlign: "right",
-            }}
-          >
-            66%
-          </Text>
+        <View style={styles.trendChip}>
+          <Feather name="trending-up" size={11} color={Palette.accent} />
+          <Text style={styles.trendText}>+12%</Text>
         </View>
+      </View>
 
-        <Text
-          style={{
-            color: "#555",
-            fontSize: 12,
-            fontFamily: "Inter_400Regular",
-          }}
-        >
-          47,250 lbs of 60,000 lbs goal
+      <View style={styles.track}>
+        <View style={[styles.fill, { width: `${pct}%` }]} />
+      </View>
+
+      <View style={styles.captionRow}>
+        <Text style={styles.captionLeft}>
+          <Text style={styles.captionAccent}>{CURRENT.toLocaleString()}</Text>
+          <Text style={styles.captionMuted}> lbs lifted</Text>
+        </Text>
+        <Text style={styles.captionRight}>
+          of <Text style={styles.captionAccent}>{GOAL.toLocaleString()}</Text>
         </Text>
       </View>
     </Animated.View>
   );
 }
+
+const styles = StyleSheet.create({
+  card: {
+    marginHorizontal: 20,
+    borderRadius: 18,
+    backgroundColor: Palette.inkSunken,
+    paddingHorizontal: 20,
+    paddingVertical: 18,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: Palette.hairline,
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
+    marginBottom: 16,
+  },
+  eyebrow: {
+    color: Palette.muted,
+    fontSize: 9,
+    fontFamily: FontFamilies.medium,
+    letterSpacing: 2.2,
+    textTransform: "uppercase",
+    marginBottom: 6,
+  },
+  valueRow: { flexDirection: "row", alignItems: "baseline" },
+  pct: {
+    color: Palette.bone,
+    fontSize: 32,
+    fontFamily: FontFamilies.displayLight,
+    letterSpacing: -1,
+    fontVariant: ["tabular-nums"],
+    lineHeight: 34,
+  },
+  pctUnit: {
+    color: Palette.muted,
+    fontSize: 14,
+    fontFamily: FontFamilies.displayRegular,
+    marginLeft: 2,
+  },
+  trendChip: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 20,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: Palette.accentBorderSoft,
+    backgroundColor: "rgba(52,211,153,0.06)",
+  },
+  trendText: {
+    color: Palette.accent,
+    fontSize: 11,
+    fontFamily: FontFamilies.medium,
+    letterSpacing: 0.4,
+    fontVariant: ["tabular-nums"],
+  },
+  track: {
+    height: 2,
+    backgroundColor: Palette.hairline,
+    overflow: "hidden",
+    borderRadius: 1,
+  },
+  fill: { height: "100%", backgroundColor: Palette.accent },
+  captionRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "baseline",
+    marginTop: 12,
+  },
+  captionLeft: {
+    fontSize: 11,
+    fontFamily: FontFamilies.regular,
+  },
+  captionRight: {
+    fontSize: 10,
+    fontFamily: FontFamilies.regular,
+    color: Palette.muted,
+    letterSpacing: 1,
+    textTransform: "uppercase",
+  },
+  captionAccent: {
+    color: Palette.bone,
+    fontFamily: FontFamilies.displayMedium,
+    fontVariant: ["tabular-nums"],
+  },
+  captionMuted: { color: Palette.muted },
+});
