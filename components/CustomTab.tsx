@@ -15,6 +15,7 @@ import { IconSymbol } from "./ui/IconSymbol";
 const TAB_TITLES: Record<string, string> = {
   index: "Home",
   Workouts: "Train",
+  History: "History",
   Overview: "Progress",
   Settings: "Profile",
 };
@@ -38,6 +39,7 @@ function TabItem({ routeName, isFocused, options, onPress, onLongPress }: TabIte
   const iconMap: Record<string, React.ReactElement> = {
     index: <IconSymbol size={22} name="house.fill" color={color} />,
     Workouts: <Ionicons name="barbell" size={22} color={color} />,
+    History: <Ionicons name="time-outline" size={22} color={color} />,
     Overview: <IconSymbol size={22} name="chart.bar.fill" color={color} />,
     Settings: <IconSymbol size={22} name="gearshape.fill" color={color} />,
   };

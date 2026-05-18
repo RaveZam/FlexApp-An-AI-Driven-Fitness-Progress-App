@@ -1,4 +1,4 @@
-import { completeSession, getSessionById, updateSet } from "@/src/features/workouts/services/sessionLocalService";
+import { cancelSession, completeSession, getSessionById, updateSet } from "@/src/features/workouts/services/sessionLocalService";
 import type { WorkoutSession } from "@/src/features/workouts/types";
 import type { SessionExerciseView } from "@/src/features/workouts/types/sessionView";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -20,22 +20,24 @@ function sessionToView(session: WorkoutSession): SessionExerciseView[] {
 }
 
 export function useWorkoutSession(sessionId: string | undefined) {
-  const session = sessionId ? getSessionById(sessionId) : null;
-
-  const [name] = useState(session?.name ?? "Today's Workout");
-  const [exercises, setExercises] = useState<SessionExerciseView[]>(
-    session ? sessionToView(session) : []
-  );
+  const [name, setName] = useState("Today's Workout");
+  const [exercises, setExercises] = useState<SessionExerciseView[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
+    const session = sessionId ? getSessionById(sessionId) : null;
+    setName(session?.name ?? "Today's Workout");
+    setExercises(session ? sessionToView(session) : []);
+    setActiveIndex(0);
+    setElapsedSeconds(0);
+    if (timerRef.current) clearInterval(timerRef.current);
     timerRef.current = setInterval(() => setElapsedSeconds((s) => s + 1), 1000);
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, []);
+  }, [sessionId]);
 
   const active = exercises[activeIndex];
   const currentSetIndex = active?.sets.findIndex((s) => !s.completed) ?? -1;
@@ -78,6 +80,10 @@ export function useWorkoutSession(sessionId: string | undefined) {
     if (sessionId) completeSession(sessionId);
   }, [sessionId]);
 
+  const cancel = useCallback(() => {
+    if (sessionId) cancelSession(sessionId);
+  }, [sessionId]);
+
   return {
     name,
     exercises,
@@ -91,5 +97,6 @@ export function useWorkoutSession(sessionId: string | undefined) {
     logSet,
     goToNextExercise,
     finish,
+    cancel,
   };
 }

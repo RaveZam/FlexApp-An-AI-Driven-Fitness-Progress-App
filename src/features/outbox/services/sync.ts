@@ -133,6 +133,13 @@ async function dispatchRow(row: OutboxRow): Promise<void> {
         .eq("id", row.entity_id);
       if (error) throw error;
     }
+    if (row.operation === "delete") {
+      const { error } = await supabase
+        .from("workout_sessions")
+        .delete()
+        .eq("id", row.entity_id);
+      if (error) throw error;
+    }
   }
 
   if (row.entity_type === "session_set" && row.operation === "update") {

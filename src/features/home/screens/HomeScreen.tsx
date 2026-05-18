@@ -224,13 +224,13 @@ export default function Index() {
 
           <View style={{ gap: 14 }}>
             <HomePageChartGraph />
-            <WeeklyVolume />
-            <PersonalRecord />
             <ProgressiveOverload />
+            {/* <WeeklyVolume /> */}
           </View>
 
           <View style={styles.divider} />
 
+          <PersonalRecord />
           <Insights />
         </ScrollView>
 

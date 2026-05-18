@@ -1,4 +1,5 @@
 import { useAuth } from "@/src/features/auth/hooks/useAuth";
+import { deleteAllSessionsForUser } from "@/src/features/workouts/services/sessionLocalService";
 import LoadingOverlay from "@/components/ui/LoadingOverlay";
 import Popup from "@/components/ui/Popup";
 import { router } from "expo-router";
@@ -18,6 +19,7 @@ export default function Settings() {
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
   const [isLogoutPopupVisible, setLogoutPopupVisible] = useState(false);
+  const [isClearHistoryPopupVisible, setClearHistoryPopupVisible] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -33,6 +35,13 @@ export default function Settings() {
 
   const handleLogout = () => {
     setLogoutPopupVisible(true);
+  };
+
+  const confirmClearHistory = () => {
+    if (user) {
+      deleteAllSessionsForUser(user.id);
+    }
+    setClearHistoryPopupVisible(false);
   };
 
   const confirmLogout = async () => {
@@ -124,6 +133,16 @@ export default function Settings() {
         </View>
 
         <View className="mb-6">
+          <Text className="text-gray-400 uppercase text-xs mb-2">Data</Text>
+          <TouchableOpacity
+            className="bg-[#191919]/60 p-4 rounded-xl border border-red-500/30 backdrop-blur-sm"
+            onPress={() => setClearHistoryPopupVisible(true)}
+          >
+            <Text className="text-red-400 text-base font-semibold">Clear History</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View className="mb-6">
           <Text className="text-gray-400 uppercase text-xs mb-2">App</Text>
           <TouchableOpacity className="bg-[#191919}/60 p-4 rounded-xl mb-3 border border-[#1a472a]/30 backdrop-blur-sm">
             <Text className="text-white">About</Text>
@@ -148,6 +167,16 @@ export default function Settings() {
           buttons={[
             { text: "Cancel", onPress: () => setLogoutPopupVisible(false) },
             { text: "Log Out", onPress: confirmLogout, style: "destructive" },
+          ]}
+        />
+        <Popup
+          isVisible={isClearHistoryPopupVisible}
+          onClose={() => setClearHistoryPopupVisible(false)}
+          iconName="exclamationcircleo"
+          message="This will permanently delete all workout history. This cannot be undone."
+          buttons={[
+            { text: "Cancel", onPress: () => setClearHistoryPopupVisible(false) },
+            { text: "Clear History", onPress: confirmClearHistory, style: "destructive" },
           ]}
         />
         <LoadingOverlay isVisible={loading} />

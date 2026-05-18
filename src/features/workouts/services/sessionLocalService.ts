@@ -2,7 +2,7 @@ import { getDb } from "@/src/lib/db";
 import { generateUUID } from "@/src/lib/uuid";
 import type { SessionExercise, SessionSet, Workout, WorkoutSession } from "../types";
 
-function hydrateSession(
+export function hydrateSession(
   sessionRow: {
     id: string; user_id: string; workout_id: string; plan_id: string | null;
     name: string; status: string; started_at: string; completed_at: string | null;
@@ -163,6 +163,46 @@ export function cancelSession(sessionId: string): void {
     "INSERT INTO outbox (id, entity_type, entity_id, operation, payload, created_at) VALUES (?, ?, ?, ?, ?, ?)",
     [generateUUID(), "workout_session", sessionId, "update", JSON.stringify({ status: "cancelled", completedAt: now }), now]
   );
+}
+
+export function deleteSession(sessionId: string): void {
+  const db = getDb();
+  const now = new Date().toISOString();
+  db.withTransactionSync(() => {
+    db.runSync(
+      "DELETE FROM session_sets WHERE session_exercise_id IN (SELECT id FROM session_exercises WHERE session_id = ?)",
+      [sessionId]
+    );
+    db.runSync("DELETE FROM session_exercises WHERE session_id = ?", [sessionId]);
+    db.runSync("DELETE FROM workout_sessions WHERE id = ?", [sessionId]);
+    db.runSync(
+      "INSERT INTO outbox (id, entity_type, entity_id, operation, payload, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+      [generateUUID(), "workout_session", sessionId, "delete", "{}", now]
+    );
+  });
+}
+
+export function deleteAllSessionsForUser(userId: string): void {
+  const db = getDb();
+  const now = new Date().toISOString();
+  const sessions = db.getAllSync<{ id: string }>(
+    "SELECT id FROM workout_sessions WHERE user_id = ?",
+    [userId]
+  );
+  db.withTransactionSync(() => {
+    for (const session of sessions) {
+      db.runSync(
+        "DELETE FROM session_sets WHERE session_exercise_id IN (SELECT id FROM session_exercises WHERE session_id = ?)",
+        [session.id]
+      );
+      db.runSync("DELETE FROM session_exercises WHERE session_id = ?", [session.id]);
+      db.runSync("DELETE FROM workout_sessions WHERE id = ?", [session.id]);
+      db.runSync(
+        "INSERT INTO outbox (id, entity_type, entity_id, operation, payload, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+        [generateUUID(), "workout_session", session.id, "delete", "{}", now]
+      );
+    }
+  });
 }
 
 export function updateSet(

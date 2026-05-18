@@ -34,6 +34,12 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="History"
+        options={{
+          title: "History",
+        }}
+      />
+      <Tabs.Screen
         name="Overview"
         options={{
           title: "Progress",

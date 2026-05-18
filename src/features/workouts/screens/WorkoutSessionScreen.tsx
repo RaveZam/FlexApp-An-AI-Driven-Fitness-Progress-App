@@ -2,13 +2,15 @@ import ExercisesListSheet from "@/src/features/workouts/components/session/Exerc
 import RestTimerModal from "@/src/features/workouts/components/session/RestTimerModal";
 import SetRow from "@/src/features/workouts/components/session/SetRow";
 import WorkoutLogModal from "@/src/features/workouts/components/session/WorkoutLogModal";
+import { useAuth } from "@/src/features/auth/hooks/useAuth";
 import { useExerciseHistory } from "@/src/features/workouts/hooks/useExerciseHistory";
 import { useWorkoutSession } from "@/src/features/workouts/hooks/useWorkoutSession";
+import { getActiveSession, getSessionById } from "@/src/features/workouts/services/sessionLocalService";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Animated, { FadeIn, FadeInDown } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -30,6 +32,7 @@ function formatTime(totalSec: number): string {
 
 export default function WorkoutSessionScreen() {
   const { id: sessionId } = useLocalSearchParams<{ id?: string }>();
+  const { user } = useAuth();
   const {
     exercises,
     activeIndex,
@@ -42,6 +45,7 @@ export default function WorkoutSessionScreen() {
     logSet,
     goToNextExercise,
     finish,
+    cancel,
   } = useWorkoutSession(sessionId);
 
   const [showLogModal, setShowLogModal] = useState(false);
@@ -57,6 +61,20 @@ export default function WorkoutSessionScreen() {
   const [selectedBarIndex, setSelectedBarIndex] = useState<number | null>(null);
   const selectedSession =
     selectedBarIndex !== null ? recentSessions[selectedBarIndex] ?? null : null;
+
+  useEffect(() => {
+    if (!sessionId || !user) return;
+    const session = getSessionById(sessionId);
+    if (!session || session.status !== "in_progress") {
+      const ongoing = getActiveSession(user.id);
+      if (ongoing && ongoing.id !== sessionId) {
+        router.replace(`/(tabs)/Workouts/session?id=${ongoing.id}` as any);
+      } else {
+        router.back();
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     setSelectedBarIndex(null);
@@ -77,6 +95,24 @@ export default function WorkoutSessionScreen() {
     logSet(weight, reps);
     setShowLogModal(false);
     if (!isLastSet) setShowRestTimer(true);
+  }
+
+  function handleExit() {
+    Alert.alert(
+      "Cancel Workout?",
+      "Your progress will not be saved.",
+      [
+        { text: "Keep Going", style: "cancel" },
+        {
+          text: "Cancel Workout",
+          style: "destructive",
+          onPress: () => {
+            cancel();
+            router.navigate("/(tabs)" as any);
+          },
+        },
+      ]
+    );
   }
 
   function handleFinish() {
@@ -114,7 +150,7 @@ export default function WorkoutSessionScreen() {
       <View style={styles.container}>
         {/* Header */}
         <Animated.View entering={FadeIn.duration(400)} style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()} activeOpacity={0.6} hitSlop={10}>
+          <TouchableOpacity onPress={handleExit} activeOpacity={0.6} hitSlop={10}>
             <Text style={styles.headerAction}>Exit</Text>
           </TouchableOpacity>
           <View style={styles.headerCenter}>
