@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Dimensions, StyleSheet, Text, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
-type DayType = "rest" | "completed" | "future" | "today";
+type DayType = "restTR" | "completed" | "future" | "today";
 
 export default function ScheduleBar() {
   // TODO: Get actual workout data from API
