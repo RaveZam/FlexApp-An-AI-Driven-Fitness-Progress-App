@@ -1,22 +1,17 @@
 import { FontFamilies, Palette } from "@/constants/theme";
-import { Ionicons } from "@expo/vector-icons";
-import { useState } from "react";
+import { getWeekDates } from "@/src/features/home/helpers/weekDates";
+import { useScheduleBar } from "@/src/features/home/hooks/useScheduleBar";
 import { Dimensions, StyleSheet, Text, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
-type DayType = "rest" | "completed" | "future" | "today";
+const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 export default function ScheduleBar() {
-  const todayIdx = new Date().getDay();
-  const [days] = useState([
-    { name: "Sun", date: 17, type: "rest" as DayType },
-    { name: "Mon", date: 11, type: "completed" as DayType },
-    { name: "Tue", date: 12, type: "completed" as DayType },
-    { name: "Wed", date: 13, type: "rest" as DayType },
-    { name: "Thu", date: 14, type: "future" as DayType },
-    { name: "Fri", date: 15, type: "future" as DayType },
-    { name: "Sat", date: 16, type: "rest" as DayType },
-  ]);
+  const { plannedDays, completedDays } = useScheduleBar();
+
+  const today = new Date();
+  const todayIdx = today.getDay();
+  const weekDates = getWeekDates(today);
 
   const screenWidth = Dimensions.get("window").width;
   const circleSize = (screenWidth - 48 - 6 * 10) / 7;
@@ -30,37 +25,44 @@ export default function ScheduleBar() {
         </View>
         <View style={styles.legend}>
           <View style={styles.legendDot} />
-          <Text style={styles.legendText}>2 / 4 done</Text>
+          <Text style={styles.legendText}>{plannedDays.size} days / week</Text>
         </View>
       </View>
 
       <View style={styles.weekTrack}>
         <View style={styles.baseline} />
         <View style={styles.weekRow}>
-          {days.map((day, index) => {
+          {DAY_NAMES.map((name, index) => {
             const isToday = index === todayIdx;
-            const isCompleted = day.type === "completed";
-            const isFuture = day.type === "future";
+            const isPlanned = plannedDays.has(index);
+            const isCompleted = completedDays.has(index);
+
+            const nameColor = isCompleted
+              ? Palette.accent
+              : isToday
+              ? Palette.accent
+              : isPlanned
+              ? Palette.bone
+              : Palette.mutedSoft;
+            const borderColor =
+              isCompleted || isToday || isPlanned ? Palette.accent : Palette.hairline;
+            const backgroundColor = isCompleted ? Palette.accent : "transparent";
+            const numColor = isCompleted
+              ? Palette.ink
+              : isToday
+              ? Palette.accent
+              : isPlanned
+              ? Palette.bone
+              : Palette.mutedSoft;
 
             return (
               <Animated.View
-                key={day.name}
+                key={name}
                 entering={FadeInDown.delay(120 + index * 36).duration(400)}
                 style={styles.dayCol}
               >
-                <Text
-                  style={[
-                    styles.dayName,
-                    {
-                      color: isToday
-                        ? Palette.accent
-                        : isCompleted
-                        ? Palette.bone
-                        : Palette.mutedSoft,
-                    },
-                  ]}
-                >
-                  {day.name.toUpperCase()}
+                <Text style={[styles.dayName, { color: nameColor }]}>
+                  {name.toUpperCase()}
                 </Text>
                 <View
                   style={[
@@ -69,35 +71,14 @@ export default function ScheduleBar() {
                       width: circleSize,
                       height: circleSize,
                       borderRadius: circleSize / 2,
-                      backgroundColor: isCompleted ? Palette.accent : "transparent",
-                      borderColor: isToday
-                        ? Palette.accent
-                        : isCompleted
-                        ? Palette.accent
-                        : isFuture
-                        ? Palette.hairlineStrong
-                        : Palette.hairline,
+                      borderColor,
+                      backgroundColor,
                     },
                   ]}
                 >
-                  {isCompleted ? (
-                    <Ionicons name="checkmark" size={14} color={Palette.ink} />
-                  ) : (
-                    <Text
-                      style={[
-                        styles.dayNum,
-                        {
-                          color: isToday
-                            ? Palette.accent
-                            : isFuture
-                            ? Palette.muted
-                            : Palette.mutedSoft,
-                        },
-                      ]}
-                    >
-                      {day.date}
-                    </Text>
-                  )}
+                  <Text style={[styles.dayNum, { color: numColor }]}>
+                    {weekDates[index]}
+                  </Text>
                 </View>
                 {isToday && <View style={styles.todayDot} />}
               </Animated.View>

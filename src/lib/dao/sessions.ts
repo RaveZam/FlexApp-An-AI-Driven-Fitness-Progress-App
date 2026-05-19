@@ -56,6 +56,21 @@ export function getById(sessionId: string): SessionRow | null {
   return row ? fromRaw(row) : null;
 }
 
+export function listCompletedInRange(
+  userId: string,
+  startISO: string,
+  endISO: string
+): SessionRow[] {
+  return getDb()
+    .getAllSync<Raw>(
+      `SELECT * FROM workout_sessions
+       WHERE user_id = ? AND status = 'completed'
+       AND completed_at >= ? AND completed_at < ?`,
+      [userId, startISO, endISO]
+    )
+    .map(fromRaw);
+}
+
 export function listIdsByUser(userId: string): string[] {
   return getDb()
     .getAllSync<{ id: string }>(
