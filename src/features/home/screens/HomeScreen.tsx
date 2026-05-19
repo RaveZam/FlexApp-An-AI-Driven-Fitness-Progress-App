@@ -4,11 +4,11 @@ import "react-native-reanimated";
 import BlurOverlay from "@/components/ui/BlurOverlay";
 import LoadingOverlay from "@/components/ui/LoadingOverlay";
 import Popup from "@/components/ui/Popup";
-import ScheduleBar from "@/components/ui/ScheduleBar";
 import UserInfoCard from "@/components/UserInfoCard";
 import { FontFamilies, Palette } from "@/constants/theme";
 import {
   ProgressiveOverload,
+  ScheduleBar,
   SectionLabel,
   TodaysWorkoutSection
 } from "@/src/features/home/components";
