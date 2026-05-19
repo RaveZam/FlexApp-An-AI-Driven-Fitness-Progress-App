@@ -7,8 +7,7 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 type DayType = "restTR" | "completed" | "future" | "today";
 
 export default function ScheduleBar() {
-  // TODO: Get actual workout data from API
-  // TODO: Get actual workout data from API
+
   const todayIdx = new Date().getDay();
   const [days] = useState([
     { name: "Sun", date: 17, type: "rest" as DayType },

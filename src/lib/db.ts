@@ -26,10 +26,13 @@ export async function initDb(): Promise<void> {
     CREATE TABLE IF NOT EXISTS user_workouts (
       id TEXT PRIMARY KEY,
       user_id TEXT NOT NULL,
+      plan_id TEXT,
       name TEXT NOT NULL,
+      days_of_week TEXT NOT NULL DEFAULT '',
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL
     );
+    CREATE INDEX IF NOT EXISTS user_workouts_plan_id_idx ON user_workouts(plan_id);
 
     CREATE TABLE IF NOT EXISTS user_workout_exercises (
       id TEXT PRIMARY KEY,
@@ -107,58 +110,4 @@ export async function initDb(): Promise<void> {
     );
     CREATE INDEX IF NOT EXISTS outbox_pending_idx ON outbox(synced_at) WHERE synced_at IS NULL;
   `);
-
-  // Idempotent column additions for existing installs
-  try {
-    await database.execAsync(
-      "ALTER TABLE user_workout_exercises ADD COLUMN catalog_exercise_id TEXT;"
-    );
-  } catch {
-    // Column already exists — ignore
-  }
-
-  try {
-    await database.execAsync("ALTER TABLE user_workouts ADD COLUMN plan_id TEXT;");
-  } catch {
-    // Column already exists — ignore
-  }
-
-  try {
-    await database.execAsync(
-      "ALTER TABLE user_workouts ADD COLUMN days_of_week TEXT NOT NULL DEFAULT '';"
-    );
-  } catch {
-    // Column already exists — ignore
-  }
-
-  try {
-    await database.execAsync(
-      "CREATE INDEX IF NOT EXISTS user_workouts_plan_id_idx ON user_workouts(plan_id);"
-    );
-  } catch {
-    // Index already exists — ignore
-  }
-
-  // One-shot backfill: copy any pre-existing CSV days_of_week into the junction
-  try {
-    const rows = database.getAllSync<{ id: string; days_of_week: string | null }>(
-      "SELECT id, days_of_week FROM user_workouts WHERE days_of_week IS NOT NULL AND days_of_week <> ''"
-    );
-    const now = new Date().toISOString();
-    database.withTransactionSync(() => {
-      for (const r of rows) {
-        for (const part of (r.days_of_week ?? "").split(",")) {
-          const d = parseInt(part, 10);
-          if (Number.isInteger(d) && d >= 0 && d <= 6) {
-            database.runSync(
-              "INSERT OR IGNORE INTO user_workout_days (workout_id, day_of_week, created_at) VALUES (?, ?, ?)",
-              [r.id, d, now]
-            );
-          }
-        }
-      }
-    });
-  } catch {
-    // Backfill is best-effort — junction may not exist yet on a partial migration; safe to ignore
-  }
 }
