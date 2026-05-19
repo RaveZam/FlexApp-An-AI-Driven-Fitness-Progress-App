@@ -1,96 +1,27 @@
+import { enqueueOutbox } from "@/src/features/outbox";
+import * as sessionsDao from "@/src/lib/dao/sessions";
+import * as sessionExercisesDao from "@/src/lib/dao/sessionExercises";
+import * as sessionSetsDao from "@/src/lib/dao/sessionSets";
 import { getDb } from "@/src/lib/db";
 import { generateUUID } from "@/src/lib/uuid";
-import type { SessionExercise, SessionSet, Workout, WorkoutSession } from "../types";
+import type { Workout, WorkoutSession } from "../types";
 
-export function hydrateSession(
-  sessionRow: {
-    id: string; user_id: string; workout_id: string; plan_id: string | null;
-    name: string; status: string; started_at: string; completed_at: string | null;
-    created_at: string; updated_at: string;
-  }
-): WorkoutSession {
-  const db = getDb();
-  const exerciseRows = db.getAllSync<{
-    id: string; session_id: string; source_exercise_id: string | null;
-    catalog_exercise_id: string | null; name: string; target_sets: number;
-    target_reps: number; position: number;
-  }>(
-    "SELECT * FROM session_exercises WHERE session_id = ? ORDER BY position ASC",
-    [sessionRow.id]
-  );
-
-  const exercises: SessionExercise[] = exerciseRows.map((ex) => {
-    const setRows = db.getAllSync<{
-      id: string; session_exercise_id: string; set_index: number; target_reps: number;
-      actual_reps: number | null; weight: number | null; completed: number; completed_at: string | null;
-    }>(
-      "SELECT * FROM session_sets WHERE session_exercise_id = ? ORDER BY set_index ASC",
-      [ex.id]
-    );
-    const sets: SessionSet[] = setRows.map((s) => ({
-      id: s.id,
-      sessionExerciseId: s.session_exercise_id,
-      setIndex: s.set_index,
-      targetReps: s.target_reps,
-      actualReps: s.actual_reps,
-      weight: s.weight,
-      completed: s.completed === 1,
-      completedAt: s.completed_at,
-    }));
-    return {
-      id: ex.id,
-      sessionId: ex.session_id,
-      sourceExerciseId: ex.source_exercise_id,
-      catalogExerciseId: ex.catalog_exercise_id,
-      name: ex.name,
-      targetSets: ex.target_sets,
-      targetReps: ex.target_reps,
-      position: ex.position,
-      sets,
-    };
-  });
-
-  return {
-    id: sessionRow.id,
-    userId: sessionRow.user_id,
-    workoutId: sessionRow.workout_id,
-    planId: sessionRow.plan_id,
-    name: sessionRow.name,
-    status: sessionRow.status as WorkoutSession["status"],
-    startedAt: sessionRow.started_at,
-    completedAt: sessionRow.completed_at,
-    createdAt: sessionRow.created_at,
-    updatedAt: sessionRow.updated_at,
-    exercises,
-  };
+function hydrate(session: sessionsDao.SessionRow): WorkoutSession {
+  const exercises = sessionExercisesDao.listBySession(session.id).map((ex) => ({
+    ...ex,
+    sets: sessionSetsDao.listByExercise(ex.id),
+  }));
+  return { ...session, exercises };
 }
 
 export function getActiveSession(userId: string): WorkoutSession | null {
-  const db = getDb();
-  const row = db.getFirstSync<{
-    id: string; user_id: string; workout_id: string; plan_id: string | null;
-    name: string; status: string; started_at: string; completed_at: string | null;
-    created_at: string; updated_at: string;
-  }>(
-    "SELECT * FROM workout_sessions WHERE user_id = ? AND status = 'in_progress' ORDER BY started_at DESC LIMIT 1",
-    [userId]
-  );
-  if (!row) return null;
-  return hydrateSession(row);
+  const session = sessionsDao.getActive(userId);
+  return session ? hydrate(session) : null;
 }
 
 export function getSessionById(sessionId: string): WorkoutSession | null {
-  const db = getDb();
-  const row = db.getFirstSync<{
-    id: string; user_id: string; workout_id: string; plan_id: string | null;
-    name: string; status: string; started_at: string; completed_at: string | null;
-    created_at: string; updated_at: string;
-  }>(
-    "SELECT * FROM workout_sessions WHERE id = ?",
-    [sessionId]
-  );
-  if (!row) return null;
-  return hydrateSession(row);
+  const session = sessionsDao.getById(sessionId);
+  return session ? hydrate(session) : null;
 }
 
 export function createSessionFromWorkout(userId: string, workout: Workout): WorkoutSession {
@@ -99,108 +30,111 @@ export function createSessionFromWorkout(userId: string, workout: Workout): Work
   const sessionId = generateUUID();
 
   db.withTransactionSync(() => {
-    db.runSync(
-      `INSERT INTO workout_sessions (id, user_id, workout_id, plan_id, name, status, started_at, completed_at, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, 'in_progress', ?, NULL, ?, ?)`,
-      [sessionId, userId, workout.id, workout.planId ?? null, workout.name, now, now, now]
-    );
+    sessionsDao.insert({
+      id: sessionId,
+      userId,
+      workoutId: workout.id,
+      planId: workout.planId ?? null,
+      name: workout.name,
+      status: "in_progress",
+      startedAt: now,
+      completedAt: null,
+      createdAt: now,
+      updatedAt: now,
+    });
 
     const sortedExercises = [...workout.exercises].sort((a, b) => a.position - b.position);
     for (const ex of sortedExercises) {
       const sessionExerciseId = generateUUID();
-      db.runSync(
-        `INSERT INTO session_exercises (id, session_id, source_exercise_id, catalog_exercise_id, name, target_sets, target_reps, position)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-        [sessionExerciseId, sessionId, ex.id, ex.catalogExerciseId ?? null, ex.name, ex.targetSets, ex.targetReps, ex.position]
-      );
+      sessionExercisesDao.insert({
+        id: sessionExerciseId,
+        sessionId,
+        sourceExerciseId: ex.id,
+        catalogExerciseId: ex.catalogExerciseId ?? null,
+        name: ex.name,
+        targetSets: ex.targetSets,
+        targetReps: ex.targetReps,
+        position: ex.position,
+      });
       for (let i = 0; i < ex.targetSets; i++) {
-        db.runSync(
-          `INSERT INTO session_sets (id, session_exercise_id, set_index, target_reps, actual_reps, weight, completed, completed_at)
-           VALUES (?, ?, ?, ?, NULL, NULL, 0, NULL)`,
-          [generateUUID(), sessionExerciseId, i, ex.targetReps]
-        );
+        sessionSetsDao.insert({
+          id: generateUUID(),
+          sessionExerciseId,
+          setIndex: i,
+          targetReps: ex.targetReps,
+        });
       }
     }
 
-    const outboxId = generateUUID();
-    db.runSync(
-      "INSERT INTO outbox (id, entity_type, entity_id, operation, payload, created_at) VALUES (?, ?, ?, ?, ?, ?)",
-      [
-        outboxId,
-        "workout_session",
+    enqueueOutbox({
+      entityType: "workout_session",
+      entityId: sessionId,
+      operation: "create",
+      payload: {
         sessionId,
-        "create",
-        JSON.stringify({ sessionId, userId, workoutId: workout.id, planId: workout.planId ?? null, name: workout.name, startedAt: now }),
-        now,
-      ]
-    );
+        userId,
+        workoutId: workout.id,
+        planId: workout.planId ?? null,
+        name: workout.name,
+        startedAt: now,
+      },
+    });
   });
 
   return getSessionById(sessionId)!;
 }
 
 export function completeSession(sessionId: string): void {
-  const db = getDb();
   const now = new Date().toISOString();
-  db.runSync(
-    "UPDATE workout_sessions SET status = 'completed', completed_at = ?, updated_at = ? WHERE id = ?",
-    [now, now, sessionId]
-  );
-  db.runSync(
-    "INSERT INTO outbox (id, entity_type, entity_id, operation, payload, created_at) VALUES (?, ?, ?, ?, ?, ?)",
-    [generateUUID(), "workout_session", sessionId, "update", JSON.stringify({ status: "completed", completedAt: now }), now]
-  );
+  sessionsDao.updateStatus(sessionId, "completed", now, now);
+  enqueueOutbox({
+    entityType: "workout_session",
+    entityId: sessionId,
+    operation: "update",
+    payload: { status: "completed", completedAt: now },
+  });
 }
 
 export function cancelSession(sessionId: string): void {
-  const db = getDb();
   const now = new Date().toISOString();
-  db.runSync(
-    "UPDATE workout_sessions SET status = 'cancelled', completed_at = ?, updated_at = ? WHERE id = ?",
-    [now, now, sessionId]
-  );
-  db.runSync(
-    "INSERT INTO outbox (id, entity_type, entity_id, operation, payload, created_at) VALUES (?, ?, ?, ?, ?, ?)",
-    [generateUUID(), "workout_session", sessionId, "update", JSON.stringify({ status: "cancelled", completedAt: now }), now]
-  );
+  sessionsDao.updateStatus(sessionId, "cancelled", now, now);
+  enqueueOutbox({
+    entityType: "workout_session",
+    entityId: sessionId,
+    operation: "update",
+    payload: { status: "cancelled", completedAt: now },
+  });
 }
 
 export function deleteSession(sessionId: string): void {
   const db = getDb();
-  const now = new Date().toISOString();
   db.withTransactionSync(() => {
-    db.runSync(
-      "DELETE FROM session_sets WHERE session_exercise_id IN (SELECT id FROM session_exercises WHERE session_id = ?)",
-      [sessionId]
-    );
-    db.runSync("DELETE FROM session_exercises WHERE session_id = ?", [sessionId]);
-    db.runSync("DELETE FROM workout_sessions WHERE id = ?", [sessionId]);
-    db.runSync(
-      "INSERT INTO outbox (id, entity_type, entity_id, operation, payload, created_at) VALUES (?, ?, ?, ?, ?, ?)",
-      [generateUUID(), "workout_session", sessionId, "delete", "{}", now]
-    );
+    sessionSetsDao.deleteBySession(sessionId);
+    sessionExercisesDao.deleteBySession(sessionId);
+    sessionsDao.remove(sessionId);
+    enqueueOutbox({
+      entityType: "workout_session",
+      entityId: sessionId,
+      operation: "delete",
+      payload: {},
+    });
   });
 }
 
 export function deleteAllSessionsForUser(userId: string): void {
   const db = getDb();
-  const now = new Date().toISOString();
-  const sessions = db.getAllSync<{ id: string }>(
-    "SELECT id FROM workout_sessions WHERE user_id = ?",
-    [userId]
-  );
+  const sessionIds = sessionsDao.listIdsByUser(userId);
   db.withTransactionSync(() => {
-    for (const session of sessions) {
-      db.runSync(
-        "DELETE FROM session_sets WHERE session_exercise_id IN (SELECT id FROM session_exercises WHERE session_id = ?)",
-        [session.id]
-      );
-      db.runSync("DELETE FROM session_exercises WHERE session_id = ?", [session.id]);
-      db.runSync("DELETE FROM workout_sessions WHERE id = ?", [session.id]);
-      db.runSync(
-        "INSERT INTO outbox (id, entity_type, entity_id, operation, payload, created_at) VALUES (?, ?, ?, ?, ?, ?)",
-        [generateUUID(), "workout_session", session.id, "delete", "{}", now]
-      );
+    for (const id of sessionIds) {
+      sessionSetsDao.deleteBySession(id);
+      sessionExercisesDao.deleteBySession(id);
+      sessionsDao.remove(id);
+      enqueueOutbox({
+        entityType: "workout_session",
+        entityId: id,
+        operation: "delete",
+        payload: {},
+      });
     }
   });
 }
@@ -209,23 +143,19 @@ export function updateSet(
   setId: string,
   patch: { actualReps?: number; weight?: number; completed?: boolean }
 ): void {
-  const db = getDb();
   const now = new Date().toISOString();
-  const current = db.getFirstSync<{ actual_reps: number | null; weight: number | null; completed: number }>(
-    "SELECT actual_reps, weight, completed FROM session_sets WHERE id = ?",
-    [setId]
-  );
+  const current = sessionSetsDao.getById(setId);
   if (!current) return;
-  const actualReps = patch.actualReps !== undefined ? patch.actualReps : current.actual_reps;
+  const actualReps = patch.actualReps !== undefined ? patch.actualReps : current.actualReps;
   const weight = patch.weight !== undefined ? patch.weight : current.weight;
-  const completed = patch.completed !== undefined ? patch.completed : current.completed === 1;
+  const completed = patch.completed !== undefined ? patch.completed : current.completed;
   const completedAt = completed ? now : null;
-  db.runSync(
-    "UPDATE session_sets SET actual_reps = ?, weight = ?, completed = ?, completed_at = ? WHERE id = ?",
-    [actualReps, weight, completed ? 1 : 0, completedAt, setId]
-  );
-  db.runSync(
-    "INSERT INTO outbox (id, entity_type, entity_id, operation, payload, created_at) VALUES (?, ?, ?, ?, ?, ?)",
-    [generateUUID(), "session_set", setId, "update", JSON.stringify({ actualReps, weight, completed, completedAt }), now]
-  );
+
+  sessionSetsDao.update({ id: setId, actualReps, weight, completed, completedAt });
+  enqueueOutbox({
+    entityType: "session_set",
+    entityId: setId,
+    operation: "update",
+    payload: { actualReps, weight, completed, completedAt },
+  });
 }
