@@ -82,3 +82,7 @@ export function upsert(ex: WorkoutExerciseRow): void {
     ]
   );
 }
+
+export function deleteById(id: string): void {
+  getDb().runSync("DELETE FROM user_workout_exercises WHERE id = ?", [id]);
+}

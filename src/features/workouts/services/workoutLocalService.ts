@@ -77,6 +77,14 @@ export function updateWorkoutDays(workoutId: string, daysOfWeek: number[]): void
   });
 }
 
+export function addExerciseToWorkout(exercise: import("../types").Exercise): void {
+  workoutExercisesDao.insert(exercise);
+}
+
+export function removeExerciseFromWorkout(exerciseId: string): void {
+  workoutExercisesDao.deleteById(exerciseId);
+}
+
 export function insertWorkoutLocal(workout: Workout): void {
   const db = getDb();
   db.withTransactionSync(() => {

@@ -64,6 +64,23 @@ export function useWorkoutSession(sessionId: string | undefined) {
     [active, activeIndex, currentSetIndex, sessionId]
   );
 
+  const editSet = useCallback(
+    (setId: string, weight: number, reps: number) => {
+      setExercises((prev) =>
+        prev.map((ex) => ({
+          ...ex,
+          sets: ex.sets.map((s) =>
+            s.id === setId ? { ...s, weight, actualReps: reps, completed: true } : s
+          ),
+        }))
+      );
+      if (sessionId) {
+        updateSet(setId, { actualReps: reps, weight, completed: true });
+      }
+    },
+    [sessionId]
+  );
+
   const goToNextExercise = useCallback(() => {
     const nextIncomplete = exercises.findIndex(
       (ex, i) => i > activeIndex && !ex.sets.every((s) => s.completed)
@@ -95,6 +112,7 @@ export function useWorkoutSession(sessionId: string | undefined) {
     allExercisesComplete,
     elapsedSeconds,
     logSet,
+    editSet,
     goToNextExercise,
     finish,
     cancel,

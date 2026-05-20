@@ -30,7 +30,6 @@ export function ExercisePickerModal({ visible, onSelect, onClose }: Props) {
     if (!visible) return;
     setLoading(true);
     setSearch("");
-    setActiveFilter(null);
     fetchExerciseCatalog()
       .then(setCatalog)
       .finally(() => setLoading(false));

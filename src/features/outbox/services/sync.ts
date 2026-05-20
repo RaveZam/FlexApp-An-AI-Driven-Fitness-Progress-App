@@ -65,6 +65,23 @@ async function dispatchRow(row: OutboxRow): Promise<void> {
     }
   }
 
+  if (row.entity_type === "workout_exercise") {
+    if (row.operation === "create") {
+      const { exercise } = payload as { exercise: Record<string, unknown> };
+      const { error } = await supabase
+        .from("user_workout_exercises")
+        .upsert(exercise, { onConflict: "id" });
+      if (error) throw error;
+    }
+    if (row.operation === "delete") {
+      const { error } = await supabase
+        .from("user_workout_exercises")
+        .delete()
+        .eq("id", row.entity_id);
+      if (error) throw error;
+    }
+  }
+
   if (row.entity_type === "user_preferences" && row.operation === "update") {
     const { activePlanId, updatedAt } = payload as { activePlanId: string | null; updatedAt: string };
     const { error } = await supabase

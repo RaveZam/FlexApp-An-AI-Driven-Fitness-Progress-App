@@ -1,7 +1,7 @@
 import { SessionSetView } from "@/src/features/workouts/types/sessionView";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import Animated, {
   Easing,
   FadeInDown,
@@ -25,9 +25,10 @@ type SetRowProps = {
   set: SessionSetView;
   isCurrent: boolean;
   index: number;
+  onEdit?: (setId: string) => void;
 };
 
-export default function SetRow({ set, isCurrent, index }: SetRowProps) {
+export default function SetRow({ set, isCurrent, index, onEdit }: SetRowProps) {
   const isCompleted = set.completed;
   const isFuture = !isCompleted && !isCurrent;
 
@@ -53,14 +54,20 @@ export default function SetRow({ set, isCurrent, index }: SetRowProps) {
 
   const setNumber = set.setNumber.toString().padStart(2, "0");
 
+  const editable = isCompleted && !!onEdit;
+
   return (
-    <Animated.View
-      entering={FadeInDown.delay(200 + index * 60).duration(420)}
-      style={[
+    <Animated.View entering={FadeInDown.delay(200 + index * 60).duration(420)}>
+    <Pressable
+      onPress={editable ? () => onEdit!(set.id) : undefined}
+      disabled={!editable}
+      android_ripple={editable ? { color: "rgba(52,211,153,0.12)" } : undefined}
+      style={({ pressed }) => [
         styles.row,
         isCompleted && styles.rowCompleted,
         isCurrent && styles.rowCurrent,
         isFuture && styles.rowFuture,
+        editable && pressed && styles.rowPressed,
       ]}
     >
       {/* Left rail */}
@@ -105,6 +112,7 @@ export default function SetRow({ set, isCurrent, index }: SetRowProps) {
             <Text style={styles.valueX}>×</Text>
             <Text style={styles.valueNumber}>{set.actualReps}</Text>
             <Text style={styles.valueUnit}>reps</Text>
+            {onEdit && <Ionicons name="pencil" size={11} color={MUTED} style={styles.editIcon} />}
           </View>
         ) : isCurrent ? (
           <>
@@ -141,6 +149,7 @@ export default function SetRow({ set, isCurrent, index }: SetRowProps) {
           <View style={styles.statusFuture} />
         )}
       </View>
+    </Pressable>
     </Animated.View>
   );
 }
@@ -165,6 +174,8 @@ const styles = StyleSheet.create({
     borderColor: "rgba(52,211,153,0.35)",
   },
   rowFuture: { opacity: 0.55 },
+  rowPressed: { opacity: 0.7 },
+  editIcon: { marginLeft: 10, opacity: 0.55 },
 
   rail: {
     width: 2,

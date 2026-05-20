@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import Animated, { FadeInDown, FadeInRight } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { ExercisePickerModal } from "../components/create/ExercisePickerModal";
+import { useEditWorkoutExercises } from "../hooks/useEditWorkoutExercises";
 import { useUpdateWorkoutDays } from "../hooks/useUpdateWorkoutDays";
 import { useWorkouts } from "../hooks/useWorkouts";
 import type { Exercise } from "../types";
@@ -93,84 +95,120 @@ function DayChipsEditor({
   );
 }
 
-function ExerciseRow({ exercise, index }: { exercise: Exercise; index: number }) {
+function ExerciseRow({
+  exercise,
+  index,
+  editing,
+  selected,
+  onToggle,
+}: {
+  exercise: Exercise;
+  index: number;
+  editing: boolean;
+  selected: boolean;
+  onToggle: () => void;
+}) {
   const image = imageForExercise(exercise.name);
   return (
     <Animated.View entering={FadeInRight.delay(100 + index * 60).duration(400)}>
-      <View
-        style={{
-          backgroundColor: "#191919",
-          borderRadius: 12,
-          borderWidth: 1,
-          borderColor: "rgba(255,255,255,0.04)",
-          flexDirection: "row",
-          alignItems: "center",
-          overflow: "hidden",
-        }}
+      <TouchableOpacity
+        activeOpacity={editing ? 0.7 : 1}
+        onPress={editing ? onToggle : undefined}
       >
         <View
           style={{
-            width: 3,
-            alignSelf: "stretch",
-            backgroundColor: "#10b981",
-            opacity: 0.5,
-          }}
-        />
-        <View
-          style={{
-            width: 56,
-            height: 56,
-            margin: 10,
-            borderRadius: 8,
-            backgroundColor: "#0f0f0f",
+            backgroundColor: selected ? "rgba(239,68,68,0.08)" : "#191919",
+            borderRadius: 12,
+            borderWidth: 1,
+            borderColor: selected ? "rgba(239,68,68,0.35)" : "rgba(255,255,255,0.04)",
+            flexDirection: "row",
             alignItems: "center",
-            justifyContent: "center",
             overflow: "hidden",
           }}
         >
-          {image ? (
-            <Image
-              source={image}
-              style={{ width: "100%", height: "100%" }}
-              contentFit="cover"
-              transition={200}
-            />
-          ) : (
-            <Ionicons name="barbell-outline" size={22} color="#333" />
+          {editing && (
+            <View style={{ paddingLeft: 12 }}>
+              <View
+                style={{
+                  width: 22,
+                  height: 22,
+                  borderRadius: 11,
+                  borderWidth: 2,
+                  borderColor: selected ? "#ef4444" : "#444",
+                  backgroundColor: selected ? "#ef4444" : "transparent",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                {selected && <Ionicons name="checkmark" size={13} color="#fff" />}
+              </View>
+            </View>
           )}
-        </View>
-        <View
-          style={{
-            flex: 1,
-            paddingVertical: 14,
-            paddingRight: 14,
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-          <Text
+          <View
             style={{
-              color: "#e0e0e0",
-              fontSize: 14,
-              fontFamily: "Inter_400Regular",
+              width: 3,
+              alignSelf: "stretch",
+              backgroundColor: selected ? "#ef4444" : "#10b981",
+              opacity: 0.5,
+              marginLeft: editing ? 10 : 0,
+            }}
+          />
+          <View
+            style={{
+              width: 56,
+              height: 56,
+              margin: 10,
+              borderRadius: 8,
+              backgroundColor: "#0f0f0f",
+              alignItems: "center",
+              justifyContent: "center",
+              overflow: "hidden",
+            }}
+          >
+            {image ? (
+              <Image
+                source={image}
+                style={{ width: "100%", height: "100%" }}
+                contentFit="cover"
+                transition={200}
+              />
+            ) : (
+              <Ionicons name="barbell-outline" size={22} color="#333" />
+            )}
+          </View>
+          <View
+            style={{
               flex: 1,
+              paddingVertical: 14,
+              paddingRight: 14,
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
             }}
           >
-            {exercise.name}
-          </Text>
-          <Text
-            style={{
-              color: "#10b981",
-              fontSize: 13,
-              fontFamily: "Inter_500Medium",
-              marginLeft: 12,
-            }}
-          >
-            {exercise.targetSets} × {exercise.targetReps}
-          </Text>
+            <Text
+              style={{
+                color: selected ? "#f87171" : "#e0e0e0",
+                fontSize: 14,
+                fontFamily: "Inter_400Regular",
+                flex: 1,
+              }}
+            >
+              {exercise.name}
+            </Text>
+            <Text
+              style={{
+                color: selected ? "#f87171" : "#10b981",
+                fontSize: 13,
+                fontFamily: "Inter_500Medium",
+                marginLeft: 12,
+              }}
+            >
+              {exercise.targetSets} × {exercise.targetReps}
+            </Text>
+          </View>
         </View>
-      </View>
+      </TouchableOpacity>
     </Animated.View>
   );
 }
@@ -179,8 +217,22 @@ export default function WorkoutDetailScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { workouts, refresh } = useWorkouts();
+  const [editing, setEditing] = useState(false);
 
   const workout = workouts.find((w) => w.id === id);
+
+  const {
+    selectedIds,
+    toggleSelect,
+    removeSelected,
+    pickerVisible,
+    setPickerVisible,
+    addExercise,
+  } = useEditWorkoutExercises(id ?? "", workout?.exercises ?? [], refresh);
+
+  function exitEdit() {
+    setEditing(false);
+  }
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#0f0f0f" }} edges={["top"]}>
@@ -196,7 +248,13 @@ export default function WorkoutDetailScreen() {
           }}
         >
           <TouchableOpacity
-            onPress={() => router.back()}
+            onPress={() => {
+              if (editing) {
+                exitEdit();
+              } else {
+                router.back();
+              }
+            }}
             activeOpacity={0.7}
             style={{
               width: 36,
@@ -209,7 +267,7 @@ export default function WorkoutDetailScreen() {
               borderColor: "rgba(255,255,255,0.06)",
             }}
           >
-            <Ionicons name="chevron-back" size={20} color="#aaa" />
+            <Ionicons name={editing ? "close" : "chevron-back"} size={20} color="#aaa" />
           </TouchableOpacity>
 
           <View style={{ flex: 1, alignItems: "center" }}>
@@ -226,7 +284,26 @@ export default function WorkoutDetailScreen() {
             </Text>
           </View>
 
-          <View style={{ width: 36 }} />
+          <TouchableOpacity
+            onPress={() => setEditing((e) => !e)}
+            activeOpacity={0.7}
+            style={{
+              width: 36,
+              height: 36,
+              borderRadius: 10,
+              backgroundColor: editing ? "rgba(16,185,129,0.15)" : "#191919",
+              alignItems: "center",
+              justifyContent: "center",
+              borderWidth: 1,
+              borderColor: editing ? "rgba(16,185,129,0.4)" : "rgba(255,255,255,0.06)",
+            }}
+          >
+            <Ionicons
+              name={editing ? "checkmark" : "pencil"}
+              size={16}
+              color={editing ? "#10b981" : "#aaa"}
+            />
+          </TouchableOpacity>
         </View>
 
         {!workout ? (
@@ -237,82 +314,163 @@ export default function WorkoutDetailScreen() {
             </Text>
           </View>
         ) : (
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 32, gap: 20 }}
-          >
-            <Animated.View entering={FadeInDown.delay(40).duration(400)}>
-              <DayChipsEditor
-                workoutId={workout.id}
-                initialDays={workout.daysOfWeek}
-                onSaved={refresh}
-              />
-            </Animated.View>
+          <>
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 32, gap: 20 }}
+            >
+              {!editing && (
+                <Animated.View entering={FadeInDown.delay(40).duration(400)}>
+                  <DayChipsEditor
+                    workoutId={workout.id}
+                    initialDays={workout.daysOfWeek}
+                    onSaved={refresh}
+                  />
+                </Animated.View>
+              )}
 
-            <Animated.View entering={FadeInDown.delay(80).duration(400)}>
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  gap: 8,
-                  marginBottom: 14,
-                }}
-              >
+              <Animated.View entering={FadeInDown.delay(80).duration(400)}>
                 <View
-                  style={{ width: 4, height: 18, borderRadius: 2, backgroundColor: "#10b981" }}
-                />
-                <Text
                   style={{
-                    color: "#ffffff",
-                    fontSize: 13,
-                    fontFamily: "Inter_500Medium",
-                    letterSpacing: 0.8,
-                    textTransform: "uppercase",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 8,
+                    marginBottom: 14,
                   }}
                 >
-                  Exercises
-                </Text>
-                <Text
-                  style={{
-                    color: "#444",
-                    fontSize: 11,
-                    fontFamily: "Inter_400Regular",
-                    marginLeft: "auto",
-                  }}
-                >
-                  {workout.exercises.length} total
-                </Text>
-              </View>
-
-              {workout.exercises.length === 0 ? (
-                <Animated.View
-                  entering={FadeInDown.delay(120).duration(400)}
-                  style={{ paddingTop: 40, alignItems: "center", gap: 8 }}
-                >
-                  <Ionicons name="barbell-outline" size={28} color="#333" />
+                  <View
+                    style={{ width: 4, height: 18, borderRadius: 2, backgroundColor: "#10b981" }}
+                  />
+                  <Text
+                    style={{
+                      color: "#ffffff",
+                      fontSize: 13,
+                      fontFamily: "Inter_500Medium",
+                      letterSpacing: 0.8,
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    Exercises
+                  </Text>
                   <Text
                     style={{
                       color: "#444",
-                      fontSize: 13,
+                      fontSize: 11,
                       fontFamily: "Inter_400Regular",
-                      textAlign: "center",
+                      marginLeft: "auto",
                     }}
                   >
-                    No exercises in this workout.
+                    {workout.exercises.length} total
                   </Text>
-                </Animated.View>
-              ) : (
-                <View style={{ gap: 8 }}>
-                  {workout.exercises
-                    .slice()
-                    .sort((a, b) => a.position - b.position)
-                    .map((exercise, index) => (
-                      <ExerciseRow key={exercise.id} exercise={exercise} index={index} />
-                    ))}
                 </View>
-              )}
-            </Animated.View>
-          </ScrollView>
+
+                {workout.exercises.length === 0 ? (
+                  <Animated.View
+                    entering={FadeInDown.delay(120).duration(400)}
+                    style={{ paddingTop: 40, alignItems: "center", gap: 8 }}
+                  >
+                    <Ionicons name="barbell-outline" size={28} color="#333" />
+                    <Text
+                      style={{
+                        color: "#444",
+                        fontSize: 13,
+                        fontFamily: "Inter_400Regular",
+                        textAlign: "center",
+                      }}
+                    >
+                      No exercises in this workout.
+                    </Text>
+                  </Animated.View>
+                ) : (
+                  <View style={{ gap: 8 }}>
+                    {workout.exercises
+                      .slice()
+                      .sort((a, b) => a.position - b.position)
+                      .map((exercise, index) => (
+                        <ExerciseRow
+                          key={exercise.id}
+                          exercise={exercise}
+                          index={index}
+                          editing={editing}
+                          selected={selectedIds.has(exercise.id)}
+                          onToggle={() => toggleSelect(exercise.id)}
+                        />
+                      ))}
+                  </View>
+                )}
+
+                {/* Edit mode actions */}
+                {editing && (
+                  <View style={{ marginTop: 16, gap: 10 }}>
+                    <TouchableOpacity
+                      onPress={() => setPickerVisible(true)}
+                      activeOpacity={0.7}
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: 8,
+                        paddingVertical: 14,
+                        borderRadius: 12,
+                        backgroundColor: "rgba(16,185,129,0.1)",
+                        borderWidth: 1,
+                        borderColor: "rgba(16,185,129,0.3)",
+                      }}
+                    >
+                      <Ionicons name="add" size={18} color="#10b981" />
+                      <Text
+                        style={{
+                          color: "#10b981",
+                          fontSize: 14,
+                          fontFamily: "Inter_500Medium",
+                        }}
+                      >
+                        Add Exercise
+                      </Text>
+                    </TouchableOpacity>
+
+                    {selectedIds.size > 0 && (
+                      <TouchableOpacity
+                        onPress={removeSelected}
+                        activeOpacity={0.7}
+                        style={{
+                          flexDirection: "row",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          gap: 8,
+                          paddingVertical: 14,
+                          borderRadius: 12,
+                          backgroundColor: "rgba(239,68,68,0.1)",
+                          borderWidth: 1,
+                          borderColor: "rgba(239,68,68,0.3)",
+                        }}
+                      >
+                        <Ionicons name="trash-outline" size={16} color="#ef4444" />
+                        <Text
+                          style={{
+                            color: "#ef4444",
+                            fontSize: 14,
+                            fontFamily: "Inter_500Medium",
+                          }}
+                        >
+                          Remove {selectedIds.size} Exercise{selectedIds.size > 1 ? "s" : ""}
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                )}
+              </Animated.View>
+            </ScrollView>
+
+            <ExercisePickerModal
+              visible={pickerVisible}
+              onSelect={(catalog) => {
+                addExercise(catalog);
+                setPickerVisible(false);
+              }}
+              onClose={() => setPickerVisible(false)}
+            />
+          </>
         )}
       </View>
     </SafeAreaView>

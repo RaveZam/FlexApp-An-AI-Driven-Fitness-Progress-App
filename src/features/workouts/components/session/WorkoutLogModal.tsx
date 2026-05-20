@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   KeyboardAvoidingView,
   Modal,
@@ -19,6 +19,9 @@ type WorkoutLogModalProps = {
   setNumber: number;
   totalSets: number;
   targetReps: number;
+  mode?: "log" | "edit";
+  initialWeight?: number | null;
+  initialReps?: number | null;
   onLog: (weight: number, reps: number) => void;
   onClose: () => void;
 };
@@ -29,11 +32,21 @@ export default function WorkoutLogModal({
   setNumber,
   totalSets,
   targetReps,
+  mode = "log",
+  initialWeight,
+  initialReps,
   onLog,
   onClose,
 }: WorkoutLogModalProps) {
   const [weight, setWeight] = useState("");
   const [reps, setReps] = useState("");
+
+  useEffect(() => {
+    if (visible) {
+      setWeight(initialWeight != null ? String(initialWeight) : "");
+      setReps(initialReps != null ? String(initialReps) : "");
+    }
+  }, [visible, initialWeight, initialReps]);
 
   const canLog = weight.trim() !== "" && reps.trim() !== "";
 
@@ -77,7 +90,9 @@ export default function WorkoutLogModal({
             <View>
               <Text style={styles.exerciseName}>{exerciseName}</Text>
               <Text style={styles.setInfo}>
-                Set {setNumber} of {totalSets} · Target: {targetReps} reps
+                {mode === "edit"
+                  ? `Edit set ${setNumber} of ${totalSets}`
+                  : `Set ${setNumber} of ${totalSets} · Target: ${targetReps} reps`}
               </Text>
             </View>
             <TouchableOpacity onPress={handleClose}>
@@ -132,7 +147,7 @@ export default function WorkoutLogModal({
                 !canLog && styles.logButtonTextDisabled,
               ]}
             >
-              Log Set {setNumber}
+              {mode === "edit" ? `Update Set ${setNumber}` : `Log Set ${setNumber}`}
             </Text>
           </TouchableOpacity>
         </View>

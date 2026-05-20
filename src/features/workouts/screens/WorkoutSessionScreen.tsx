@@ -36,6 +36,7 @@ export default function WorkoutSessionScreen() {
     allExercisesComplete,
     elapsedSeconds,
     logSet,
+    editSet,
     goToNextExercise,
     finish,
     cancel,
@@ -46,6 +47,17 @@ export default function WorkoutSessionScreen() {
   const [showLogModal, setShowLogModal] = useState(false);
   const [showRestTimer, setShowRestTimer] = useState(false);
   const [showExercisesList, setShowExercisesList] = useState(false);
+  const [editingSetId, setEditingSetId] = useState<string | null>(null);
+
+  const editingSet = editingSetId
+    ? active?.sets.find((s) => s.id === editingSetId) ?? null
+    : null;
+
+  function handleEditSave(weight: number, reps: number) {
+    if (!editingSetId) return;
+    editSet(editingSetId, weight, reps);
+    setEditingSetId(null);
+  }
 
   const completedSetCount = exercises.reduce(
     (acc, ex) => acc + ex.sets.filter((s) => s.completed).length,
@@ -150,7 +162,13 @@ export default function WorkoutSessionScreen() {
           </View>
           <View style={styles.setsContainer}>
             {active.sets.map((set, index) => (
-              <SetRow key={set.id} set={set} isCurrent={index === currentSetIndex} index={index} />
+              <SetRow
+                key={set.id}
+                set={set}
+                isCurrent={index === currentSetIndex}
+                index={index}
+                onEdit={(id) => setEditingSetId(id)}
+              />
             ))}
           </View>
 
@@ -191,6 +209,19 @@ export default function WorkoutSessionScreen() {
           targetReps={allSetsComplete ? 0 : active.sets[currentSetIndex]?.targetReps ?? 0}
           onLog={handleLog}
           onClose={() => setShowLogModal(false)}
+        />
+
+        <WorkoutLogModal
+          visible={!!editingSet}
+          exerciseName={active.name}
+          setNumber={editingSet?.setNumber ?? 0}
+          totalSets={active.sets.length}
+          targetReps={editingSet?.targetReps ?? 0}
+          mode="edit"
+          initialWeight={editingSet?.weight ?? null}
+          initialReps={editingSet?.actualReps ?? null}
+          onLog={handleEditSave}
+          onClose={() => setEditingSetId(null)}
         />
 
         <ExercisesListSheet
