@@ -1,6 +1,7 @@
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useStorageCleaner } from "@/hooks/useStorageCleaner";
 import { AuthProvider } from "@/src/features/auth/hooks/useAuth";
+import { ActivePlanProvider } from "@/src/features/workouts/context/ActivePlanContext";
 import { initDb } from "@/src/lib/db";
 import { runOutboxSync } from "@/src/features/outbox";
 import {
@@ -84,16 +85,18 @@ export default function RootLayout() {
 
   return (
     <AuthProvider>
-      <ThemeProvider
-        value={colorScheme === "dark" ? DarkTheme : DarkTheme}
-      >
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="+not-found" />
-          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-        </Stack>
-        <StatusBar style="auto" />
-      </ThemeProvider>
+      <ActivePlanProvider>
+        <ThemeProvider
+          value={colorScheme === "dark" ? DarkTheme : DarkTheme}
+        >
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="+not-found" />
+            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+          </Stack>
+          <StatusBar style="auto" />
+        </ThemeProvider>
+      </ActivePlanProvider>
     </AuthProvider>
   );
 }
