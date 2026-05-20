@@ -1,6 +1,7 @@
 import { cancelSession, completeSession, getSessionById, updateSet } from "@/src/features/workouts/services/sessionLocalService";
 import type { WorkoutSession } from "@/src/features/workouts/types";
 import type { SessionExerciseView } from "@/src/features/workouts/types/sessionView";
+import { getElapsedSeconds } from "@/src/features/workouts/utils/sessionElapsed";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 function sessionToView(session: WorkoutSession): SessionExerciseView[] {
@@ -31,9 +32,16 @@ export function useWorkoutSession(sessionId: string | undefined) {
     setName(session?.name ?? "Today's Workout");
     setExercises(session ? sessionToView(session) : []);
     setActiveIndex(0);
-    setElapsedSeconds(0);
+
+    const startedAt = session?.startedAt ?? null;
+    setElapsedSeconds(getElapsedSeconds(startedAt));
     if (timerRef.current) clearInterval(timerRef.current);
-    timerRef.current = setInterval(() => setElapsedSeconds((s) => s + 1), 1000);
+    if (startedAt) {
+      timerRef.current = setInterval(
+        () => setElapsedSeconds(getElapsedSeconds(startedAt)),
+        1000
+      );
+    }
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };

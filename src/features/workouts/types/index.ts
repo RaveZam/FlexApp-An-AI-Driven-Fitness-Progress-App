@@ -95,5 +95,10 @@ export type WorkoutSession = {
 export type UserPreferences = {
   userId: string;
   activePlanId: string | null;
+  restTimerSeconds: number;
   updatedAt: string;
 };
+
+export const DEFAULT_REST_TIMER_SECONDS = 120;
+export const MIN_REST_TIMER_SECONDS = 15;
+export const MAX_REST_TIMER_SECONDS = 600;

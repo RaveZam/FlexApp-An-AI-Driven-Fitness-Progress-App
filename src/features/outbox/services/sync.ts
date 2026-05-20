@@ -83,10 +83,26 @@ async function dispatchRow(row: OutboxRow): Promise<void> {
   }
 
   if (row.entity_type === "user_preferences" && row.operation === "update") {
-    const { activePlanId, updatedAt } = payload as { activePlanId: string | null; updatedAt: string };
+    const local = getDb().getFirstSync<{
+      active_plan_id: string | null;
+      rest_timer_seconds: number;
+      updated_at: string;
+    }>(
+      "SELECT active_plan_id, rest_timer_seconds, updated_at FROM user_preferences WHERE user_id = ?",
+      [row.entity_id]
+    );
+    if (!local) return;
     const { error } = await supabase
       .from("user_preferences")
-      .upsert({ user_id: row.entity_id, active_plan_id: activePlanId, updated_at: updatedAt }, { onConflict: "user_id" });
+      .upsert(
+        {
+          user_id: row.entity_id,
+          active_plan_id: local.active_plan_id,
+          rest_timer_seconds: local.rest_timer_seconds,
+          updated_at: local.updated_at,
+        },
+        { onConflict: "user_id" }
+      );
     if (error) throw error;
   }
 

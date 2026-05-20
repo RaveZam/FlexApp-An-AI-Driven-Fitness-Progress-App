@@ -17,25 +17,35 @@ const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
+const STEP_SECONDS = 15;
+const MIN_SECONDS = 15;
+const MAX_SECONDS = 600;
+
 type Props = {
   visible: boolean;
   onClose: () => void;
   durationSeconds?: number;
+  onSaveAsDefault?: (seconds: number) => void;
 };
 
 export default function RestTimerModal({
   visible,
   onClose,
   durationSeconds = 180,
+  onSaveAsDefault,
 }: Props) {
+  const [total, setTotal] = useState(durationSeconds);
   const [remaining, setRemaining] = useState(durationSeconds);
+  const [savedFlash, setSavedFlash] = useState(false);
   const progress = useSharedValue(1);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     if (!visible) return;
 
+    setTotal(durationSeconds);
     setRemaining(durationSeconds);
+    setSavedFlash(false);
     progress.value = 1;
     progress.value = withTiming(0, {
       duration: durationSeconds * 1000,
@@ -55,7 +65,32 @@ export default function RestTimerModal({
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [visible]);
+  }, [visible, durationSeconds]);
+
+  const adjust = (delta: number) => {
+    const nextTotal = Math.min(
+      MAX_SECONDS,
+      Math.max(MIN_SECONDS, total + delta)
+    );
+    const nextRemaining = Math.min(
+      MAX_SECONDS,
+      Math.max(0, remaining + delta)
+    );
+    setTotal(nextTotal);
+    setRemaining(nextRemaining);
+    progress.value = nextTotal > 0 ? nextRemaining / nextTotal : 0;
+    progress.value = withTiming(0, {
+      duration: nextRemaining * 1000,
+      easing: Easing.linear,
+    });
+  };
+
+  const handleSaveAsDefault = () => {
+    if (!onSaveAsDefault) return;
+    onSaveAsDefault(total);
+    setSavedFlash(true);
+    setTimeout(() => setSavedFlash(false), 1200);
+  };
 
   useEffect(() => {
     if (remaining === 0 && visible) {
@@ -81,7 +116,7 @@ export default function RestTimerModal({
     return `${m}:${sec.toString().padStart(2, "0")}`;
   };
 
-  const pct = Math.round((remaining / durationSeconds) * 100);
+  const pct = total > 0 ? Math.round((remaining / total) * 100) : 0;
 
   return (
     <Modal
@@ -128,7 +163,7 @@ export default function RestTimerModal({
 
             <View style={styles.timerCenter}>
               <Text style={styles.timerDigits}>{formatTime(remaining)}</Text>
-              <Text style={styles.timerSub}>{pct}% remaining</Text>
+              <Text style={styles.timerSub}>of {formatTime(total)} · {pct}%</Text>
             </View>
           </View>
 
@@ -136,6 +171,42 @@ export default function RestTimerModal({
             <Ionicons name="barbell-outline" size={15} color="#444" />
             <Text style={styles.hintText}>Prepare for next set</Text>
           </View>
+
+          <View style={styles.adjustRow}>
+            <TouchableOpacity
+              onPress={() => adjust(-STEP_SECONDS)}
+              activeOpacity={0.8}
+              style={styles.adjustButton}
+            >
+              <Ionicons name="remove" size={20} color={ACCENT} />
+              <Text style={styles.adjustText}>15s</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => adjust(STEP_SECONDS)}
+              activeOpacity={0.8}
+              style={styles.adjustButton}
+            >
+              <Ionicons name="add" size={20} color={ACCENT} />
+              <Text style={styles.adjustText}>15s</Text>
+            </TouchableOpacity>
+          </View>
+
+          {onSaveAsDefault && (
+            <TouchableOpacity
+              onPress={handleSaveAsDefault}
+              activeOpacity={0.8}
+              style={styles.saveDefaultButton}
+            >
+              <Ionicons
+                name={savedFlash ? "checkmark" : "bookmark-outline"}
+                size={14}
+                color="#666"
+              />
+              <Text style={styles.saveDefaultText}>
+                {savedFlash ? "Saved as default" : "Save as default"}
+              </Text>
+            </TouchableOpacity>
+          )}
 
           <TouchableOpacity
             onPress={handleSkip}
@@ -220,5 +291,39 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: "Inter_600SemiBold",
     letterSpacing: 0.4,
+  },
+  adjustRow: {
+    flexDirection: "row",
+    gap: 14,
+  },
+  adjustButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    paddingHorizontal: 18,
+    paddingVertical: 10,
+    borderRadius: 100,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.08)",
+    backgroundColor: "rgba(255,255,255,0.02)",
+  },
+  adjustText: {
+    color: ACCENT,
+    fontSize: 13,
+    fontFamily: "Inter_600SemiBold",
+    letterSpacing: 0.3,
+  },
+  saveDefaultButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+  },
+  saveDefaultText: {
+    color: "#666",
+    fontSize: 12,
+    fontFamily: "Inter_500Medium",
+    letterSpacing: 0.3,
   },
 });

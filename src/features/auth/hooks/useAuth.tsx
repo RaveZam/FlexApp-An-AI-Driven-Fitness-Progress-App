@@ -1,3 +1,4 @@
+import { syncPreferencesFromRemote } from "@/src/features/workouts/services/preferencesSupabaseService";
 import { supabase } from "@/src/lib/supabase";
 import { Session, User } from "@supabase/supabase-js";
 import {
@@ -5,6 +6,7 @@ import {
   PropsWithChildren,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from "react";
 
@@ -21,12 +23,21 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: PropsWithChildren) {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
+  const syncedUserIdsRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
     const { data: authListener } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
+
+        const userId = session?.user?.id;
+        if (userId && !syncedUserIdsRef.current.has(userId)) {
+          syncedUserIdsRef.current.add(userId);
+          syncPreferencesFromRemote(userId).catch((err) =>
+            console.error("[auth] preference sync-down failed:", err)
+          );
+        }
       }
     );
 

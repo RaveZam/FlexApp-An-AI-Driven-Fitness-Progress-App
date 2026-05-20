@@ -58,6 +58,7 @@ export async function initDb(): Promise<void> {
     CREATE TABLE IF NOT EXISTS user_preferences (
       user_id TEXT PRIMARY KEY,
       active_plan_id TEXT,
+      rest_timer_seconds INTEGER NOT NULL DEFAULT 120,
       updated_at TEXT NOT NULL
     );
 
@@ -110,4 +111,13 @@ export async function initDb(): Promise<void> {
     );
     CREATE INDEX IF NOT EXISTS outbox_pending_idx ON outbox(synced_at) WHERE synced_at IS NULL;
   `);
+
+  const prefCols = database.getAllSync<{ name: string }>(
+    "PRAGMA table_info(user_preferences)"
+  );
+  if (!prefCols.some((c) => c.name === "rest_timer_seconds")) {
+    database.execSync(
+      "ALTER TABLE user_preferences ADD COLUMN rest_timer_seconds INTEGER NOT NULL DEFAULT 120"
+    );
+  }
 }

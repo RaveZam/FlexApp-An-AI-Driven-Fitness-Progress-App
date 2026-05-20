@@ -8,6 +8,7 @@ import SessionTimerHero from "@/src/features/workouts/components/session/Session
 import SetRow from "@/src/features/workouts/components/session/SetRow";
 import WorkoutLogModal from "@/src/features/workouts/components/session/WorkoutLogModal";
 import { useExerciseHistory } from "@/src/features/workouts/hooks/useExerciseHistory";
+import { useRestTimerDefault } from "@/src/features/workouts/hooks/useRestTimerDefault";
 import { useSessionGuard } from "@/src/features/workouts/hooks/useSessionGuard";
 import { useWorkoutSession } from "@/src/features/workouts/hooks/useWorkoutSession";
 import { Ionicons } from "@expo/vector-icons";
@@ -26,6 +27,7 @@ const MUTED = "#6b6b6b";
 
 export default function WorkoutSessionScreen() {
   const { id: sessionId } = useLocalSearchParams<{ id?: string }>();
+  const { restSeconds, setRestSeconds } = useRestTimerDefault();
   const {
     exercises,
     activeIndex,
@@ -135,7 +137,7 @@ export default function WorkoutSessionScreen() {
           <View style={[styles.progressFill, { width: `${progressPct}%` }]} />
         </View>
 
-        <SessionTimerHero elapsedSeconds={elapsedSeconds} restSeconds={active.restSeconds} />
+        <SessionTimerHero elapsedSeconds={elapsedSeconds} restSeconds={restSeconds} />
 
         <ScrollView
           style={styles.scroll}
@@ -198,7 +200,8 @@ export default function WorkoutSessionScreen() {
         <RestTimerModal
           visible={showRestTimer}
           onClose={() => setShowRestTimer(false)}
-          durationSeconds={180}
+          durationSeconds={restSeconds}
+          onSaveAsDefault={setRestSeconds}
         />
 
         <WorkoutLogModal
