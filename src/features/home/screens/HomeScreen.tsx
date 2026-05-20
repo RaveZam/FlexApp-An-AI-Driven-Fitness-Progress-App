@@ -84,10 +84,10 @@ export default function Index() {
         >
           <ScheduleBar />
 
-          <SectionLabel eyebrow="Daily Focus" title="Today" delay={80} />
+          <SectionLabel title="Today" delay={80} />
           <TodaysWorkoutSection workouts={todaysWorkouts} activePlanId={activePlanId} />
 
-          <SectionLabel eyebrow="Performance" title="Your Progress" delay={220} />
+          <SectionLabel title="Your Progress" delay={220} />
 
           <View style={{ gap: 14 }}>
             {/* <HomePageChartGraph />x */}

@@ -34,7 +34,6 @@ export default function UserInfoCard() {
           }}
         />
         <View>
-          <Text style={styles.eyebrow}>Daily Practice</Text>
           <Text style={styles.wordmark}>
             Flex<Text style={styles.wordmarkAccent}>Life</Text>
           </Text>

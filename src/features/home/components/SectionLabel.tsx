@@ -3,7 +3,7 @@ import { StyleSheet, Text } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
 type Props = {
-  eyebrow: string;
+  eyebrow?: string;
   title: string;
   delay?: number;
 };
@@ -11,7 +11,7 @@ type Props = {
 export function SectionLabel({ eyebrow, title, delay = 0 }: Props) {
   return (
     <Animated.View entering={FadeInDown.delay(delay).duration(400)} style={styles.sectionHead}>
-      <Text style={styles.eyebrow}>{eyebrow}</Text>
+      {eyebrow ? <Text style={styles.eyebrow}>{eyebrow}</Text> : null}
       <Text style={styles.sectionTitle}>{title}</Text>
     </Animated.View>
   );

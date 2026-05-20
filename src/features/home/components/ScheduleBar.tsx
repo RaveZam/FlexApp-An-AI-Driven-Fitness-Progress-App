@@ -19,10 +19,7 @@ export default function ScheduleBar() {
   return (
     <Animated.View entering={FadeInDown.delay(60).duration(400)} style={styles.wrap}>
       <View style={styles.header}>
-        <View>
-          <Text style={styles.eyebrow}>This Week</Text>
-          <Text style={styles.title}>Rhythm</Text>
-        </View>
+        <Text style={styles.title}>This Week</Text>
         <View style={styles.legend}>
           <View style={styles.legendDot} />
           <Text style={styles.legendText}>{plannedDays.size} days / week</Text>
@@ -102,14 +99,6 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
     justifyContent: "space-between",
     marginBottom: 18,
-  },
-  eyebrow: {
-    color: Palette.accent,
-    fontSize: 9,
-    fontFamily: FontFamilies.medium,
-    letterSpacing: 2.4,
-    textTransform: "uppercase",
-    marginBottom: 4,
   },
   title: {
     color: Palette.bone,
