@@ -71,9 +71,15 @@ function SessionCard({
         </View>
         <View style={styles.cardBody}>
           <Text style={styles.cardTitle} numberOfLines={1}>{item.name}</Text>
-          <Text style={styles.cardMeta}>
-            {item.exerciseCount} exercise{item.exerciseCount !== 1 ? "s" : ""} · {item.completedSetCount} sets · {duration}
-          </Text>
+          <View style={styles.metaRow}>
+            <Text style={styles.metaStat}>
+              {item.exerciseCount} exercise{item.exerciseCount !== 1 ? "s" : ""}
+            </Text>
+            <View style={styles.metaDivider} />
+            <Text style={styles.metaStat}>{item.completedSetCount} sets</Text>
+            <View style={styles.metaDivider} />
+            <Text style={styles.metaStat}>{duration}</Text>
+          </View>
         </View>
         {editing ? (
           <Pressable onPress={handleDeletePress} style={styles.deleteBtn} hitSlop={8}>
@@ -139,7 +145,11 @@ export default function HistoryScreen() {
           contentContainerStyle={styles.listContent}
           stickySectionHeadersEnabled={false}
           renderSectionHeader={({ section }) => (
-            <Text style={styles.sectionHeader}>{section.title}</Text>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>{section.title}</Text>
+              <View style={styles.sectionRule} />
+              <Text style={styles.sectionCount}>{section.data.length}</Text>
+            </View>
           )}
           renderItem={({ item }) => {
             const idx = globalIndex++;
@@ -180,23 +190,39 @@ const styles = StyleSheet.create({
     paddingBottom: 32,
   },
   sectionHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    marginTop: 24,
+    marginBottom: 10,
+    marginLeft: 4,
+  },
+  sectionTitle: {
     fontFamily: FontFamilies.semibold,
     fontSize: 11,
-    color: Palette.muted,
+    color: Palette.bone,
     letterSpacing: 1.5,
     textTransform: "uppercase",
-    marginTop: 20,
-    marginBottom: 8,
-    marginLeft: 4,
+  },
+  sectionRule: {
+    flex: 1,
+    height: 1,
+    backgroundColor: Palette.hairline,
+  },
+  sectionCount: {
+    fontFamily: FontFamilies.medium,
+    fontSize: 11,
+    color: Palette.muted,
+    letterSpacing: 0.5,
   },
   card: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#191919",
+    backgroundColor: Palette.inkRaised,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: "rgba(245,243,239,0.04)",
-    marginBottom: 8,
+    borderColor: Palette.hairline,
+    marginBottom: 10,
     overflow: "hidden",
   },
   accentBar: {
@@ -227,18 +253,31 @@ const styles = StyleSheet.create({
   cardBody: {
     flex: 1,
     paddingVertical: 14,
+    paddingLeft: 14,
     paddingRight: 8,
-    gap: 3,
+    gap: 5,
+    borderLeftWidth: 1,
+    borderLeftColor: Palette.hairline,
   },
   cardTitle: {
     fontFamily: FontFamilies.medium,
     fontSize: 15,
     color: "#ffffff",
   },
-  cardMeta: {
+  metaRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  metaStat: {
     fontFamily: FontFamilies.regular,
     fontSize: 12,
     color: Palette.muted,
+  },
+  metaDivider: {
+    width: 1,
+    height: 10,
+    backgroundColor: Palette.hairlineStrong,
   },
   center: {
     flex: 1,

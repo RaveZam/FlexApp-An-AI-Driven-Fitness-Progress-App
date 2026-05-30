@@ -256,7 +256,6 @@ export function ProgressiveOverload() {
     <ReAnimated.View entering={FadeInDown.delay(390).duration(400)} style={styles.card}>
       <View style={styles.header}>
         <Text style={styles.eyebrow}>Progression · Last 6 sessions</Text>
-        <Text style={styles.title}>Are you growing?</Text>
       </View>
 
       <View style={styles.statRow}>

@@ -83,8 +83,7 @@ export default function Index() {
           contentContainerStyle={{ paddingBottom: 20 }}
         >
           <ScheduleBar />
-
-          <SectionLabel title="Today" delay={80} />
+ 
           <TodaysWorkoutSection workouts={todaysWorkouts} activePlanId={activePlanId} />
 
           <SectionLabel title="Your Progress" delay={220} />

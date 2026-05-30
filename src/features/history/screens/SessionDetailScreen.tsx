@@ -65,7 +65,10 @@ function ExerciseCard({ exercise, index }: { exercise: SessionExercise; index: n
   return (
     <Animated.View entering={FadeInRight.delay(index * 80).duration(350)} style={styles.exerciseCard}>
       <View style={styles.exerciseHeader}>
-        <Text style={styles.exerciseName}>{exercise.name}</Text>
+        <View style={styles.exerciseBadge}>
+          <Text style={styles.exerciseBadgeText}>{index + 1}</Text>
+        </View>
+        <Text style={styles.exerciseName} numberOfLines={1}>{exercise.name}</Text>
         <Text style={styles.exerciseMeta}>{completedSets}/{exercise.sets.length} sets</Text>
       </View>
       {exercise.sets.length > 0 && (
@@ -154,6 +157,12 @@ export default function SessionDetailScreen() {
             value={totalVolume > 0 ? `${totalVolume.toLocaleString()} lb` : "—"}
           />
         </Animated.View>
+
+        <View style={styles.sectionLabelRow}>
+          <Text style={styles.sectionLabel}>Exercises</Text>
+          <View style={styles.sectionRule} />
+          <Text style={styles.sectionCount}>{session.exercises.length}</Text>
+        </View>
 
         <View style={styles.exerciseList}>
           {session.exercises.map((ex, i) => (
@@ -244,23 +253,62 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(245,243,239,0.07)",
     marginVertical: 12,
   },
+  sectionLabelRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    marginBottom: 12,
+    marginLeft: 2,
+  },
+  sectionLabel: {
+    fontFamily: FontFamilies.semibold,
+    fontSize: 11,
+    color: Palette.bone,
+    letterSpacing: 1.5,
+    textTransform: "uppercase",
+  },
+  sectionRule: {
+    flex: 1,
+    height: 1,
+    backgroundColor: Palette.hairline,
+  },
+  sectionCount: {
+    fontFamily: FontFamilies.medium,
+    fontSize: 11,
+    color: Palette.muted,
+  },
   exerciseList: {
     gap: 12,
   },
   exerciseCard: {
-    backgroundColor: "#191919",
+    backgroundColor: Palette.inkRaised,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: "rgba(245,243,239,0.04)",
+    borderColor: Palette.hairline,
     overflow: "hidden",
   },
   exerciseHeader: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 16,
+    gap: 10,
+    paddingHorizontal: 14,
     paddingTop: 14,
     paddingBottom: 10,
+  },
+  exerciseBadge: {
+    width: 22,
+    height: 22,
+    borderRadius: 6,
+    backgroundColor: Palette.accentSoft,
+    borderWidth: 1,
+    borderColor: Palette.accentBorderSoft,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  exerciseBadgeText: {
+    fontFamily: FontFamilies.semibold,
+    fontSize: 11,
+    color: Palette.accent,
   },
   exerciseName: {
     fontFamily: FontFamilies.semibold,
