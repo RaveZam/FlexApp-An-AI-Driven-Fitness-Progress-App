@@ -3,11 +3,11 @@ import { Feather } from "@expo/vector-icons";
 import { useMemo, useState } from "react";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import ReAnimated, { FadeInDown } from "react-native-reanimated";
-import Svg, { Circle, Defs, LinearGradient as SvgGradient, Path, Rect, Stop } from "react-native-svg";
+import Svg, { Circle, Defs, Path, Rect, Stop, LinearGradient as SvgGradient } from "react-native-svg";
 import {
   useProgressionOverview,
-  type BodyPart as ProgressionBodyPart,
   type ExerciseProgress,
+  type BodyPart as ProgressionBodyPart,
 } from "../hooks/useProgressionOverview";
 
 type BodyPart = "All" | ProgressionBodyPart;

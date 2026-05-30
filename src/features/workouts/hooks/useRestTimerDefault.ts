@@ -21,6 +21,11 @@ export function useRestTimerDefault() {
     setRestSecondsState(getRestTimerSeconds(user.id));
   }, [user]);
 
+  const refresh = useCallback(() => {
+    if (!user) return;
+    setRestSecondsState(getRestTimerSeconds(user.id));
+  }, [user]);
+
   const setRestSeconds = useCallback(
     (seconds: number) => {
       if (!user) return;
@@ -34,5 +39,5 @@ export function useRestTimerDefault() {
     [user]
   );
 
-  return { restSeconds, setRestSeconds };
+  return { restSeconds, setRestSeconds, refresh };
 }

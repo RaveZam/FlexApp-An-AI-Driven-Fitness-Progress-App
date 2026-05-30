@@ -1,7 +1,7 @@
 import { useAuth } from "@/src/features/auth/hooks/useAuth";
 import { useActivePlan } from "@/src/features/workouts/context/ActivePlanContext";
-import { fetchExerciseCatalog } from "@/src/features/workouts/services/workoutSupabaseService";
 import { listPlans } from "@/src/features/workouts/services/workoutLocalService";
+import { fetchExerciseCatalog } from "@/src/features/workouts/services/workoutSupabaseService";
 import type { CatalogExercise } from "@/src/features/workouts/types";
 import { listRecentTopSets } from "@/src/lib/dao/exerciseStats";
 import { useFocusEffect } from "expo-router";
@@ -14,7 +14,7 @@ export type ExerciseProgress = {
   bodyPart: BodyPart;
   currentWeight: number;
   currentReps: number;
-  unit: "kg" | "lbs";
+  unit: "lbs" ;
   deltaWeight: number;
   deltaReps: number;
   history: number[];
@@ -112,7 +112,7 @@ export function useProgressionOverview(): {
           bodyPart: mapMuscleGroup(muscleGroup),
           currentWeight: 0,
           currentReps: 0,
-          unit: "kg",
+          unit: "lbs",
           deltaWeight: 0,
           deltaReps: 0,
           history: [],
@@ -133,7 +133,7 @@ export function useProgressionOverview(): {
         bodyPart: mapMuscleGroup(muscleGroup),
         currentWeight: lastWeight,
         currentReps: lastReps,
-        unit: "kg",
+        unit: "lbs",
         deltaWeight: lastWeight - firstWeight,
         deltaReps: lastReps - firstReps,
         history,

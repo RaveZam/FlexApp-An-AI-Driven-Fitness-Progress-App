@@ -14,8 +14,9 @@ import { useSessionGuard } from "@/src/features/workouts/hooks/useSessionGuard";
 import { useWorkoutSession } from "@/src/features/workouts/hooks/useWorkoutSession";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import { useFocusEffect } from "expo-router";
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -28,7 +29,7 @@ const MUTED = "#6b6b6b";
 
 export default function WorkoutSessionScreen() {
   const { id: sessionId } = useLocalSearchParams<{ id?: string }>();
-  const { restSeconds, setRestSeconds } = useRestTimerDefault();
+  const { restSeconds, setRestSeconds, refresh: refreshRestTimer } = useRestTimerDefault();
   const { refresh: refreshActiveSession } = useActiveSession();
   const {
     exercises,
@@ -47,6 +48,8 @@ export default function WorkoutSessionScreen() {
   } = useWorkoutSession(sessionId);
 
   useSessionGuard(sessionId);
+
+  useFocusEffect(useCallback(() => { refreshRestTimer(); }, [refreshRestTimer]));
 
   const [showLogModal, setShowLogModal] = useState(false);
   const [showRestTimer, setShowRestTimer] = useState(false);
