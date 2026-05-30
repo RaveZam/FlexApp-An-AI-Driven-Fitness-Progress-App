@@ -1,5 +1,5 @@
-import { getDb } from "@/src/lib/db";
 import type { SessionStatus } from "@/src/features/workouts/types";
+import { getDb } from "@/src/lib/db";
 
 export type SessionRow = {
   id: string;
@@ -114,4 +114,10 @@ export function updateStatus(
 
 export function remove(sessionId: string): void {
   getDb().runSync("DELETE FROM workout_sessions WHERE id = ?", [sessionId]);
+}
+
+export function listAll(): SessionRow[] {
+  return getDb()
+    .getAllSync<Raw>("SELECT * FROM workout_sessions ORDER BY created_at DESC")
+    .map(fromRaw);
 }

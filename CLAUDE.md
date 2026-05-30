@@ -102,3 +102,46 @@ EXPO_PUBLIC_SUPABASE_ANON_KEY=...
 ### TypeScript
 
 Strict mode enabled. Path alias `@/*` resolves to project root. Feature code is referenced as `@/src/features/...`.
+
+@AGENTS.md
+
+## Architecture Principles
+
+- No abstraction layers that don't reduce real duplication.
+- No design patterns by name (no "factory", "strategy", "observer") unless obvious.
+- No TypeScript generics gymnastics. If the type is complex, simplify the data.
+- Prefer co-location: keep logic near where it's used, not in a shared folder.
+- Don't extract a hook unless it's reused in 2+ places.
+- Avoid HOCs. Prefer composition via props.
+- RPC over client-side data transforms — push SQL logic to Supabase functions.
+- SQLite queries stay in the data layer, never inline in components.
+
+## When adding new code
+
+- Show me the simplest version first, then ask if I want more.
+- Flag if you're about to create a new file/folder and why.
+- Prefer editing existing files over creating new ones.
+
+## Code Style Rules
+
+- Prefer flat over nested. Max 2 levels of nesting.
+- Functions do ONE thing. If you need to explain it with "and", split it.
+- No abstractions until you need them 3 times (rule of three).
+- Name variables for what they ARE, not what they do. `userId` not `getUserId`.
+- No barrel exports, no index.ts re-exports unless asked.
+- Inline comments only for WHY, never for WHAT.
+- Prefer explicit over clever. No one-liners that need decoding.
+- Default to flat file structure. Don't create folders for <3 files.
+- No utility files/helpers until there's actual duplication.
+
+## Supabase / Data
+
+- Always use RPCs for aggregations or multi-table reads. No chained client-side queries.
+- Never expose Supabase client outside the data layer.
+- RLS is the auth boundary — don't duplicate it in application logic.
+  
+## What NOT to do
+
+- Don't scaffold folders speculatively ("we might need this later").
+- Don't add loading/error states I didn't ask for yet.
+- Don't refactor working code while fixing something else.

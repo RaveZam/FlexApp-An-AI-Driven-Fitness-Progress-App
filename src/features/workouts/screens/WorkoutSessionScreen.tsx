@@ -7,6 +7,7 @@ import SessionStatsPanel from "@/src/features/workouts/components/session/Sessio
 import SessionTimerHero from "@/src/features/workouts/components/session/SessionTimerHero";
 import SetRow from "@/src/features/workouts/components/session/SetRow";
 import WorkoutLogModal from "@/src/features/workouts/components/session/WorkoutLogModal";
+import { useActiveSession } from "@/src/features/workouts/hooks/useActiveSession";
 import { useExerciseHistory } from "@/src/features/workouts/hooks/useExerciseHistory";
 import { useRestTimerDefault } from "@/src/features/workouts/hooks/useRestTimerDefault";
 import { useSessionGuard } from "@/src/features/workouts/hooks/useSessionGuard";
@@ -28,6 +29,7 @@ const MUTED = "#6b6b6b";
 export default function WorkoutSessionScreen() {
   const { id: sessionId } = useLocalSearchParams<{ id?: string }>();
   const { restSeconds, setRestSeconds } = useRestTimerDefault();
+  const { refresh: refreshActiveSession } = useActiveSession();
   const {
     exercises,
     activeIndex,
@@ -92,7 +94,8 @@ export default function WorkoutSessionScreen() {
         style: "destructive",
         onPress: () => {
           cancel();
-          router.navigate("/(tabs)" as any);
+          refreshActiveSession();
+          router.back();
         },
       },
     ]);
@@ -100,6 +103,7 @@ export default function WorkoutSessionScreen() {
 
   function handleFinish() {
     finish();
+    refreshActiveSession();
     router.back();
   }
 

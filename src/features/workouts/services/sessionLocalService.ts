@@ -1,6 +1,6 @@
 import { enqueueOutbox } from "@/src/features/outbox";
-import * as sessionsDao from "@/src/lib/dao/sessions";
 import * as sessionExercisesDao from "@/src/lib/dao/sessionExercises";
+import * as sessionsDao from "@/src/lib/dao/sessions";
 import * as sessionSetsDao from "@/src/lib/dao/sessionSets";
 import { getDb } from "@/src/lib/db";
 import { generateUUID } from "@/src/lib/uuid";

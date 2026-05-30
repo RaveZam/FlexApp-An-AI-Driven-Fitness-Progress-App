@@ -33,7 +33,7 @@ export function useHomeScreen() {
 
   function handleStartWorkout() {
     if (hasActiveSession) {
-      router.push(`/(tabs)/Workouts/session?id=${activeSession!.id}` as any);
+      router.push(`/(tabs)/Workouts/session?id=${activeSession.id}` as any);
       return;
     }
     if (todaysWorkouts.length === 1) {

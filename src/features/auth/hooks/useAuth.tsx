@@ -1,4 +1,4 @@
-import { syncPreferencesFromRemote } from "@/src/features/workouts/services/preferencesSupabaseService";
+import { runDownloadSync } from "@/src/features/outbox";
 import { supabase } from "@/src/lib/supabase";
 import { Session, User } from "@supabase/supabase-js";
 import {
@@ -34,8 +34,8 @@ export function AuthProvider({ children }: PropsWithChildren) {
         const userId = session?.user?.id;
         if (userId && !syncedUserIdsRef.current.has(userId)) {
           syncedUserIdsRef.current.add(userId);
-          syncPreferencesFromRemote(userId).catch((err) =>
-            console.error("[auth] preference sync-down failed:", err)
+          runDownloadSync(userId).catch((err) =>
+            console.error("[auth] download sync failed:", err)
           );
         }
       }
