@@ -49,7 +49,7 @@ const STATUS_COLOR: Record<TrendStatus, string> = {
   stalled: STALL_COLOR,
 };
 
-const BODY_FILTERS: BodyPart[] = ["All", "Chest", "Back", "Shoulders", "Biceps", "Triceps", "Legs", "Other"];
+const BODY_FILTERS: BodyPart[] = ["Chest", "Back", "Shoulders", "Biceps", "Triceps", "Legs", "Other"];
 const PAGE_SIZE = 5;
 
 function StatPill({

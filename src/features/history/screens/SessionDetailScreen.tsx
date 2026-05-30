@@ -1,4 +1,5 @@
 import { FontFamilies, Palette } from "@/constants/theme";
+import type { SessionExercise, SessionSet } from "@/src/features/workouts/types";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import React from "react";
@@ -13,7 +14,6 @@ import {
 import Animated, { FadeInDown, FadeInRight } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useSessionDetail } from "../hooks/useSessionDetail";
-import type { SessionExercise, SessionSet } from "@/src/features/workouts/types";
 
 function formatDate(iso: string): string {
   const d = new Date(iso);
@@ -47,7 +47,7 @@ function SetRow({ set, isLast }: { set: SessionSet; isLast: boolean }) {
         {set.actualReps != null ? set.actualReps : set.targetReps}
       </Text>
       <Text style={[styles.setCell, dim && styles.dimText]}>
-        {set.weight != null ? `${set.weight} kg` : "—"}
+        {set.weight != null ? `${set.weight} lb` : "—"}
       </Text>
       <View style={styles.setCellCheck}>
         {set.completed ? (
@@ -151,7 +151,7 @@ export default function SessionDetailScreen() {
           <View style={styles.statDivider} />
           <StatTile
             label="Volume"
-            value={totalVolume > 0 ? `${totalVolume.toLocaleString()} kg` : "—"}
+            value={totalVolume > 0 ? `${totalVolume.toLocaleString()} lb` : "—"}
           />
         </Animated.View>
 
@@ -294,7 +294,7 @@ const styles = StyleSheet.create({
     fontFamily: FontFamilies.medium,
     fontSize: 10,
     color: Palette.muted,
-    letterSpacing: 1,
+    letterSpacing: 0,
     textTransform: "uppercase",
     flex: 1,
   },
