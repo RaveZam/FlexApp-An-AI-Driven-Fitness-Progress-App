@@ -5,14 +5,14 @@ import { useActiveSession } from "@/src/features/workouts/hooks/useActiveSession
 import { useStartSession } from "@/src/features/workouts/hooks/useStartSession";
 import { useTodaysWorkouts } from "@/src/features/workouts/hooks/useTodaysWorkouts";
 import type { Workout } from "@/src/features/workouts/types";
-import { router } from "expo-router";
-import { useEffect, useState } from "react";
+import { router, useFocusEffect } from "expo-router";
+import { useCallback, useEffect, useState } from "react";
 
 export function useHomeScreen() {
   const { session } = useAuth();
   const { activePlanId } = useActivePlan();
   const { workouts: todaysWorkouts } = useTodaysWorkouts();
-  const { activeSession } = useActiveSession();
+  const { activeSession, refresh: refreshActiveSession } = useActiveSession();
   const { startSession } = useStartSession();
 
   const [multiPickerVisible, setMultiPickerVisible] = useState(false);
@@ -20,6 +20,14 @@ export function useHomeScreen() {
   useEffect(() => {
     if (!session) router.replace("/login");
   }, [session]);
+
+  // Re-read the active session from local storage whenever Home regains focus
+  // (e.g. after finishing/cancelling a workout in the session screen).
+  useFocusEffect(
+    useCallback(() => {
+      refreshActiveSession();
+    }, [refreshActiveSession])
+  );
 
   const hasActiveSession = !!activeSession;
   const hasNoActivePlan = !activePlanId;

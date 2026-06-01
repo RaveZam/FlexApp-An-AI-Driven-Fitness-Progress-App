@@ -30,6 +30,7 @@ export function ActivePlanProvider({ children }: { children: ReactNode }) {
   const [activeSession, setActiveSession] = useState<WorkoutSession | null>(null);
   const [loading, setLoading] = useState(true);
 
+  //This exists here since if we put this on home id be technically having a DAO on home.
   const refreshActiveSession = useCallback(() => {
     if (!user) {
       setActiveSession(null);

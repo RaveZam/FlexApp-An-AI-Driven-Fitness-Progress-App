@@ -83,7 +83,7 @@ export function useWorkoutSession(sessionId: string | undefined) {
             s.id === setId ? { ...s, weight, actualReps: reps, completed: true } : s
           ),
         }))
-      );
+      )
       if (sessionId) {
         updateSet(setId, { actualReps: reps, weight, completed: true });
       }
