@@ -1,6 +1,6 @@
 import { useAuth } from "@/src/features/auth/hooks/useAuth";
 import { useRestTimerDefault } from "@/src/features/workouts/hooks/useRestTimerDefault";
-import { deleteAllSessionsForUser } from "@/src/features/workouts/services/sessionLocalService";
+import { cancelAllInProgressForUser, deleteAllSessionsForUser } from "@/src/features/workouts/services/sessionLocalService";
 import LoadingOverlay from "@/components/ui/LoadingOverlay";
 import Popup from "@/components/ui/Popup";
 import { Ionicons } from "@expo/vector-icons";
@@ -9,6 +9,7 @@ import React, { useEffect, useState } from "react";
 import {
   Alert,
   Image,
+  ScrollView,
   Switch,
   Text,
   TouchableOpacity,
@@ -31,6 +32,7 @@ export default function Settings() {
   const [userEmail, setUserEmail] = useState("");
   const [isLogoutPopupVisible, setLogoutPopupVisible] = useState(false);
   const [isClearHistoryPopupVisible, setClearHistoryPopupVisible] = useState(false);
+  const [isCancelInProgressPopupVisible, setCancelInProgressPopupVisible] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -55,6 +57,13 @@ export default function Settings() {
     setClearHistoryPopupVisible(false);
   };
 
+  const confirmCancelInProgress = () => {
+    if (user) {
+      cancelAllInProgressForUser(user.id);
+    }
+    setCancelInProgressPopupVisible(false);
+  };
+
   const confirmLogout = async () => {
     setLoading(true);
     const { error } = await signOut();
@@ -69,7 +78,11 @@ export default function Settings() {
 
   return (
     <SafeAreaView className="flex-1 bg-[#0f0f0f]">
-      <View className="flex-1 bg-[#0f0f0f] px-5 pt-10">
+      <ScrollView
+        className="flex-1 bg-[#0f0f0f]"
+        contentContainerClassName="px-5 pt-10 pb-6"
+        showsVerticalScrollIndicator={false}
+      >
         <Text className="text-white text-2xl font-bold mb-6">Settings</Text>
 
         <View className="mb-8 bg-[#191919] p-6 rounded-xl border border-[#1a472a]/20">
@@ -171,6 +184,12 @@ export default function Settings() {
         <View className="mb-6">
           <Text className="text-gray-400 uppercase text-xs mb-2">Data</Text>
           <TouchableOpacity
+            className="bg-[#191919]/60 p-4 rounded-xl mb-3 border border-[#1a472a]/30 backdrop-blur-sm"
+            onPress={() => setCancelInProgressPopupVisible(true)}
+          >
+            <Text className="text-white text-base">Cancel In-Progress Workouts</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
             className="bg-[#191919]/60 p-4 rounded-xl border border-red-500/30 backdrop-blur-sm"
             onPress={() => setClearHistoryPopupVisible(true)}
           >
@@ -189,13 +208,14 @@ export default function Settings() {
         </View>
 
         {/* Version Info */}
-        <View className="mt-auto pb-6">
+        <View className="mt-8">
           <Text className="text-gray-500 text-center text-xs">
             Version 1.0.0
           </Text>
         </View>
+      </ScrollView>
 
-        <Popup
+      <Popup
           isVisible={isLogoutPopupVisible}
           onClose={() => setLogoutPopupVisible(false)}
           iconName="questioncircleo"
@@ -215,8 +235,17 @@ export default function Settings() {
             { text: "Clear History", onPress: confirmClearHistory, style: "destructive" },
           ]}
         />
-        <LoadingOverlay isVisible={loading} />
-      </View>
+        <Popup
+          isVisible={isCancelInProgressPopupVisible}
+          onClose={() => setCancelInProgressPopupVisible(false)}
+          iconName="exclamationcircleo"
+          message="This will mark all in-progress workouts as cancelled."
+          buttons={[
+            { text: "Cancel", onPress: () => setCancelInProgressPopupVisible(false) },
+            { text: "Cancel Workouts", onPress: confirmCancelInProgress, style: "destructive" },
+          ]}
+        />
+      <LoadingOverlay isVisible={loading} />
     </SafeAreaView>
   );
 }

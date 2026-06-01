@@ -25,6 +25,7 @@ export function useWorkoutSession(sessionId: string | undefined) {
   const [exercises, setExercises] = useState<SessionExerciseView[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [loading, setLoading] = useState(true);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
@@ -32,6 +33,7 @@ export function useWorkoutSession(sessionId: string | undefined) {
     setName(session?.name ?? "Today's Workout");
     setExercises(session ? sessionToView(session) : []);
     setActiveIndex(0);
+    setLoading(false);
 
     const startedAt = session?.startedAt ?? null;
     setElapsedSeconds(getElapsedSeconds(startedAt));
@@ -110,6 +112,7 @@ export function useWorkoutSession(sessionId: string | undefined) {
   }, [sessionId]);
 
   return {
+    loading,
     name,
     exercises,
     activeIndex,

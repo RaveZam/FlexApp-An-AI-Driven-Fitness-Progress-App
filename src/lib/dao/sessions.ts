@@ -80,6 +80,15 @@ export function listIdsByUser(userId: string): string[] {
     .map((r) => r.id);
 }
 
+export function listInProgressIdsByUser(userId: string): string[] {
+  return getDb()
+    .getAllSync<{ id: string }>(
+      "SELECT id FROM workout_sessions WHERE user_id = ? AND status = 'in_progress'",
+      [userId]
+    )
+    .map((r) => r.id);
+}
+
 export function insert(row: SessionRow): void {
   getDb().runSync(
     `INSERT INTO workout_sessions

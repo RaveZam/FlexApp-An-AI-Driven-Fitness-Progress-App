@@ -106,6 +106,11 @@ export function cancelSession(sessionId: string): void {
   });
 }
 
+export function cancelAllInProgressForUser(userId: string): void {
+  const ids = sessionsDao.listInProgressIdsByUser(userId);
+  for (const id of ids) cancelSession(id);
+}
+
 export function deleteSession(sessionId: string): void {
   const db = getDb();
   db.withTransactionSync(() => {

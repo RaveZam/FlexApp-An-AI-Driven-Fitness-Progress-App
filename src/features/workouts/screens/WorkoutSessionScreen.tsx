@@ -14,8 +14,7 @@ import { useSessionGuard } from "@/src/features/workouts/hooks/useSessionGuard";
 import { useWorkoutSession } from "@/src/features/workouts/hooks/useWorkoutSession";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { useFocusEffect } from "expo-router";
-import { router, useLocalSearchParams } from "expo-router";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
@@ -32,6 +31,7 @@ export default function WorkoutSessionScreen() {
   const { restSeconds, setRestSeconds, refresh: refreshRestTimer } = useRestTimerDefault();
   const { refresh: refreshActiveSession } = useActiveSession();
   const {
+    loading,
     exercises,
     activeIndex,
     setActiveIndex,
@@ -73,10 +73,10 @@ export default function WorkoutSessionScreen() {
   const { best, recentSessions } = useExerciseHistory(active?.name, completedSetCount);
 
   useEffect(() => {
-    if (!active) router.back();
-  }, [active]);
+    if (!loading && !active) router.back();
+  }, [loading, active]);
 
-  if (!active) return null;
+  if (loading || !active) return null;
 
   function handleLog(weight: number, reps: number) {
     const incomplete = exercises.reduce(
