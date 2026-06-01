@@ -43,6 +43,7 @@ export async function initDb(): Promise<void> {
       target_sets INTEGER NOT NULL,
       target_reps INTEGER NOT NULL,
       position INTEGER NOT NULL DEFAULT 0,
+      is_unilateral INTEGER NOT NULL DEFAULT 0,
       created_at TEXT NOT NULL
     );
     CREATE INDEX IF NOT EXISTS user_workout_exercises_workout_id_idx ON user_workout_exercises(workout_id);
@@ -84,7 +85,8 @@ export async function initDb(): Promise<void> {
       name TEXT NOT NULL,
       target_sets INTEGER NOT NULL,
       target_reps INTEGER NOT NULL,
-      position INTEGER NOT NULL
+      position INTEGER NOT NULL,
+      is_unilateral INTEGER NOT NULL DEFAULT 0
     );
     CREATE INDEX IF NOT EXISTS session_exercises_session_idx ON session_exercises(session_id);
 
@@ -94,6 +96,8 @@ export async function initDb(): Promise<void> {
       set_index INTEGER NOT NULL,
       target_reps INTEGER NOT NULL,
       actual_reps INTEGER,
+      actual_reps_left INTEGER,
+      actual_reps_right INTEGER,
       weight REAL,
       completed INTEGER NOT NULL DEFAULT 0,
       completed_at TEXT
@@ -119,5 +123,33 @@ export async function initDb(): Promise<void> {
     database.execSync(
       "ALTER TABLE user_preferences ADD COLUMN rest_timer_seconds INTEGER NOT NULL DEFAULT 120"
     );
+  }
+
+  const workoutExCols = database.getAllSync<{ name: string }>(
+    "PRAGMA table_info(user_workout_exercises)"
+  );
+  if (!workoutExCols.some((c) => c.name === "is_unilateral")) {
+    database.execSync(
+      "ALTER TABLE user_workout_exercises ADD COLUMN is_unilateral INTEGER NOT NULL DEFAULT 0"
+    );
+  }
+
+  const sessionExCols = database.getAllSync<{ name: string }>(
+    "PRAGMA table_info(session_exercises)"
+  );
+  if (!sessionExCols.some((c) => c.name === "is_unilateral")) {
+    database.execSync(
+      "ALTER TABLE session_exercises ADD COLUMN is_unilateral INTEGER NOT NULL DEFAULT 0"
+    );
+  }
+
+  const sessionSetCols = database.getAllSync<{ name: string }>(
+    "PRAGMA table_info(session_sets)"
+  );
+  if (!sessionSetCols.some((c) => c.name === "actual_reps_left")) {
+    database.execSync("ALTER TABLE session_sets ADD COLUMN actual_reps_left INTEGER");
+  }
+  if (!sessionSetCols.some((c) => c.name === "actual_reps_right")) {
+    database.execSync("ALTER TABLE session_sets ADD COLUMN actual_reps_right INTEGER");
   }
 }

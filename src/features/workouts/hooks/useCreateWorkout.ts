@@ -38,6 +38,7 @@ export function useCreateWorkout() {
           targetSets: ex.targetSets,
           targetReps: ex.targetReps,
           position: index,
+          isUnilateral: ex.isUnilateral,
           createdAt: now,
         })),
       };
@@ -68,6 +69,7 @@ export function useCreateWorkout() {
             target_sets: e.targetSets,
             target_reps: e.targetReps,
             position: e.position,
+            is_unilateral: e.isUnilateral,
             created_at: e.createdAt,
           })),
         },

@@ -10,6 +10,7 @@ type SupabaseExercise = {
   target_sets: number;
   target_reps: number;
   position: number;
+  is_unilateral: boolean;
   created_at: string;
 };
 
@@ -47,6 +48,7 @@ function toExercise(row: SupabaseExercise): Exercise {
     targetSets: row.target_sets,
     targetReps: row.target_reps,
     position: row.position,
+    isUnilateral: row.is_unilateral ?? false,
     createdAt: row.created_at,
   };
 }
@@ -80,16 +82,17 @@ function toPlan(row: SupabasePlan): WorkoutPlan {
 export async function fetchExerciseCatalog(): Promise<CatalogExercise[]> {
   const { data, error } = await supabase
     .from("exercises_catalog")
-    .select("id, name, muscle_group, description")
+    .select("id, name, muscle_group, description, is_unilateral")
     .order("name", { ascending: true });
 
   if (error) throw error;
-  return (data as { id: string; name: string; muscle_group: string | null; description: string | null }[]).map(
+  return (data as { id: string; name: string; muscle_group: string | null; description: string | null; is_unilateral: boolean | null }[]).map(
     (row) => ({
       id: row.id,
       name: row.name,
       muscleGroup: row.muscle_group,
       description: row.description,
+      isUnilateral: row.is_unilateral ?? false,
     })
   );
 }

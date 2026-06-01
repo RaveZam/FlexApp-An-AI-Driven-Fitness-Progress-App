@@ -9,6 +9,7 @@ export type WorkoutExerciseRow = {
   targetSets: number;
   targetReps: number;
   position: number;
+  isUnilateral: boolean;
   createdAt: string;
 };
 
@@ -21,6 +22,7 @@ type Raw = {
   target_sets: number;
   target_reps: number;
   position: number;
+  is_unilateral: number;
   created_at: string;
 };
 
@@ -33,6 +35,7 @@ const fromRaw = (r: Raw): WorkoutExerciseRow => ({
   targetSets: r.target_sets,
   targetReps: r.target_reps,
   position: r.position,
+  isUnilateral: r.is_unilateral === 1,
   createdAt: r.created_at,
 });
 
@@ -48,8 +51,8 @@ export function listByWorkout(workoutId: string): WorkoutExerciseRow[] {
 export function insert(ex: WorkoutExerciseRow): void {
   getDb().runSync(
     `INSERT INTO user_workout_exercises
-     (id, workout_id, user_id, name, catalog_exercise_id, target_sets, target_reps, position, created_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+     (id, workout_id, user_id, name, catalog_exercise_id, target_sets, target_reps, position, is_unilateral, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       ex.id,
       ex.workoutId,
@@ -59,6 +62,7 @@ export function insert(ex: WorkoutExerciseRow): void {
       ex.targetSets,
       ex.targetReps,
       ex.position,
+      ex.isUnilateral ? 1 : 0,
       ex.createdAt,
     ]
   );
@@ -67,8 +71,8 @@ export function insert(ex: WorkoutExerciseRow): void {
 export function upsert(ex: WorkoutExerciseRow): void {
   getDb().runSync(
     `INSERT OR REPLACE INTO user_workout_exercises
-     (id, workout_id, user_id, name, catalog_exercise_id, target_sets, target_reps, position, created_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+     (id, workout_id, user_id, name, catalog_exercise_id, target_sets, target_reps, position, is_unilateral, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       ex.id,
       ex.workoutId,
@@ -78,6 +82,7 @@ export function upsert(ex: WorkoutExerciseRow): void {
       ex.targetSets,
       ex.targetReps,
       ex.position,
+      ex.isUnilateral ? 1 : 0,
       ex.createdAt,
     ]
   );

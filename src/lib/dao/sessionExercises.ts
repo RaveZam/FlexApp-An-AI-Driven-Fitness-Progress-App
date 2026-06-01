@@ -9,6 +9,7 @@ export type SessionExerciseRow = {
   targetSets: number;
   targetReps: number;
   position: number;
+  isUnilateral: boolean;
 };
 
 type Raw = {
@@ -20,6 +21,7 @@ type Raw = {
   target_sets: number;
   target_reps: number;
   position: number;
+  is_unilateral: number;
 };
 
 const fromRaw = (r: Raw): SessionExerciseRow => ({
@@ -31,6 +33,7 @@ const fromRaw = (r: Raw): SessionExerciseRow => ({
   targetSets: r.target_sets,
   targetReps: r.target_reps,
   position: r.position,
+  isUnilateral: r.is_unilateral === 1,
 });
 
 export function listBySession(sessionId: string): SessionExerciseRow[] {
@@ -45,8 +48,8 @@ export function listBySession(sessionId: string): SessionExerciseRow[] {
 export function insert(ex: SessionExerciseRow): void {
   getDb().runSync(
     `INSERT INTO session_exercises
-     (id, session_id, source_exercise_id, catalog_exercise_id, name, target_sets, target_reps, position)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+     (id, session_id, source_exercise_id, catalog_exercise_id, name, target_sets, target_reps, position, is_unilateral)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       ex.id,
       ex.sessionId,
@@ -56,6 +59,7 @@ export function insert(ex: SessionExerciseRow): void {
       ex.targetSets,
       ex.targetReps,
       ex.position,
+      ex.isUnilateral ? 1 : 0,
     ]
   );
 }

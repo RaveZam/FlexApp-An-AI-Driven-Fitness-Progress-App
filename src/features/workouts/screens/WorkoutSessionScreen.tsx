@@ -60,9 +60,14 @@ export default function WorkoutSessionScreen() {
     ? active?.sets.find((s) => s.id === editingSetId) ?? null
     : null;
 
-  function handleEditSave(weight: number, reps: number) {
+  function handleEditSave(
+    weight: number,
+    actualReps: number | null,
+    leftReps: number | null,
+    rightReps: number | null
+  ) {
     if (!editingSetId) return;
-    editSet(editingSetId, weight, reps);
+    editSet(editingSetId, weight, actualReps, leftReps, rightReps);
     setEditingSetId(null);
   }
 
@@ -78,13 +83,18 @@ export default function WorkoutSessionScreen() {
 
   if (loading || !active) return null;
 
-  function handleLog(weight: number, reps: number) {
+  function handleLog(
+    weight: number,
+    actualReps: number | null,
+    leftReps: number | null,
+    rightReps: number | null
+  ) {
     const incomplete = exercises.reduce(
       (acc, ex) => acc + ex.sets.filter((s) => !s.completed).length,
       0
     );
     const isLastSet = incomplete === 1;
-    logSet(weight, reps);
+    logSet(weight, actualReps, leftReps, rightReps);
     setShowLogModal(false);
     if (!isLastSet) setShowRestTimer(true);
   }
@@ -217,6 +227,7 @@ export default function WorkoutSessionScreen() {
           setNumber={allSetsComplete ? active.sets.length : currentSetIndex + 1}
           totalSets={active.sets.length}
           targetReps={allSetsComplete ? 0 : active.sets[currentSetIndex]?.targetReps ?? 0}
+          isUnilateral={active.isUnilateral}
           onLog={handleLog}
           onClose={() => setShowLogModal(false)}
         />
@@ -227,9 +238,12 @@ export default function WorkoutSessionScreen() {
           setNumber={editingSet?.setNumber ?? 0}
           totalSets={active.sets.length}
           targetReps={editingSet?.targetReps ?? 0}
+          isUnilateral={active.isUnilateral}
           mode="edit"
           initialWeight={editingSet?.weight ?? null}
           initialReps={editingSet?.actualReps ?? null}
+          initialLeftReps={editingSet?.actualRepsLeft ?? null}
+          initialRightReps={editingSet?.actualRepsRight ?? null}
           onLog={handleEditSave}
           onClose={() => setEditingSetId(null)}
         />

@@ -52,6 +52,7 @@ export function useEditWorkoutExercises(
       targetSets: 3,
       targetReps: 10,
       position: nextPosition,
+      isUnilateral: catalog.isUnilateral,
       createdAt: now,
     };
 
@@ -70,6 +71,7 @@ export function useEditWorkoutExercises(
           target_sets: exercise.targetSets,
           target_reps: exercise.targetReps,
           position: exercise.position,
+          is_unilateral: exercise.isUnilateral,
           created_at: exercise.createdAt,
         },
       },

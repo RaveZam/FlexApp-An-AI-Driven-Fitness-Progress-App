@@ -15,6 +15,14 @@ import Animated, { FadeInDown, FadeInRight } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useSessionDetail } from "../hooks/useSessionDetail";
 
+// Unilateral sets store reps per side; the analytics value is the stronger side.
+function effectiveReps(set: SessionSet): number | null {
+  if (set.actualRepsLeft != null || set.actualRepsRight != null) {
+    return Math.max(set.actualRepsLeft ?? 0, set.actualRepsRight ?? 0);
+  }
+  return set.actualReps;
+}
+
 function formatDate(iso: string): string {
   const d = new Date(iso);
   return d.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
@@ -44,7 +52,11 @@ function SetRow({ set, isLast }: { set: SessionSet; isLast: boolean }) {
     <View style={[styles.setRow, !isLast && styles.setRowDivider]}>
       <Text style={[styles.setNum, dim && styles.dimText]}>{set.setIndex + 1}</Text>
       <Text style={[styles.setCell, dim && styles.dimText]}>
-        {set.actualReps != null ? set.actualReps : set.targetReps}
+        {set.actualRepsLeft != null || set.actualRepsRight != null
+          ? `${set.actualRepsLeft ?? 0}/${set.actualRepsRight ?? 0}`
+          : set.actualReps != null
+          ? set.actualReps
+          : set.targetReps}
       </Text>
       <Text style={[styles.setCell, dim && styles.dimText]}>
         {set.weight != null ? `${set.weight} lb` : "—"}
@@ -122,10 +134,10 @@ export default function SessionDetailScreen() {
     0
   );
   const totalVolume = session.exercises.reduce((acc, ex) =>
-    acc + ex.sets.reduce((a, s) =>
-      a + (s.completed && s.weight != null && s.actualReps != null ? s.weight * s.actualReps : 0),
-      0
-    ), 0
+    acc + ex.sets.reduce((a, s) => {
+      const reps = effectiveReps(s);
+      return a + (s.completed && s.weight != null && reps != null ? s.weight * reps : 0);
+    }, 0), 0
   );
   const duration = session.completedAt
     ? formatDuration(session.startedAt, session.completedAt)

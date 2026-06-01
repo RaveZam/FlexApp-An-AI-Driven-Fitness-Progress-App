@@ -110,8 +110,19 @@ export default function SetRow({ set, isCurrent, index, onEdit }: SetRowProps) {
             <Text style={styles.valueNumber}>{set.weight}</Text>
             <Text style={styles.valueUnit}>lb</Text>
             <Text style={styles.valueX}>×</Text>
-            <Text style={styles.valueNumber}>{set.actualReps}</Text>
-            <Text style={styles.valueUnit}>reps</Text>
+            {set.actualRepsLeft != null || set.actualRepsRight != null ? (
+              <>
+                <Text style={styles.valueNumber}>
+                  {set.actualRepsLeft ?? 0}/{set.actualRepsRight ?? 0}
+                </Text>
+                <Text style={styles.valueUnit}>L/R</Text>
+              </>
+            ) : (
+              <>
+                <Text style={styles.valueNumber}>{set.actualReps}</Text>
+                <Text style={styles.valueUnit}>reps</Text>
+              </>
+            )}
             {onEdit && <Ionicons name="pencil" size={11} color={MUTED} style={styles.editIcon} />}
           </View>
         ) : isCurrent ? (

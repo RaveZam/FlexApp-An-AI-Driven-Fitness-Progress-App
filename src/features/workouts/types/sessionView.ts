@@ -4,6 +4,8 @@ export type SessionSetView = {
   targetReps: number;
   weight: number | null;
   actualReps: number | null;
+  actualRepsLeft: number | null;
+  actualRepsRight: number | null;
   completed: boolean;
 };
 
@@ -12,4 +14,5 @@ export type SessionExerciseView = {
   name: string;
   sets: SessionSetView[];
   restSeconds: number;
+  isUnilateral: boolean;
 };

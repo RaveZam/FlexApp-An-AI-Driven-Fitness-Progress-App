@@ -78,7 +78,7 @@ async function downloadWorkouts(userId: string): Promise<void> {
     const { data: exercises, error: exErr } = await supabase
       .from("user_workout_exercises")
       .select(
-        "id, workout_id, user_id, name, catalog_exercise_id, target_sets, target_reps, position, created_at"
+        "id, workout_id, user_id, name, catalog_exercise_id, target_sets, target_reps, position, is_unilateral, created_at"
       )
       .in("workout_id", appliedIds);
     if (exErr) throw exErr;
@@ -103,6 +103,7 @@ async function downloadWorkouts(userId: string): Promise<void> {
           targetSets: e.target_sets,
           targetReps: e.target_reps,
           position: e.position,
+          isUnilateral: e.is_unilateral ?? false,
           createdAt: e.created_at,
         });
       }
@@ -180,7 +181,7 @@ async function downloadSessions(userId: string): Promise<void> {
     const { data: exercises, error: exErr } = await supabase
       .from("session_exercises")
       .select(
-        "id, session_id, source_exercise_id, catalog_exercise_id, name, target_sets, target_reps, position"
+        "id, session_id, source_exercise_id, catalog_exercise_id, name, target_sets, target_reps, position, is_unilateral"
       )
       .in("session_id", appliedIds);
     if (exErr) throw exErr;
@@ -190,7 +191,7 @@ async function downloadSessions(userId: string): Promise<void> {
       ? await supabase
           .from("session_sets")
           .select(
-            "id, session_exercise_id, set_index, target_reps, actual_reps, weight, completed, completed_at"
+            "id, session_exercise_id, set_index, target_reps, actual_reps, actual_reps_left, actual_reps_right, weight, completed, completed_at"
           )
           .in("session_exercise_id", exerciseIds)
       : { data: [], error: null };
@@ -206,6 +207,7 @@ async function downloadSessions(userId: string): Promise<void> {
         targetSets: e.target_sets,
         targetReps: e.target_reps,
         position: e.position,
+        isUnilateral: e.is_unilateral ?? false,
       });
     }
 
@@ -219,6 +221,8 @@ async function downloadSessions(userId: string): Promise<void> {
       sessionSetsDao.update({
         id: s.id,
         actualReps: s.actual_reps,
+        actualRepsLeft: s.actual_reps_left ?? null,
+        actualRepsRight: s.actual_reps_right ?? null,
         weight: s.weight,
         completed: s.completed,
         completedAt: s.completed_at,

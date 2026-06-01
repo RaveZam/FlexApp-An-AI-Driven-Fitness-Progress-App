@@ -33,7 +33,8 @@
       "Bash(npm uninstall *)",
       "Bash(npm run *)",
       "Skill(superpowers:brainstorming)",
-      "Bash(ipconfig getifaddr *)"
+      "Bash(ipconfig getifaddr *)",
+      "Bash(npx eslint *)"
     ]
   }
 }

@@ -19,10 +19,18 @@ type WorkoutLogModalProps = {
   setNumber: number;
   totalSets: number;
   targetReps: number;
+  isUnilateral?: boolean;
   mode?: "log" | "edit";
   initialWeight?: number | null;
   initialReps?: number | null;
-  onLog: (weight: number, reps: number) => void;
+  initialLeftReps?: number | null;
+  initialRightReps?: number | null;
+  onLog: (
+    weight: number,
+    actualReps: number | null,
+    leftReps: number | null,
+    rightReps: number | null
+  ) => void;
   onClose: () => void;
 };
 
@@ -32,36 +40,58 @@ export default function WorkoutLogModal({
   setNumber,
   totalSets,
   targetReps,
+  isUnilateral = false,
   mode = "log",
   initialWeight,
   initialReps,
+  initialLeftReps,
+  initialRightReps,
   onLog,
   onClose,
 }: WorkoutLogModalProps) {
   const [weight, setWeight] = useState("");
   const [reps, setReps] = useState("");
+  const [leftReps, setLeftReps] = useState("");
+  const [rightReps, setRightReps] = useState("");
 
   useEffect(() => {
     if (visible) {
       setWeight(initialWeight != null ? String(initialWeight) : "");
       setReps(initialReps != null ? String(initialReps) : "");
+      setLeftReps(initialLeftReps != null ? String(initialLeftReps) : "");
+      setRightReps(initialRightReps != null ? String(initialRightReps) : "");
     }
-  }, [visible, initialWeight, initialReps]);
+  }, [visible, initialWeight, initialReps, initialLeftReps, initialRightReps]);
 
-  const canLog = weight.trim() !== "" && reps.trim() !== "";
+  const canLog = isUnilateral
+    ? weight.trim() !== "" && leftReps.trim() !== "" && rightReps.trim() !== ""
+    : weight.trim() !== "" && reps.trim() !== "";
+
+  const reset = () => {
+    setWeight("");
+    setReps("");
+    setLeftReps("");
+    setRightReps("");
+  };
 
   const handleLog = () => {
     const w = parseFloat(weight);
-    const r = parseInt(reps, 10);
-    if (isNaN(w) || isNaN(r)) return;
-    onLog(w, r);
-    setWeight("");
-    setReps("");
+    if (isNaN(w)) return;
+    if (isUnilateral) {
+      const l = parseInt(leftReps, 10);
+      const r = parseInt(rightReps, 10);
+      if (isNaN(l) || isNaN(r)) return;
+      onLog(w, null, l, r);
+    } else {
+      const r = parseInt(reps, 10);
+      if (isNaN(r)) return;
+      onLog(w, r, null, null);
+    }
+    reset();
   };
 
   const handleClose = () => {
-    setWeight("");
-    setReps("");
+    reset();
     onClose();
   };
 
@@ -115,18 +145,47 @@ export default function WorkoutLogModal({
                 autoFocus
               />
             </View>
-            <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>REPS</Text>
-              <TextInput
-                style={styles.input}
-                value={reps}
-                onChangeText={(t) => setReps(t.replace(/[^0-9]/g, ""))}
-                keyboardType="number-pad"
-                placeholder="0"
-                placeholderTextColor="#444"
-                selectionColor={ACCENT}
-              />
-            </View>
+            {isUnilateral ? (
+              <>
+                <View style={styles.inputGroup}>
+                  <Text style={styles.inputLabel}>LEFT REPS</Text>
+                  <TextInput
+                    style={styles.input}
+                    value={leftReps}
+                    onChangeText={(t) => setLeftReps(t.replace(/[^0-9]/g, ""))}
+                    keyboardType="number-pad"
+                    placeholder="0"
+                    placeholderTextColor="#444"
+                    selectionColor={ACCENT}
+                  />
+                </View>
+                <View style={styles.inputGroup}>
+                  <Text style={styles.inputLabel}>RIGHT REPS</Text>
+                  <TextInput
+                    style={styles.input}
+                    value={rightReps}
+                    onChangeText={(t) => setRightReps(t.replace(/[^0-9]/g, ""))}
+                    keyboardType="number-pad"
+                    placeholder="0"
+                    placeholderTextColor="#444"
+                    selectionColor={ACCENT}
+                  />
+                </View>
+              </>
+            ) : (
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputLabel}>REPS</Text>
+                <TextInput
+                  style={styles.input}
+                  value={reps}
+                  onChangeText={(t) => setReps(t.replace(/[^0-9]/g, ""))}
+                  keyboardType="number-pad"
+                  placeholder="0"
+                  placeholderTextColor="#444"
+                  selectionColor={ACCENT}
+                />
+              </View>
+            )}
           </View>
 
           {/* Log Button */}

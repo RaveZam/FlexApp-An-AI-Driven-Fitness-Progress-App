@@ -55,6 +55,7 @@ export function createSessionFromWorkout(userId: string, workout: Workout): Work
         targetSets: ex.targetSets,
         targetReps: ex.targetReps,
         position: ex.position,
+        isUnilateral: ex.isUnilateral,
       });
       for (let i = 0; i < ex.targetSets; i++) {
         sessionSetsDao.insert({
@@ -146,21 +147,39 @@ export function deleteAllSessionsForUser(userId: string): void {
 
 export function updateSet(
   setId: string,
-  patch: { actualReps?: number; weight?: number; completed?: boolean }
+  patch: {
+    actualReps?: number | null;
+    actualRepsLeft?: number | null;
+    actualRepsRight?: number | null;
+    weight?: number;
+    completed?: boolean;
+  }
 ): void {
   const now = new Date().toISOString();
   const current = sessionSetsDao.getById(setId);
   if (!current) return;
   const actualReps = patch.actualReps !== undefined ? patch.actualReps : current.actualReps;
+  const actualRepsLeft =
+    patch.actualRepsLeft !== undefined ? patch.actualRepsLeft : current.actualRepsLeft;
+  const actualRepsRight =
+    patch.actualRepsRight !== undefined ? patch.actualRepsRight : current.actualRepsRight;
   const weight = patch.weight !== undefined ? patch.weight : current.weight;
   const completed = patch.completed !== undefined ? patch.completed : current.completed;
   const completedAt = completed ? now : null;
 
-  sessionSetsDao.update({ id: setId, actualReps, weight, completed, completedAt });
+  sessionSetsDao.update({
+    id: setId,
+    actualReps,
+    actualRepsLeft,
+    actualRepsRight,
+    weight,
+    completed,
+    completedAt,
+  });
   enqueueOutbox({
     entityType: "session_set",
     entityId: setId,
     operation: "update",
-    payload: { actualReps, weight, completed, completedAt },
+    payload: { actualReps, actualRepsLeft, actualRepsRight, weight, completed, completedAt },
   });
 }

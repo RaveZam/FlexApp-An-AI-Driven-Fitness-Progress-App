@@ -124,7 +124,7 @@ async function dispatchRow(row: OutboxRow): Promise<void> {
       const exerciseRows = db.getAllSync<{
         id: string; session_id: string; source_exercise_id: string | null;
         catalog_exercise_id: string | null; name: string; target_sets: number;
-        target_reps: number; position: number;
+        target_reps: number; position: number; is_unilateral: number;
       }>("SELECT * FROM session_exercises WHERE session_id = ? ORDER BY position ASC", [sessionId]);
 
       if (exerciseRows.length > 0) {
@@ -133,6 +133,7 @@ async function dispatchRow(row: OutboxRow): Promise<void> {
             id: ex.id, session_id: ex.session_id, source_exercise_id: ex.source_exercise_id,
             catalog_exercise_id: ex.catalog_exercise_id, name: ex.name,
             target_sets: ex.target_sets, target_reps: ex.target_reps, position: ex.position,
+            is_unilateral: ex.is_unilateral === 1,
           })),
           { onConflict: "id" }
         );
@@ -141,15 +142,17 @@ async function dispatchRow(row: OutboxRow): Promise<void> {
         for (const ex of exerciseRows) {
           const setRows = db.getAllSync<{
             id: string; session_exercise_id: string; set_index: number; target_reps: number;
-            actual_reps: number | null; weight: number | null; completed: number; completed_at: string | null;
+            actual_reps: number | null; actual_reps_left: number | null; actual_reps_right: number | null;
+            weight: number | null; completed: number; completed_at: string | null;
           }>("SELECT * FROM session_sets WHERE session_exercise_id = ? ORDER BY set_index ASC", [ex.id]);
 
           if (setRows.length > 0) {
             const { error: setsErr } = await supabase.from("session_sets").upsert(
               setRows.map((s) => ({
                 id: s.id, session_exercise_id: s.session_exercise_id, set_index: s.set_index,
-                target_reps: s.target_reps, actual_reps: s.actual_reps, weight: s.weight,
-                completed: s.completed === 1, completed_at: s.completed_at,
+                target_reps: s.target_reps, actual_reps: s.actual_reps,
+                actual_reps_left: s.actual_reps_left, actual_reps_right: s.actual_reps_right,
+                weight: s.weight, completed: s.completed === 1, completed_at: s.completed_at,
               })),
               { onConflict: "id" }
             );
@@ -176,12 +179,20 @@ async function dispatchRow(row: OutboxRow): Promise<void> {
   }
 
   if (row.entity_type === "session_set" && row.operation === "update") {
-    const { actualReps, weight, completed, completedAt } = payload as {
-      actualReps: number | null; weight: number | null; completed: boolean; completedAt: string | null;
+    const { actualReps, actualRepsLeft, actualRepsRight, weight, completed, completedAt } = payload as {
+      actualReps: number | null; actualRepsLeft: number | null; actualRepsRight: number | null;
+      weight: number | null; completed: boolean; completedAt: string | null;
     };
     const { error } = await supabase
       .from("session_sets")
-      .update({ actual_reps: actualReps, weight, completed, completed_at: completedAt })
+      .update({
+        actual_reps: actualReps,
+        actual_reps_left: actualRepsLeft ?? null,
+        actual_reps_right: actualRepsRight ?? null,
+        weight,
+        completed,
+        completed_at: completedAt,
+      })
       .eq("id", row.entity_id);
     if (error) throw error;
   }

@@ -6,6 +6,8 @@ export type SessionSetRow = {
   setIndex: number;
   targetReps: number;
   actualReps: number | null;
+  actualRepsLeft: number | null;
+  actualRepsRight: number | null;
   weight: number | null;
   completed: boolean;
   completedAt: string | null;
@@ -17,6 +19,8 @@ type Raw = {
   set_index: number;
   target_reps: number;
   actual_reps: number | null;
+  actual_reps_left: number | null;
+  actual_reps_right: number | null;
   weight: number | null;
   completed: number;
   completed_at: string | null;
@@ -28,6 +32,8 @@ const fromRaw = (r: Raw): SessionSetRow => ({
   setIndex: r.set_index,
   targetReps: r.target_reps,
   actualReps: r.actual_reps,
+  actualRepsLeft: r.actual_reps_left,
+  actualRepsRight: r.actual_reps_right,
   weight: r.weight,
   completed: r.completed === 1,
   completedAt: r.completed_at,
@@ -64,13 +70,23 @@ export function insert(params: {
 export function update(params: {
   id: string;
   actualReps: number | null;
+  actualRepsLeft: number | null;
+  actualRepsRight: number | null;
   weight: number | null;
   completed: boolean;
   completedAt: string | null;
 }): void {
   getDb().runSync(
-    "UPDATE session_sets SET actual_reps = ?, weight = ?, completed = ?, completed_at = ? WHERE id = ?",
-    [params.actualReps, params.weight, params.completed ? 1 : 0, params.completedAt, params.id]
+    "UPDATE session_sets SET actual_reps = ?, actual_reps_left = ?, actual_reps_right = ?, weight = ?, completed = ?, completed_at = ? WHERE id = ?",
+    [
+      params.actualReps,
+      params.actualRepsLeft,
+      params.actualRepsRight,
+      params.weight,
+      params.completed ? 1 : 0,
+      params.completedAt,
+      params.id,
+    ]
   );
 }
 

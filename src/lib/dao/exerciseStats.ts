@@ -21,7 +21,9 @@ export function getBestRecord(userId: string, exerciseName: string): ExerciseBes
     completed_at: string | null;
     started_at: string;
   }>(
-    `SELECT ss.weight, ss.actual_reps, ss.completed_at, ws.started_at
+    `SELECT ss.weight,
+            COALESCE(ss.actual_reps, max(ss.actual_reps_left, ss.actual_reps_right)) AS actual_reps,
+            ss.completed_at, ws.started_at
      FROM session_sets ss
      JOIN session_exercises se ON ss.session_exercise_id = se.id
      JOIN workout_sessions ws ON se.session_id = ws.id
@@ -30,7 +32,7 @@ export function getBestRecord(userId: string, exerciseName: string): ExerciseBes
        AND ss.completed = 1
        AND ss.weight IS NOT NULL
        AND ws.status != 'cancelled'
-     ORDER BY ss.weight DESC, ss.actual_reps DESC
+     ORDER BY ss.weight DESC, actual_reps DESC
      LIMIT 1`,
     [userId, exerciseName]
   );
@@ -64,7 +66,7 @@ export function listRecentTopSets(
     `SELECT ws.id AS session_id,
             ws.started_at AS started_at,
             ss.weight AS weight,
-            ss.actual_reps AS actual_reps
+            COALESCE(ss.actual_reps, max(ss.actual_reps_left, ss.actual_reps_right)) AS actual_reps
      FROM workout_sessions ws
      JOIN session_exercises se ON se.session_id = ws.id
      JOIN session_sets ss ON ss.session_exercise_id = se.id
@@ -73,7 +75,7 @@ export function listRecentTopSets(
        AND ss.completed = 1
        AND ss.weight IS NOT NULL
        AND ws.status != 'cancelled'
-     ORDER BY ss.weight DESC, ss.actual_reps DESC`,
+     ORDER BY ss.weight DESC, actual_reps DESC`,
     [userId, exerciseName]
   );
 
@@ -106,7 +108,8 @@ export function listTopSetsByExercise(
       weight: number;
       actual_reps: number | null;
     }>(
-      `SELECT ws.id AS id, ws.started_at AS started_at, ss.weight AS weight, ss.actual_reps AS actual_reps
+      `SELECT ws.id AS id, ws.started_at AS started_at, ss.weight AS weight,
+              COALESCE(ss.actual_reps, max(ss.actual_reps_left, ss.actual_reps_right)) AS actual_reps
        FROM workout_sessions ws
        JOIN session_exercises se ON se.session_id = ws.id
        JOIN session_sets ss ON ss.session_exercise_id = se.id
@@ -115,7 +118,7 @@ export function listTopSetsByExercise(
          AND ss.completed = 1
          AND ss.weight IS NOT NULL
          AND ws.status != 'cancelled'
-       ORDER BY ss.weight DESC, ss.actual_reps DESC`,
+       ORDER BY ss.weight DESC, actual_reps DESC`,
       [userId, exerciseName]
     )
     .map((r) => ({

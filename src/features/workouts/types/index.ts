@@ -3,6 +3,7 @@ export type CatalogExercise = {
   name: string;
   muscleGroup: string | null;
   description: string | null;
+  isUnilateral: boolean;
 };
 
 export type Exercise = {
@@ -14,6 +15,7 @@ export type Exercise = {
   targetSets: number;
   targetReps: number;
   position: number;
+  isUnilateral: boolean;
   createdAt: string;
 };
 
@@ -46,6 +48,7 @@ export type WorkoutInput = {
     name: string;
     targetSets: number;
     targetReps: number;
+    isUnilateral: boolean;
   }[];
 };
 
@@ -61,6 +64,8 @@ export type SessionSet = {
   setIndex: number;
   targetReps: number;
   actualReps: number | null;
+  actualRepsLeft: number | null;
+  actualRepsRight: number | null;
   weight: number | null;
   completed: boolean;
   completedAt: string | null;
@@ -75,6 +80,7 @@ export type SessionExercise = {
   targetSets: number;
   targetReps: number;
   position: number;
+  isUnilateral: boolean;
   sets: SessionSet[];
 };
 

@@ -9,12 +9,15 @@ function sessionToView(session: WorkoutSession): SessionExerciseView[] {
     id: ex.id,
     name: ex.name,
     restSeconds: 90,
+    isUnilateral: ex.isUnilateral,
     sets: ex.sets.map((s) => ({
       id: s.id,
       setNumber: s.setIndex + 1,
       targetReps: s.targetReps,
       weight: s.weight,
       actualReps: s.actualReps,
+      actualRepsLeft: s.actualRepsLeft,
+      actualRepsRight: s.actualRepsRight,
       completed: s.completed,
     })),
   }));
@@ -55,37 +58,76 @@ export function useWorkoutSession(sessionId: string | undefined) {
   const allExercisesComplete = exercises.every((ex) => ex.sets.every((s) => s.completed));
 
   const logSet = useCallback(
-    (weight: number, reps: number) => {
+    (
+      weight: number,
+      actualReps: number | null,
+      leftReps: number | null,
+      rightReps: number | null
+    ) => {
       if (currentSetIndex === -1 || !active) return;
       const setId = active.sets[currentSetIndex].id;
       setExercises((prev) => {
         const updated = [...prev];
         const ex = { ...updated[activeIndex] };
         const sets = [...ex.sets];
-        sets[currentSetIndex] = { ...sets[currentSetIndex], weight, actualReps: reps, completed: true };
+        sets[currentSetIndex] = {
+          ...sets[currentSetIndex],
+          weight,
+          actualReps,
+          actualRepsLeft: leftReps,
+          actualRepsRight: rightReps,
+          completed: true,
+        };
         ex.sets = sets;
         updated[activeIndex] = ex;
         return updated;
       });
       if (sessionId) {
-        updateSet(setId, { actualReps: reps, weight, completed: true });
+        updateSet(setId, {
+          actualReps,
+          actualRepsLeft: leftReps,
+          actualRepsRight: rightReps,
+          weight,
+          completed: true,
+        });
       }
     },
     [active, activeIndex, currentSetIndex, sessionId]
   );
 
   const editSet = useCallback(
-    (setId: string, weight: number, reps: number) => {
+    (
+      setId: string,
+      weight: number,
+      actualReps: number | null,
+      leftReps: number | null,
+      rightReps: number | null
+    ) => {
       setExercises((prev) =>
         prev.map((ex) => ({
           ...ex,
           sets: ex.sets.map((s) =>
-            s.id === setId ? { ...s, weight, actualReps: reps, completed: true } : s
+            s.id === setId
+              ? {
+                  ...s,
+                  weight,
+                  actualReps,
+                  actualRepsLeft: leftReps,
+                  actualRepsRight: rightReps,
+                  completed: true,
+                }
+              : s
           ),
         }))
       )
       if (sessionId) {
-        updateSet(setId, { actualReps: reps, weight, completed: true });
+        updateSet(setId, {
+          actualReps,
+          actualRepsLeft: leftReps,
+          actualRepsRight: rightReps,
+          weight,
+          completed: true,
+        });
       }
     },
     [sessionId]

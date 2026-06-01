@@ -67,6 +67,7 @@ export function useCreateWorkoutForm(planId: string | undefined, onSaved: () => 
         name: e.catalogExercise.name,
         targetSets: parseInt(e.targetSets, 10),
         targetReps: parseInt(e.targetReps, 10),
+        isUnilateral: e.catalogExercise.isUnilateral,
       })),
     });
 
