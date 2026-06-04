@@ -6,4 +6,5 @@ export type WorkoutSessionSummary = {
   exerciseCount: number;
   completedSetCount: number;
   totalSetCount: number;
+  volume: number;
 };

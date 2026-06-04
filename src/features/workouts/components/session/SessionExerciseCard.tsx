@@ -1,4 +1,3 @@
-import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
@@ -6,7 +5,6 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 
 const ACCENT = "#34d399";
 const BONE = "#f5f3ef";
-const HAIRLINE_STRONG = "rgba(245,243,239,0.14)";
 const MUTED = "#6b6b6b";
 
 type Props = {
@@ -16,85 +14,75 @@ type Props = {
 };
 
 export default function SessionExerciseCard({ name, setCount, targetReps }: Props) {
+  const setLabel = `${setCount} set${setCount !== 1 ? "s" : ""}`;
+  const meta = targetReps != null ? `${setLabel} · ${targetReps} reps target` : setLabel;
+
   return (
-    <Animated.View entering={FadeInDown.delay(120).duration(500)} style={styles.exerciseCard}>
+    <Animated.View entering={FadeInDown.delay(120).duration(500)} style={styles.card}>
       <LinearGradient
-        colors={["rgba(52,211,153,0.10)", "rgba(52,211,153,0)"]}
+        colors={["rgba(52,211,153,0.10)", "rgba(52,211,153,0.0)"]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={StyleSheet.absoluteFillObject}
+        pointerEvents="none"
       />
-      <View style={styles.exerciseCardInner}>
-        <View style={styles.exerciseMedallion}>
-          <View style={styles.medallionInner}>
-            <Ionicons name="barbell" size={26} color={ACCENT} />
-          </View>
-        </View>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.exerciseEyebrow}>Current Lift</Text>
-          <Text style={styles.exerciseName}>{name}</Text>
-          <Text style={styles.exerciseMeta}>
-            {setCount} sets · target {targetReps ?? "—"} reps
-          </Text>
-        </View>
+      <View style={styles.rail} />
+
+      <View style={styles.body}>
+        <Text style={styles.eyebrow}>Now Lifting</Text>
+        <Text style={styles.name} numberOfLines={2}>
+          {name}
+        </Text>
+        <Text style={styles.meta}>{meta}</Text>
       </View>
     </Animated.View>
   );
 }
 
 const styles = StyleSheet.create({
-  exerciseCard: {
+  card: {
+    flexDirection: "row",
+    alignItems: "center",
     marginHorizontal: 20,
     marginTop: 22,
     borderRadius: 18,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: HAIRLINE_STRONG,
-    backgroundColor: "#0c0c0c",
+    borderColor: "rgba(245,243,239,0.12)",
+    backgroundColor: "#0b0b0b",
     overflow: "hidden",
   },
-  exerciseCardInner: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 18,
-    gap: 16,
+  rail: {
+    alignSelf: "stretch",
+    width: 2,
+    backgroundColor: ACCENT,
+    opacity: 0.7,
   },
-  exerciseMedallion: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: "rgba(52,211,153,0.45)",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 6,
-  },
-  medallionInner: {
+  body: {
     flex: 1,
-    width: "100%",
-    borderRadius: 30,
-    backgroundColor: "rgba(52,211,153,0.08)",
-    alignItems: "center",
-    justifyContent: "center",
+    paddingVertical: 18,
+    paddingLeft: 18,
+    paddingRight: 16,
   },
-  exerciseEyebrow: {
+  eyebrow: {
     color: ACCENT,
-    fontSize: 9,
-    fontFamily: "Inter_500Medium",
-    letterSpacing: 2.2,
+    fontSize: 10,
+    fontFamily: "Inter_600SemiBold",
+    letterSpacing: 2.6,
     textTransform: "uppercase",
-    marginBottom: 4,
+    marginBottom: 7,
   },
-  exerciseName: {
+  name: {
     color: BONE,
-    fontSize: 22,
-    fontFamily: "Outfit_500Medium",
-    letterSpacing: -0.4,
-    marginBottom: 4,
+    fontSize: 23,
+    lineHeight: 27,
+    fontFamily: "Outfit_600SemiBold",
+    letterSpacing: -0.5,
   },
-  exerciseMeta: {
+  meta: {
     color: MUTED,
     fontSize: 12,
     fontFamily: "Inter_400Regular",
-    letterSpacing: 0.2,
+    letterSpacing: 0.4,
+    marginTop: 6,
   },
 });

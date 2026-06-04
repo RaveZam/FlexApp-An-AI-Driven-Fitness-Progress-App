@@ -1,5 +1,6 @@
 import { SessionSetView } from "@/src/features/workouts/types/sessionView";
 import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import Animated, {
@@ -15,11 +16,13 @@ import Animated, {
 
 const ACCENT = "#34d399";
 const BONE = "#f5f3ef";
-const INK = "#060606";
-const HAIRLINE = "rgba(245,243,239,0.07)";
-const HAIRLINE_STRONG = "rgba(245,243,239,0.14)";
 const MUTED = "#6b6b6b";
 const MUTED_SOFT = "#3a3a3a";
+const HAIRLINE = "rgba(245,243,239,0.07)";
+const HAIRLINE_STRONG = "rgba(245,243,239,0.14)";
+const ACCENT_BORDER = "rgba(52,211,153,0.45)";
+const ACCENT_BORDER_SOFT = "rgba(52,211,153,0.18)";
+const ACCENT_TINT = "rgba(52,211,153,0.12)";
 
 type SetRowProps = {
   set: SessionSetView;
@@ -48,302 +51,200 @@ export default function SetRow({ set, isCurrent, index, onEdit }: SetRowProps) {
   }, [isCurrent, pulse]);
 
   const pulseStyle = useAnimatedStyle(() => ({
-    opacity: 0.35 + pulse.value * 0.55,
-    transform: [{ scale: 1 + pulse.value * 0.08 }],
+    opacity: 0.6 + pulse.value * 0.4,
+    transform: [{ translateX: pulse.value * 2 }],
   }));
 
-  const setNumber = set.setNumber.toString().padStart(2, "0");
-
   const editable = isCompleted && !!onEdit;
+  const hasPerSide = set.actualRepsLeft != null || set.actualRepsRight != null;
 
   return (
-    <Animated.View entering={FadeInDown.delay(200 + index * 60).duration(420)}>
-    <Pressable
-      onPress={editable ? () => onEdit!(set.id) : undefined}
-      disabled={!editable}
-      android_ripple={editable ? { color: "rgba(52,211,153,0.12)" } : undefined}
-      style={({ pressed }) => [
-        styles.row,
-        isCompleted && styles.rowCompleted,
-        isCurrent && styles.rowCurrent,
-        isFuture && styles.rowFuture,
-        editable && pressed && styles.rowPressed,
-      ]}
-    >
-      {/* Left rail */}
-      <View
+    <Animated.View entering={FadeInDown.delay(160 + index * 70).duration(420)}>
+      <Pressable
+        onPress={editable ? () => onEdit!(set.id) : undefined}
+        disabled={!editable}
+        android_ripple={editable ? { color: ACCENT_TINT } : undefined}
         style={[
-          styles.rail,
-          isCompleted && styles.railCompleted,
-          isCurrent && styles.railCurrent,
+          styles.pill,
+          isCompleted && styles.pillCompleted,
+          isCurrent && styles.pillCurrent,
+          isFuture && styles.pillFuture,
         ]}
-      />
+      >
+        {isCurrent && (
+          <LinearGradient
+            colors={["rgba(52,211,153,0.14)", "rgba(52,211,153,0.03)"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={StyleSheet.absoluteFill}
+          />
+        )}
 
-      {/* Set index */}
-      <View style={styles.indexCol}>
-        <Text
-          style={[
-            styles.indexEyebrow,
-            isCurrent && { color: ACCENT },
-            isFuture && { color: MUTED_SOFT },
-          ]}
-        >
-          Set
-        </Text>
-        <Text
-          style={[
-            styles.indexNumber,
-            isCurrent && styles.indexNumberCurrent,
-            isFuture && styles.indexNumberFuture,
-          ]}
-        >
-          {setNumber}
-        </Text>
-      </View>
-
-      <View style={styles.colDivider} />
-
-      {/* Value column */}
-      <View style={styles.valueCol}>
-        {isCompleted ? (
-          <View style={styles.valueLine}>
-            <Text style={styles.valueNumber}>{set.weight}</Text>
-            <Text style={styles.valueUnit}>lb</Text>
-            <Text style={styles.valueX}>×</Text>
-            {set.actualRepsLeft != null || set.actualRepsRight != null ? (
-              <>
-                <Text style={styles.valueNumber}>
-                  {set.actualRepsLeft ?? 0}/{set.actualRepsRight ?? 0}
-                </Text>
-                <Text style={styles.valueUnit}>L/R</Text>
-              </>
-            ) : (
-              <>
-                <Text style={styles.valueNumber}>{set.actualReps}</Text>
-                <Text style={styles.valueUnit}>reps</Text>
-              </>
-            )}
-            {onEdit && <Ionicons name="pencil" size={11} color={MUTED} style={styles.editIcon} />}
-          </View>
-        ) : isCurrent ? (
-          <>
-            <Text style={styles.currentEyebrow}>Tap log set</Text>
-            <View style={styles.valueLine}>
-              <Text style={styles.valueDash}>—</Text>
-              <Text style={styles.valueX}>×</Text>
-              <Text style={styles.valueNumberCurrent}>{set.targetReps}</Text>
-              <Text style={styles.valueUnitCurrent}>target</Text>
+        {/* Weight */}
+        <View style={styles.weightCol}>
+          {isCompleted ? (
+            <View style={styles.inline}>
+              <Text style={styles.weightValue}>{set.weight}</Text>
+              <Text style={styles.weightUnit}>lb</Text>
             </View>
-          </>
-        ) : (
-          <View style={styles.valueLine}>
-            <Text style={styles.valueDashFuture}>—</Text>
-            <Text style={styles.valueXFuture}>×</Text>
-            <Text style={styles.valueNumberFuture}>{set.targetReps}</Text>
-            <Text style={styles.valueUnitFuture}>target</Text>
-          </View>
-        )}
-      </View>
+          ) : (
+            <View style={styles.inline}>
+              <Text style={isCurrent ? styles.weightDash : styles.weightDashFuture}>—</Text>
+              <Text style={isCurrent ? styles.weightUnit : styles.weightUnitFuture}>lb</Text>
+            </View>
+          )}
+        </View>
 
-      {/* Status badge */}
-      <View style={styles.statusCol}>
-        {isCompleted ? (
-          <Animated.View entering={ZoomIn.springify().damping(14)} style={styles.statusComplete}>
-            <Ionicons name="checkmark" size={16} color={INK} />
-          </Animated.View>
-        ) : isCurrent ? (
-          <View style={styles.statusCurrent}>
-            <Animated.View style={[styles.statusCurrentRing, pulseStyle]} />
-            <View style={styles.statusCurrentDot} />
-          </View>
-        ) : (
-          <View style={styles.statusFuture} />
-        )}
-      </View>
-    </Pressable>
+        <View style={styles.divider} />
+
+        {/* Reps */}
+        <View style={styles.repsCol}>
+          {isCompleted ? (
+            hasPerSide ? (
+              <Text style={styles.repsValue}>
+                {set.actualRepsLeft ?? 0}/{set.actualRepsRight ?? 0}{" "}
+                <Text style={styles.repsLabel}>L/R</Text>
+              </Text>
+            ) : (
+              <Text style={styles.repsValue}>
+                {set.actualReps} <Text style={styles.repsLabel}>Reps</Text>
+              </Text>
+            )
+          ) : isCurrent ? (
+            <Text style={styles.repsValue}>
+              {set.targetReps} <Text style={styles.repsLabelAccent}>target</Text>
+            </Text>
+          ) : (
+            <Text style={styles.repsValueFuture}>
+              {set.targetReps} <Text style={styles.repsLabelFuture}>target</Text>
+            </Text>
+          )}
+        </View>
+
+        <View style={styles.divider} />
+
+        {/* Action */}
+        <View style={styles.actionCol}>
+          {isCompleted ? (
+            <Animated.View entering={ZoomIn.springify().damping(14)} style={styles.glyph}>
+              <Ionicons name="checkmark" size={14} color={ACCENT} />
+            </Animated.View>
+          ) : isCurrent ? (
+            <Animated.View style={[styles.glyph, pulseStyle]}>
+              <Ionicons name="arrow-forward" size={14} color={ACCENT} />
+            </Animated.View>
+          ) : (
+            <View style={styles.dotFuture} />
+          )}
+        </View>
+      </Pressable>
     </Animated.View>
   );
 }
 
 const styles = StyleSheet.create({
-  row: {
+  pill: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#0a0a0a",
-    borderRadius: 14,
-    height: 72,
+    height: 64,
+    borderRadius: 16,
+    paddingHorizontal: 6,
     overflow: "hidden",
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: HAIRLINE,
-  },
-  rowCompleted: {
     backgroundColor: "#0c0c0c",
-    borderColor: "rgba(52,211,153,0.18)",
   },
-  rowCurrent: {
+  pillCompleted: {
+    backgroundColor: "#0d0d0d",
+    borderColor: ACCENT_BORDER_SOFT,
+  },
+  pillCurrent: {
+    backgroundColor: "#0c0c0c",
+    borderColor: ACCENT_BORDER,
+  },
+  pillFuture: {
     backgroundColor: "#0a0a0a",
-    borderColor: "rgba(52,211,153,0.35)",
+    borderColor: HAIRLINE,
+    opacity: 0.7,
   },
-  rowFuture: { opacity: 0.55 },
-  rowPressed: { opacity: 0.7 },
-  editIcon: { marginLeft: 10, opacity: 0.55 },
 
-  rail: {
-    width: 2,
-    alignSelf: "stretch",
-    backgroundColor: HAIRLINE,
-    marginRight: 14,
-  },
-  railCompleted: { backgroundColor: ACCENT },
-  railCurrent: { backgroundColor: ACCENT, opacity: 0.7 },
-
-  indexCol: {
-    width: 52,
-    alignItems: "flex-start",
-    justifyContent: "center",
-  },
-  indexEyebrow: {
-    color: MUTED,
-    fontSize: 8,
-    fontFamily: "Inter_500Medium",
-    letterSpacing: 2.2,
-    textTransform: "uppercase",
-    marginBottom: 2,
-  },
-  indexNumber: {
-    color: BONE,
-    fontSize: 26,
-    fontFamily: "Outfit_300Light",
-    letterSpacing: -0.5,
-    fontVariant: ["tabular-nums"],
-    lineHeight: 30,
-  },
-  indexNumberCurrent: { color: BONE, fontFamily: "Outfit_400Regular" },
-  indexNumberFuture: { color: MUTED_SOFT },
-
-  colDivider: {
+  divider: {
     width: StyleSheet.hairlineWidth,
-    height: 36,
+    height: 30,
     backgroundColor: HAIRLINE_STRONG,
-    marginRight: 16,
   },
 
-  valueCol: { flex: 1, justifyContent: "center" },
-  valueLine: { flexDirection: "row", alignItems: "baseline" },
-  valueNumber: {
+  inline: { flexDirection: "row", alignItems: "baseline" },
+
+  // Weight column
+  weightCol: { width: 92, alignItems: "center", justifyContent: "center" },
+  weightValue: {
     color: BONE,
-    fontSize: 22,
+    fontSize: 20,
     fontFamily: "Outfit_400Regular",
     letterSpacing: -0.3,
     fontVariant: ["tabular-nums"],
   },
-  valueNumberCurrent: {
-    color: BONE,
-    fontSize: 22,
-    fontFamily: "Outfit_400Regular",
-    letterSpacing: -0.3,
-    fontVariant: ["tabular-nums"],
-  },
-  valueNumberFuture: {
+  weightUnit: {
     color: MUTED,
-    fontSize: 22,
+    fontSize: 11,
+    fontFamily: "Inter_500Medium",
+    marginLeft: 2,
+  },
+  weightDash: {
+    color: MUTED,
+    fontSize: 20,
     fontFamily: "Outfit_300Light",
-    letterSpacing: -0.3,
-    fontVariant: ["tabular-nums"],
   },
-  valueUnit: {
-    color: MUTED,
-    fontSize: 10,
-    fontFamily: "Inter_500Medium",
-    letterSpacing: 1.4,
-    textTransform: "uppercase",
-    marginLeft: 4,
-  },
-  valueUnitCurrent: {
-    color: ACCENT,
-    fontSize: 10,
-    fontFamily: "Inter_500Medium",
-    letterSpacing: 1.4,
-    textTransform: "uppercase",
-    marginLeft: 4,
-  },
-  valueUnitFuture: {
+  weightDashFuture: {
     color: MUTED_SOFT,
-    fontSize: 10,
+    fontSize: 20,
+    fontFamily: "Outfit_300Light",
+  },
+  weightUnitFuture: {
+    color: MUTED_SOFT,
+    fontSize: 11,
     fontFamily: "Inter_400Regular",
-    letterSpacing: 1.4,
-    textTransform: "uppercase",
-    marginLeft: 4,
-  },
-  valueX: {
-    color: MUTED,
-    fontSize: 14,
-    fontFamily: "Outfit_300Light",
-    marginHorizontal: 8,
-  },
-  valueXFuture: {
-    color: MUTED_SOFT,
-    fontSize: 14,
-    fontFamily: "Outfit_300Light",
-    marginHorizontal: 8,
-  },
-  valueDash: {
-    color: MUTED,
-    fontSize: 22,
-    fontFamily: "Outfit_300Light",
-  },
-  valueDashFuture: {
-    color: MUTED_SOFT,
-    fontSize: 22,
-    fontFamily: "Outfit_300Light",
-  },
-  currentEyebrow: {
-    color: ACCENT,
-    fontSize: 8,
-    fontFamily: "Inter_500Medium",
-    letterSpacing: 2.2,
-    textTransform: "uppercase",
-    marginBottom: 4,
+    marginLeft: 2,
   },
 
-  statusCol: {
-    width: 64,
+  // Reps column
+  repsCol: { flex: 1, alignItems: "center", justifyContent: "center" },
+  repsValue: {
+    color: BONE,
+    fontSize: 19,
+    fontFamily: "Outfit_400Regular",
+    letterSpacing: -0.2,
+    fontVariant: ["tabular-nums"],
+  },
+  repsValueFuture: {
+    color: MUTED,
+    fontSize: 19,
+    fontFamily: "Outfit_300Light",
+    fontVariant: ["tabular-nums"],
+  },
+  repsLabel: { color: MUTED, fontSize: 13, fontFamily: "Inter_400Regular" },
+  repsLabelAccent: { color: ACCENT, fontSize: 13, fontFamily: "Inter_500Medium" },
+  repsLabelFuture: {
+    color: MUTED_SOFT,
+    fontSize: 13,
+    fontFamily: "Inter_400Regular",
+  },
+
+  // Action column
+  actionCol: { width: 64, alignItems: "center", justifyContent: "center" },
+  glyph: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
     alignItems: "center",
     justifyContent: "center",
-  },
-  statusComplete: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: ACCENT,
-  },
-  statusCurrent: {
-    width: 30,
-    height: 30,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  statusCurrentRing: {
-    position: "absolute",
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    borderWidth: 1,
-    borderColor: ACCENT,
-  },
-  statusCurrentDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: ACCENT,
-  },
-  statusFuture: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: HAIRLINE_STRONG,
+    borderColor: ACCENT_BORDER,
+  },
+  dotFuture: {
+    width: 7,
+    height: 7,
+    borderRadius: 4,
+    backgroundColor: MUTED_SOFT,
   },
 });

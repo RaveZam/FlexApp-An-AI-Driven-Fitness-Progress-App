@@ -14,6 +14,8 @@ const HAIRLINE = "rgba(245,243,239,0.07)";
 const HAIRLINE_STRONG = "rgba(245,243,239,0.14)";
 const MUTED = "#6b6b6b";
 const MUTED_SOFT = "#3a3a3a";
+const LABEL = "#9b9b9b";
+const READABLE = "#b8b6b1";
 
 type Props = {
   best: ExerciseBestRecord | null;
@@ -154,10 +156,10 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
   },
   sectionLabel: {
-    color: MUTED,
-    fontSize: 9,
-    fontFamily: "Inter_500Medium",
-    letterSpacing: 2,
+    color: LABEL,
+    fontSize: 11,
+    fontFamily: "Inter_600SemiBold",
+    letterSpacing: 1.6,
     textTransform: "uppercase",
     marginBottom: 12,
   },
@@ -184,13 +186,13 @@ const styles = StyleSheet.create({
     lineHeight: 40,
   },
   prSubvalue: {
-    color: MUTED,
-    fontSize: 12,
+    color: READABLE,
+    fontSize: 14,
     fontFamily: "Inter_400Regular",
-    marginTop: 2,
+    marginTop: 4,
     letterSpacing: 0.3,
   },
-  prSubvalueAccent: { color: ACCENT, fontFamily: "Inter_500Medium" },
+  prSubvalueAccent: { color: ACCENT, fontFamily: "Inter_600SemiBold" },
   prRule: {
     height: StyleSheet.hairlineWidth,
     backgroundColor: HAIRLINE_STRONG,
@@ -198,42 +200,42 @@ const styles = StyleSheet.create({
     width: 24,
   },
   prDate: {
-    color: MUTED_SOFT,
-    fontSize: 10,
-    fontFamily: "Inter_400Regular",
+    color: MUTED,
+    fontSize: 11,
+    fontFamily: "Inter_500Medium",
     marginTop: 8,
-    letterSpacing: 1.2,
+    letterSpacing: 0.8,
     textTransform: "uppercase",
   },
   historySection: { flex: 1.1 },
   historyHeader: { marginBottom: 12 },
   chartTooltip: {
     color: BONE,
-    fontSize: 11,
-    fontFamily: "Outfit_400Regular",
+    fontSize: 13,
+    fontFamily: "Outfit_500Medium",
     letterSpacing: 0.2,
     marginTop: -6,
   },
   chartTooltipValue: {
     color: ACCENT,
-    fontFamily: "Outfit_500Medium",
+    fontFamily: "Outfit_600SemiBold",
     fontVariant: ["tabular-nums"],
   },
   chartTooltipDate: {
-    color: MUTED,
-    fontFamily: "Inter_400Regular",
-    fontSize: 10,
-    letterSpacing: 0.8,
+    color: LABEL,
+    fontFamily: "Inter_500Medium",
+    fontSize: 11,
+    letterSpacing: 0.5,
     textTransform: "uppercase",
   },
   chartTooltipHint: {
-    color: MUTED_SOFT,
-    fontSize: 10,
-    fontFamily: "Inter_400Regular",
-    letterSpacing: 1.4,
+    color: MUTED,
+    fontSize: 11,
+    fontFamily: "Inter_500Medium",
+    letterSpacing: 1,
     textTransform: "uppercase",
     marginTop: -6,
-    height: 14,
+    height: 16,
   },
   chartWrap: { position: "relative" },
   chartBaseline: {
@@ -261,9 +263,9 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   emptyChart: {
-    color: MUTED_SOFT,
-    fontSize: 11,
-    fontFamily: "Inter_400Regular",
+    color: MUTED,
+    fontSize: 12,
+    fontFamily: "Inter_500Medium",
     letterSpacing: 0.5,
     alignSelf: "center",
     marginTop: 24,

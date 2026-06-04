@@ -12,6 +12,7 @@ export function listCompletedSessions(userId: string): WorkoutSessionSummary[] {
     exerciseCount: r.exerciseCount,
     completedSetCount: r.completedSetCount,
     totalSetCount: r.totalSetCount,
+    volume: r.volume,
   }));
 }
 

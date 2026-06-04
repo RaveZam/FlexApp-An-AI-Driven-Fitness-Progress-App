@@ -8,6 +8,7 @@ export type CompletedSessionSummaryRow = {
   exerciseCount: number;
   completedSetCount: number;
   totalSetCount: number;
+  volume: number;
 };
 
 export function listCompletedSummariesByUser(userId: string): CompletedSessionSummaryRow[] {
@@ -20,6 +21,7 @@ export function listCompletedSummariesByUser(userId: string): CompletedSessionSu
       exercise_count: number;
       completed_set_count: number;
       total_set_count: number;
+      volume: number;
     }>(
       `SELECT
          ws.id,
@@ -32,7 +34,13 @@ export function listCompletedSummariesByUser(userId: string): CompletedSessionSu
             WHERE se.session_id = ws.id AND ss.completed = 1) AS completed_set_count,
          (SELECT COUNT(*) FROM session_sets ss
             JOIN session_exercises se ON ss.session_exercise_id = se.id
-            WHERE se.session_id = ws.id) AS total_set_count
+            WHERE se.session_id = ws.id) AS total_set_count,
+         (SELECT COALESCE(SUM(
+              ss.weight * COALESCE(ss.actual_reps, max(ss.actual_reps_left, ss.actual_reps_right))
+            ), 0)
+            FROM session_sets ss
+            JOIN session_exercises se ON ss.session_exercise_id = se.id
+            WHERE se.session_id = ws.id AND ss.completed = 1 AND ss.weight IS NOT NULL) AS volume
        FROM workout_sessions ws
        WHERE ws.user_id = ? AND ws.status != 'in_progress'
        ORDER BY COALESCE(ws.completed_at, ws.started_at) DESC`,
@@ -46,5 +54,6 @@ export function listCompletedSummariesByUser(userId: string): CompletedSessionSu
       exerciseCount: r.exercise_count,
       completedSetCount: r.completed_set_count,
       totalSetCount: r.total_set_count,
+      volume: r.volume ?? 0,
     }));
 }

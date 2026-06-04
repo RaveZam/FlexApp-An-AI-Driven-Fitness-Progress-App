@@ -1,5 +1,6 @@
 import { FontFamilies, Palette } from "@/constants/theme";
 import Fontisto from "@expo/vector-icons/Fontisto";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { useEffect } from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Animated, {
@@ -27,12 +28,7 @@ export default function UserInfoCard() {
   return (
     <Animated.View style={[styles.row, animatedStyle]}>
       <View style={styles.brand}>
-        <Image
-          style={styles.logo}
-          source={{
-            uri: "https://res.cloudinary.com/dcdgu2fxc/image/upload/v1755495758/FlexLifeLogo-removebg-preview_n678qi.png",
-          }}
-        />
+        <Ionicons name="barbell" size={32} color="#FFFFFF" />
         <View>
           <Text style={styles.wordmark}>
             Flex<Text style={styles.wordmarkAccent}>Life</Text>
@@ -67,7 +63,6 @@ const styles = StyleSheet.create({
     borderBottomColor: Palette.hairline,
   },
   brand: { flexDirection: "row", alignItems: "center", gap: 12 },
-  logo: { width: 36, height: 36, borderRadius: 10 },
   eyebrow: {
     color: Palette.accent,
     fontSize: 8,
