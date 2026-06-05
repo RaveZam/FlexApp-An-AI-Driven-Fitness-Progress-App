@@ -53,11 +53,48 @@ target 'flexapp' do
   )
 
   post_install do |installer|
+
+    # Added by withSwiftUICoreFix: stop pods from directly autolinking SwiftUICore (Xcode 26).
+    disable_swiftuicore_autolink = lambda do |target|
+      target.build_configurations.each do |bc|
+        flags = bc.build_settings['OTHER_SWIFT_FLAGS'] || '$(inherited)'
+        flags = flags.join(' ') if flags.is_a?(Array)
+        unless flags.include?('disable-autolink-framework SwiftUICore')
+          bc.build_settings['OTHER_SWIFT_FLAGS'] = "#{flags} -Xfrontend -disable-autolink-framework -Xfrontend SwiftUICore"
+        end
+      end
+    end
+
+    installer.pods_project.targets.each(&disable_swiftuicore_autolink)
+
+    # The app target lives in the user project, not pods_project, so patch it too —
+    # AppDelegate.swift/ExpoModulesProvider.swift import Expo (→ SwiftUI) and emit the
+    # forbidden SwiftUICore autolink directive otherwise.
+    installer.aggregate_targets.each do |aggregate_target|
+      user_project = aggregate_target.user_project
+      next unless user_project
+      user_project.native_targets.each(&disable_swiftuicore_autolink)
+      user_project.save
+    end
     react_native_post_install(
       installer,
       config[:reactNativePath],
       :mac_catalyst_enabled => false,
       :ccache_enabled => ccache_enabled?(podfile_properties),
     )
+
+    # NOTE: must run AFTER react_native_post_install, which otherwise resets the C++ standard.
+    # fmt 11.0.2 (bundled by RN 0.81) fails to compile under Apple clang 21 (Xcode 26): its
+    # FMT_STRING consteval path is no longer a valid constant expression. fmt's base.h sets
+    # FMT_USE_CONSTEVAL=0 when __cplusplus < 201709L, so compiling the fmt pod as C++17
+    # disables consteval and falls back to runtime format-string checks.
+    # See facebook/react-native#55601, expo/expo#44229 (fixed upstream in fmt 12.1.0).
+    installer.pods_project.targets.each do |target|
+      next unless target.name == 'fmt'
+      target.build_configurations.each do |bc|
+        bc.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'c++17'
+      end
+    end
+    installer.pods_project.save
   end
 end

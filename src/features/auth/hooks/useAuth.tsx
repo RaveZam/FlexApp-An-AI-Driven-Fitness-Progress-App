@@ -1,5 +1,9 @@
 import { runDownloadSync } from "@/src/features/outbox";
 import { supabase } from "@/src/lib/supabase";
+import {
+  GoogleSignin,
+  statusCodes,
+} from "@react-native-google-signin/google-signin";
 import { Session, User } from "@supabase/supabase-js";
 import {
   createContext,
@@ -10,11 +14,17 @@ import {
   useState,
 } from "react";
 
+GoogleSignin.configure({
+  webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+  iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
+});
+
 type AuthContextType = {
   user: User | null;
   session: Session | null;
   signIn: (email: string, password: string) => Promise<any>;
   signUp: (email: string, password: string) => Promise<any>;
+  signInWithGoogle: () => Promise<any>;
   signOut: () => Promise<any>;
 };
 
@@ -50,6 +60,32 @@ export function AuthProvider({ children }: PropsWithChildren) {
     supabase.auth.signInWithPassword({ email, password });
   const signUp = (email: string, password: string) =>
     supabase.auth.signUp({ email, password });
+  const signInWithGoogle = async () => {
+    try {
+      await GoogleSignin.hasPlayServices();
+      await GoogleSignin.signIn();
+      const { idToken } = await GoogleSignin.getTokens();
+      console.log("[google] idToken received:", !!idToken);
+      if (!idToken) {
+        return { error: new Error("No ID token returned from Google.") };
+      }
+      const result = await supabase.auth.signInWithIdToken({
+        provider: "google",
+        token: idToken,
+      });
+      if (result.error) {
+        console.error("[google] supabase.signInWithIdToken error:", result.error);
+      }
+      return result;
+    } catch (error: any) {
+      if (error?.code === statusCodes.SIGN_IN_CANCELLED) {
+        return { error: null, cancelled: true };
+      }
+      console.error("[google] sign-in failed:", error);
+      return { error };
+    }
+  };
+
   const signOut = async () => {
     try {
       const { error } = await supabase.auth.signOut();
@@ -67,7 +103,9 @@ export function AuthProvider({ children }: PropsWithChildren) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, signIn, signUp, signOut }}>
+    <AuthContext.Provider
+      value={{ user, session, signIn, signUp, signInWithGoogle, signOut }}
+    >
       {children}
     </AuthContext.Provider>
   );

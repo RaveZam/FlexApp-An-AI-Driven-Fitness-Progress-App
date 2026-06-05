@@ -1,3 +1,4 @@
+import { AntDesign } from "@expo/vector-icons";
 import { useAuth } from "@/src/features/auth/hooks/useAuth";
 import LoadingOverlay from "@/components/ui/LoadingOverlay";
 import Popup from "@/components/ui/Popup";
@@ -12,7 +13,7 @@ export default function LoginScreen() {
   const [loading, setLoading] = useState(false);
   const [isErrorPopupVisible, setErrorPopupVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const { signIn, session } = useAuth();
+  const { signIn, signInWithGoogle, session } = useAuth();
 
   useEffect(() => {
     if (session) {
@@ -33,6 +34,20 @@ export default function LoginScreen() {
         message = "Please confirm your email address before logging in.";
       }
       setErrorMessage(message);
+      setErrorPopupVisible(true);
+    } else {
+      router.replace("/");
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    setLoading(true);
+    const { error, cancelled } = await signInWithGoogle();
+    setLoading(false);
+
+    if (cancelled) return;
+    if (error) {
+      setErrorMessage(`Google sign-in failed: ${error.message ?? "Unknown error"}`);
       setErrorPopupVisible(true);
     } else {
       router.replace("/");
@@ -71,6 +86,22 @@ export default function LoginScreen() {
         >
           <Text className="text-center text-black font-semibold text-base">
             Login
+          </Text>
+        </TouchableOpacity>
+
+        <View className="flex-row items-center my-6">
+          <View className="flex-1 h-px bg-gray-700" />
+          <Text className="text-gray-500 mx-3">or</Text>
+          <View className="flex-1 h-px bg-gray-700" />
+        </View>
+
+        <TouchableOpacity
+          className="bg-white rounded-xl py-3 flex-row items-center justify-center"
+          onPress={handleGoogleLogin}
+        >
+          <AntDesign name="google" size={18} color="#000" />
+          <Text className="text-center text-black font-semibold text-base ml-2">
+            Continue with Google
           </Text>
         </TouchableOpacity>
 

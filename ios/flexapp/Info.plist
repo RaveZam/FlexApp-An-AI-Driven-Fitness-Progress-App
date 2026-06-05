@@ -37,6 +37,12 @@
           <string>exp+flexapp</string>
         </array>
       </dict>
+      <dict>
+        <key>CFBundleURLSchemes</key>
+        <array>
+          <string>com.googleusercontent.apps.1083008928772-6i71gvometpshd7e5huciqdn87oj3f7h</string>
+        </array>
+      </dict>
     </array>
     <key>CFBundleVersion</key>
     <string>1</string>
