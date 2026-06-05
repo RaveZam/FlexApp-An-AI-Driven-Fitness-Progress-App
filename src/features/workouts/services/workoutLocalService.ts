@@ -85,6 +85,14 @@ export function removeExerciseFromWorkout(exerciseId: string): void {
   workoutExercisesDao.deleteById(exerciseId);
 }
 
+export function updateExerciseTargets(
+  exerciseId: string,
+  targetSets: number,
+  targetReps: number
+): void {
+  workoutExercisesDao.updateTargets(exerciseId, targetSets, targetReps);
+}
+
 export function insertWorkoutLocal(workout: Workout): void {
   const db = getDb();
   db.withTransactionSync(() => {

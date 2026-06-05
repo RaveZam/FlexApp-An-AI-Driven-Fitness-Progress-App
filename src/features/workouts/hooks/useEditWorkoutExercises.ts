@@ -5,6 +5,7 @@ import { useState } from "react";
 import {
   addExerciseToWorkout,
   removeExerciseFromWorkout,
+  updateExerciseTargets,
 } from "../services/workoutLocalService";
 import type { CatalogExercise, Exercise } from "../types";
 
@@ -79,10 +80,22 @@ export function useEditWorkoutExercises(
     onRefresh();
   }
 
+  function updateTargets(exerciseId: string, targetSets: number, targetReps: number) {
+    updateExerciseTargets(exerciseId, targetSets, targetReps);
+    enqueueOutbox({
+      entityType: "workout_exercise",
+      entityId: exerciseId,
+      operation: "update",
+      payload: { targetSets, targetReps },
+    });
+    onRefresh();
+  }
+
   return {
     selectedIds,
     toggleSelect,
     removeSelected,
+    updateTargets,
     pickerVisible,
     setPickerVisible,
     addExercise,

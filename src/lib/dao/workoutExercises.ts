@@ -88,6 +88,13 @@ export function upsert(ex: WorkoutExerciseRow): void {
   );
 }
 
+export function updateTargets(id: string, targetSets: number, targetReps: number): void {
+  getDb().runSync(
+    "UPDATE user_workout_exercises SET target_sets = ?, target_reps = ? WHERE id = ?",
+    [targetSets, targetReps, id]
+  );
+}
+
 export function deleteById(id: string): void {
   getDb().runSync("DELETE FROM user_workout_exercises WHERE id = ?", [id]);
 }

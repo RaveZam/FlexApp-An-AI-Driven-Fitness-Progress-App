@@ -73,6 +73,17 @@ async function dispatchRow(row: OutboxRow): Promise<void> {
         .upsert(exercise, { onConflict: "id" });
       if (error) throw error;
     }
+    if (row.operation === "update") {
+      const { targetSets, targetReps } = payload as {
+        targetSets: number;
+        targetReps: number;
+      };
+      const { error } = await supabase
+        .from("user_workout_exercises")
+        .update({ target_sets: targetSets, target_reps: targetReps })
+        .eq("id", row.entity_id);
+      if (error) throw error;
+    }
     if (row.operation === "delete") {
       const { error } = await supabase
         .from("user_workout_exercises")

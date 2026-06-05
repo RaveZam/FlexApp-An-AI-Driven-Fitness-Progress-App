@@ -35,6 +35,11 @@ export function useWorkouts() {
     }
   }, [userId]);
 
+  const refreshLocal = useCallback(() => {
+    if (!userId) return;
+    setWorkouts(listWorkouts(userId));
+  }, [userId]);
+
   useFocusEffect(
     useCallback(() => {
       setLoading(true);
@@ -42,5 +47,5 @@ export function useWorkouts() {
     }, [load])
   );
 
-  return { workouts, loading, error, refresh: load };
+  return { workouts, loading, error, refresh: load, refreshLocal };
 }

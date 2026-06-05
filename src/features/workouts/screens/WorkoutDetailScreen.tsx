@@ -1,222 +1,21 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Image } from "expo-image";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
-import Animated, { FadeInDown, FadeInRight } from "react-native-reanimated";
+import Animated, { FadeInDown } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ExercisePickerModal } from "../components/create/ExercisePickerModal";
+import { DayChipsEditor } from "../components/detail/DayChipsEditor";
+import { ExerciseRow } from "../components/detail/ExerciseRow";
+import { WorkoutDetailHeader } from "../components/detail/WorkoutDetailHeader";
 import { useEditWorkoutExercises } from "../hooks/useEditWorkoutExercises";
-import { useUpdateWorkoutDays } from "../hooks/useUpdateWorkoutDays";
 import { useWorkouts } from "../hooks/useWorkouts";
-import type { Exercise } from "../types";
 import "@/global.css";
-
-const DAY_LABELS = ["S", "M", "T", "W", "TH", "F", "S"];
-
-const EXERCISE_IMAGES: Record<string, any> = {
-  "lat pulldown": require("@/assets/images/WorkoutImages/latpulldownimage.webp"),
-};
-
-function imageForExercise(name: string) {
-  return EXERCISE_IMAGES[name.trim().toLowerCase()] ?? null;
-}
-
-function DayChipsEditor({
-  workoutId,
-  initialDays,
-  onSaved,
-}: {
-  workoutId: string;
-  initialDays: number[];
-  onSaved: () => void;
-}) {
-  const [days, setDays] = useState<number[]>(initialDays);
-  const { saveDays } = useUpdateWorkoutDays();
-
-  useEffect(() => {
-    setDays(initialDays);
-  }, [workoutId]);
-
-  function toggleDay(day: number) {
-    const next = days.includes(day) ? days.filter((d) => d !== day) : [...days, day];
-    setDays(next);
-    saveDays(workoutId, next);
-    onSaved();
-  }
-
-  return (
-    <View>
-      <Text
-        style={{
-          color: "#666",
-          fontSize: 11,
-          fontFamily: "Inter_500Medium",
-          letterSpacing: 0.8,
-          textTransform: "uppercase",
-          marginBottom: 10,
-        }}
-      >
-        Days
-      </Text>
-      <View style={{ flexDirection: "row", gap: 8 }}>
-        {DAY_LABELS.map((label, i) => {
-          const selected = days.includes(i);
-          return (
-            <TouchableOpacity
-              key={i}
-              onPress={() => toggleDay(i)}
-              activeOpacity={0.7}
-              style={{
-                flex: 1,
-                aspectRatio: 1,
-                borderRadius: 10,
-                backgroundColor: selected ? "rgba(16,185,129,0.15)" : "#191919",
-                alignItems: "center",
-                justifyContent: "center",
-                borderWidth: 1,
-                borderColor: selected ? "rgba(16,185,129,0.5)" : "rgba(255,255,255,0.06)",
-              }}
-            >
-              <Text
-                style={{
-                  color: selected ? "#10b981" : "#555",
-                  fontSize: 12,
-                  fontFamily: selected ? "Inter_600SemiBold" : "Inter_400Regular",
-                }}
-              >
-                {label}
-              </Text>
-            </TouchableOpacity>
-          );
-        })}
-      </View>
-    </View>
-  );
-}
-
-function ExerciseRow({
-  exercise,
-  index,
-  editing,
-  selected,
-  onToggle,
-}: {
-  exercise: Exercise;
-  index: number;
-  editing: boolean;
-  selected: boolean;
-  onToggle: () => void;
-}) {
-  const image = imageForExercise(exercise.name);
-  return (
-    <Animated.View entering={FadeInRight.delay(100 + index * 60).duration(400)}>
-      <TouchableOpacity
-        activeOpacity={editing ? 0.7 : 1}
-        onPress={editing ? onToggle : undefined}
-      >
-        <View
-          style={{
-            backgroundColor: selected ? "rgba(239,68,68,0.08)" : "#191919",
-            borderRadius: 12,
-            borderWidth: 1,
-            borderColor: selected ? "rgba(239,68,68,0.35)" : "rgba(255,255,255,0.04)",
-            flexDirection: "row",
-            alignItems: "center",
-            overflow: "hidden",
-          }}
-        >
-          {editing && (
-            <View style={{ paddingLeft: 12 }}>
-              <View
-                style={{
-                  width: 22,
-                  height: 22,
-                  borderRadius: 11,
-                  borderWidth: 2,
-                  borderColor: selected ? "#ef4444" : "#444",
-                  backgroundColor: selected ? "#ef4444" : "transparent",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                {selected && <Ionicons name="checkmark" size={13} color="#fff" />}
-              </View>
-            </View>
-          )}
-          <View
-            style={{
-              width: 3,
-              alignSelf: "stretch",
-              backgroundColor: selected ? "#ef4444" : "#10b981",
-              opacity: 0.5,
-              marginLeft: editing ? 10 : 0,
-            }}
-          />
-          <View
-            style={{
-              width: 56,
-              height: 56,
-              margin: 10,
-              borderRadius: 8,
-              backgroundColor: "#0f0f0f",
-              alignItems: "center",
-              justifyContent: "center",
-              overflow: "hidden",
-            }}
-          >
-            {image ? (
-              <Image
-                source={image}
-                style={{ width: "100%", height: "100%" }}
-                contentFit="cover"
-                transition={200}
-              />
-            ) : (
-              <Ionicons name="barbell-outline" size={22} color="#333" />
-            )}
-          </View>
-          <View
-            style={{
-              flex: 1,
-              paddingVertical: 14,
-              paddingRight: 14,
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <Text
-              style={{
-                color: selected ? "#f87171" : "#e0e0e0",
-                fontSize: 14,
-                fontFamily: "Inter_400Regular",
-                flex: 1,
-              }}
-            >
-              {exercise.name}
-            </Text>
-            <Text
-              style={{
-                color: selected ? "#f87171" : "#10b981",
-                fontSize: 13,
-                fontFamily: "Inter_500Medium",
-                marginLeft: 12,
-              }}
-            >
-              {exercise.targetSets} × {exercise.targetReps}
-            </Text>
-          </View>
-        </View>
-      </TouchableOpacity>
-    </Animated.View>
-  );
-}
 
 export default function WorkoutDetailScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { workouts, refresh } = useWorkouts();
+  const { workouts, refresh, refreshLocal } = useWorkouts();
   const [editing, setEditing] = useState(false);
 
   const workout = workouts.find((w) => w.id === id);
@@ -225,86 +24,21 @@ export default function WorkoutDetailScreen() {
     selectedIds,
     toggleSelect,
     removeSelected,
+    updateTargets,
     pickerVisible,
     setPickerVisible,
     addExercise,
-  } = useEditWorkoutExercises(id ?? "", workout?.exercises ?? [], refresh);
-
-  function exitEdit() {
-    setEditing(false);
-  }
+  } = useEditWorkoutExercises(id ?? "", workout?.exercises ?? [], refreshLocal);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#0f0f0f" }} edges={["top"]}>
       <View style={{ flex: 1, backgroundColor: "#0f0f0f" }}>
-        {/* Header */}
-        <View
-          style={{
-            paddingHorizontal: 20,
-            paddingTop: 8,
-            paddingBottom: 16,
-            flexDirection: "row",
-            alignItems: "center",
-          }}
-        >
-          <TouchableOpacity
-            onPress={() => {
-              if (editing) {
-                exitEdit();
-              } else {
-                router.back();
-              }
-            }}
-            activeOpacity={0.7}
-            style={{
-              width: 36,
-              height: 36,
-              borderRadius: 10,
-              backgroundColor: "#191919",
-              alignItems: "center",
-              justifyContent: "center",
-              borderWidth: 1,
-              borderColor: "rgba(255,255,255,0.06)",
-            }}
-          >
-            <Ionicons name={editing ? "close" : "chevron-back"} size={20} color="#aaa" />
-          </TouchableOpacity>
-
-          <View style={{ flex: 1, alignItems: "center" }}>
-            <Text
-              style={{
-                color: "#ffffff",
-                fontSize: 18,
-                fontFamily: "Inter_600SemiBold",
-                letterSpacing: -0.3,
-              }}
-              numberOfLines={1}
-            >
-              {workout?.name ?? "Workout"}
-            </Text>
-          </View>
-
-          <TouchableOpacity
-            onPress={() => setEditing((e) => !e)}
-            activeOpacity={0.7}
-            style={{
-              width: 36,
-              height: 36,
-              borderRadius: 10,
-              backgroundColor: editing ? "rgba(16,185,129,0.15)" : "#191919",
-              alignItems: "center",
-              justifyContent: "center",
-              borderWidth: 1,
-              borderColor: editing ? "rgba(16,185,129,0.4)" : "rgba(255,255,255,0.06)",
-            }}
-          >
-            <Ionicons
-              name={editing ? "checkmark" : "pencil"}
-              size={16}
-              color={editing ? "#10b981" : "#aaa"}
-            />
-          </TouchableOpacity>
-        </View>
+        <WorkoutDetailHeader
+          title={workout?.name ?? "Workout"}
+          editing={editing}
+          onBack={() => (editing ? setEditing(false) : router.back())}
+          onToggleEdit={() => setEditing((e) => !e)}
+        />
 
         {!workout ? (
           <View style={{ flex: 1, alignItems: "center", justifyContent: "center", gap: 8 }}>
@@ -331,12 +65,7 @@ export default function WorkoutDetailScreen() {
 
               <Animated.View entering={FadeInDown.delay(80).duration(400)}>
                 <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    gap: 8,
-                    marginBottom: 14,
-                  }}
+                  style={{ flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 14 }}
                 >
                   <View
                     style={{ width: 4, height: 18, borderRadius: 2, backgroundColor: "#10b981" }}
@@ -394,12 +123,12 @@ export default function WorkoutDetailScreen() {
                           editing={editing}
                           selected={selectedIds.has(exercise.id)}
                           onToggle={() => toggleSelect(exercise.id)}
+                          onUpdateTargets={(sets, reps) => updateTargets(exercise.id, sets, reps)}
                         />
                       ))}
                   </View>
                 )}
 
-                {/* Edit mode actions */}
                 {editing && (
                   <View style={{ marginTop: 16, gap: 10 }}>
                     <TouchableOpacity
@@ -418,13 +147,7 @@ export default function WorkoutDetailScreen() {
                       }}
                     >
                       <Ionicons name="add" size={18} color="#10b981" />
-                      <Text
-                        style={{
-                          color: "#10b981",
-                          fontSize: 14,
-                          fontFamily: "Inter_500Medium",
-                        }}
-                      >
+                      <Text style={{ color: "#10b981", fontSize: 14, fontFamily: "Inter_500Medium" }}>
                         Add Exercise
                       </Text>
                     </TouchableOpacity>
@@ -446,13 +169,7 @@ export default function WorkoutDetailScreen() {
                         }}
                       >
                         <Ionicons name="trash-outline" size={16} color="#ef4444" />
-                        <Text
-                          style={{
-                            color: "#ef4444",
-                            fontSize: 14,
-                            fontFamily: "Inter_500Medium",
-                          }}
-                        >
+                        <Text style={{ color: "#ef4444", fontSize: 14, fontFamily: "Inter_500Medium" }}>
                           Remove {selectedIds.size} Exercise{selectedIds.size > 1 ? "s" : ""}
                         </Text>
                       </TouchableOpacity>
