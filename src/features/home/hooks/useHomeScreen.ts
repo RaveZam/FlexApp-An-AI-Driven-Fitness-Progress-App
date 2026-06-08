@@ -42,15 +42,11 @@ export function useHomeScreen() {
    function handleStartWorkout() {
     if (hasActiveSession) {
       router.push(`/(tabs)/Workouts/session?id=${activeSession.id}` as any);
-      console.log("1")
       return;
     }
     if (todaysWorkouts.length === 1) {
       const sessionId =  startSession(todaysWorkouts[0]);
-      console.log("Session ID:", sessionId);
       router.push(`/(tabs)/Workouts/session?id=${sessionId}` as any);
-      console.log("Session ID2:", sessionId);
-       console.log("2")
       return;
     }
     if (todaysWorkouts.length > 1) {

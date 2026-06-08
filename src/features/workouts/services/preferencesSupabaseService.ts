@@ -14,7 +14,6 @@ export async function syncPreferencesFromRemote(userId: string): Promise<void> {
     .maybeSingle();
 
   if (error) {
-    console.error("[preferences] sync-down failed:", error);
     return;
   }
 

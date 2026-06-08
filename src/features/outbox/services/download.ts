@@ -41,9 +41,7 @@ async function downloadPlans(userId: string): Promise<void> {
         updatedAt: row.updated_at,
       });
     }
-  } catch (err) {
-    console.error("[download] plans failed:", err);
-  }
+  } catch {}
 }
 
 async function downloadWorkouts(userId: string): Promise<void> {
@@ -113,9 +111,7 @@ async function downloadWorkouts(userId: string): Promise<void> {
         .map((d) => d.day_of_week);
       daysDao.replace(workoutId, workoutDays, now);
     }
-  } catch (err) {
-    console.error("[download] workouts failed:", err);
-  }
+  } catch {}
 }
 
 async function downloadPreferences(userId: string): Promise<void> {
@@ -137,9 +133,7 @@ async function downloadPreferences(userId: string): Promise<void> {
       restTimerSeconds: data.rest_timer_seconds,
       updatedAt: data.updated_at,
     });
-  } catch (err) {
-    console.error("[download] preferences failed:", err);
-  }
+  } catch {}
 }
 
 async function downloadSessions(userId: string): Promise<void> {
@@ -228,7 +222,5 @@ async function downloadSessions(userId: string): Promise<void> {
         completedAt: s.completed_at,
       });
     }
-  } catch (err) {
-    console.error("[download] sessions failed:", err);
-  }
+  } catch {}
 }

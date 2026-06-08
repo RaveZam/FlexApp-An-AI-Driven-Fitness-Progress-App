@@ -13,9 +13,7 @@ export function useStorageCleaner() {
       await AsyncStorage.removeItem("finishedWorkouts");
 
       await AsyncStorage.setItem(LAST_CLEAR_KEY, new Date().toDateString());
-    } catch (e) {
-      console.error("❌ Error clearing storage:", e);
-    }
+    } catch {}
   };
 
   const checkAndClear = async () => {

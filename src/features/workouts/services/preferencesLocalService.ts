@@ -8,7 +8,9 @@ import {
 } from "../types";
 
 export function getPreferences(userId: string): UserPreferences | null {
-  return preferencesDao.get(userId);
+  const userPreferences = preferencesDao.get(userId);
+  console.log("[userPreferences]", JSON.stringify(userPreferences, null, 2));
+  return userPreferences;
 }
 
 export function getRestTimerSeconds(userId: string): number {

@@ -3,7 +3,6 @@ import { useStorageCleaner } from "@/hooks/useStorageCleaner";
 import { AuthProvider } from "@/src/features/auth/hooks/useAuth";
 import { ActivePlanProvider } from "@/src/features/workouts/context/ActivePlanContext";
 import { initDb } from "@/src/lib/db";
-import { listAll as listAllSessions } from "@/src/lib/dao/sessions";
 import { runOutboxSync } from "@/src/features/outbox";
 import {
   Inter_400Regular,
@@ -53,7 +52,6 @@ export default function RootLayout() {
   useEffect(() => {
     initDb().then(() => {
       setDbReady(true);
-      console.log("[sessions]", JSON.stringify(listAllSessions(), null, 2));
       runOutboxSync();
     });
 

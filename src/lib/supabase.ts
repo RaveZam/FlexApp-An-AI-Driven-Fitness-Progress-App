@@ -7,24 +7,19 @@ const createSafeStorage = () => {
     getItem: async (key: string) => {
       try {
         return await AsyncStorage.getItem(key);
-      } catch (error) {
-        console.warn("AsyncStorage getItem failed:", error);
+      } catch {
         return null;
       }
     },
     setItem: async (key: string, value: string) => {
       try {
         await AsyncStorage.setItem(key, value);
-      } catch (error) {
-        console.warn("AsyncStorage setItem failed:", error);
-      }
+      } catch {}
     },
     removeItem: async (key: string) => {
       try {
         await AsyncStorage.removeItem(key);
-      } catch (error) {
-        console.warn("AsyncStorage removeItem failed:", error);
-      }
+      } catch {}
     },
   };
 };

@@ -8,7 +8,6 @@ function sessionToView(session: WorkoutSession): SessionExerciseView[] {
   return session.exercises.map((ex) => ({
     id: ex.id,
     name: ex.name,
-    restSeconds: 90,
     isUnilateral: ex.isUnilateral,
     sets: ex.sets.map((s) => ({
       id: s.id,

@@ -1,9 +1,7 @@
 import LoadingOverlay from "@/components/ui/LoadingOverlay";
 import Popup from "@/components/ui/Popup";
 import { useAuth } from "@/src/features/auth/hooks/useAuth";
-import { useRestTimerDefault } from "@/src/features/workouts/hooks/useRestTimerDefault";
 import { cancelAllInProgressForUser, deleteAllSessionsForUser } from "@/src/features/workouts/services/sessionLocalService";
-import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
@@ -17,17 +15,8 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const REST_STEP_SECONDS = 15;
-
-function formatRestTime(seconds: number) {
-  const m = Math.floor(seconds / 60);
-  const s = seconds % 60;
-  return `${m}:${s.toString().padStart(2, "0")}`;
-}
-
 export default function Settings() {
   const { signOut, session, user } = useAuth();
-  const { restSeconds, setRestSeconds } = useRestTimerDefault();
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
   const [isLogoutPopupVisible, setLogoutPopupVisible] = useState(false);
@@ -153,31 +142,6 @@ export default function Settings() {
               trackColor={{ false: "#374151", true: "#10b981" }}
               thumbColor={true ? "#ffffff" : "#9ca3af"}
             />
-          </View>
-          <View className="bg-[#191919]/60 p-4 rounded-xl flex-row justify-between items-center border border-[#1a472a]/30 backdrop-blur-sm">
-            <View>
-              <Text className="text-white">Default rest time</Text>
-              <Text className="text-gray-500 text-xs mt-1">
-                Used between sets
-              </Text>
-            </View>
-            <View className="flex-row items-center">
-              <TouchableOpacity
-                onPress={() => setRestSeconds(restSeconds - REST_STEP_SECONDS)}
-                className="bg-[#0f0f0f] w-8 h-8 rounded-full items-center justify-center border border-[#10b981]/20"
-              >
-                <Ionicons name="remove" size={16} color="#10b981" />
-              </TouchableOpacity>
-              <Text className="text-white text-base font-semibold mx-4 w-12 text-center">
-                {formatRestTime(restSeconds)}
-              </Text>
-              <TouchableOpacity
-                onPress={() => setRestSeconds(restSeconds + REST_STEP_SECONDS)}
-                className="bg-[#0f0f0f] w-8 h-8 rounded-full items-center justify-center border border-[#10b981]/20"
-              >
-                <Ionicons name="add" size={16} color="#10b981" />
-              </TouchableOpacity>
-            </View>
           </View>
         </View>
 

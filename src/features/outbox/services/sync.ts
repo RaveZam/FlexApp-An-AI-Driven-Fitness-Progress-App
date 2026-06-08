@@ -265,8 +265,6 @@ export async function runOutboxSync(): Promise<void> {
     try {
       await dispatchRow(row);
       markSynced(row.id);
-    } catch (err) {
-      console.error(`[outbox] failed to sync ${row.entity_type}/${row.operation} ${row.entity_id}:`, err);
-    }
+    } catch {}
   }
 }

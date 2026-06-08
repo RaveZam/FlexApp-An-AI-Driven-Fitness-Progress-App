@@ -13,6 +13,5 @@ export type SessionExerciseView = {
   id: string;
   name: string;
   sets: SessionSetView[];
-  restSeconds: number;
   isUnilateral: boolean;
 };

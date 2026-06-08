@@ -44,9 +44,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
         const userId = session?.user?.id;
         if (userId && !syncedUserIdsRef.current.has(userId)) {
           syncedUserIdsRef.current.add(userId);
-          runDownloadSync(userId).catch((err) =>
-            console.error("[auth] download sync failed:", err)
-          );
+          runDownloadSync(userId).catch(() => {});
         }
       }
     );
@@ -65,7 +63,6 @@ export function AuthProvider({ children }: PropsWithChildren) {
       await GoogleSignin.hasPlayServices();
       await GoogleSignin.signIn();
       const { idToken } = await GoogleSignin.getTokens();
-      console.log("[google] idToken received:", !!idToken);
       if (!idToken) {
         return { error: new Error("No ID token returned from Google.") };
       }
@@ -73,15 +70,11 @@ export function AuthProvider({ children }: PropsWithChildren) {
         provider: "google",
         token: idToken,
       });
-      if (result.error) {
-        console.error("[google] supabase.signInWithIdToken error:", result.error);
-      }
       return result;
     } catch (error: any) {
       if (error?.code === statusCodes.SIGN_IN_CANCELLED) {
         return { error: null, cancelled: true };
       }
-      console.error("[google] sign-in failed:", error);
       return { error };
     }
   };
@@ -90,12 +83,10 @@ export function AuthProvider({ children }: PropsWithChildren) {
     try {
       const { error } = await supabase.auth.signOut();
       if (error) {
-        console.error("Error signing out:", error.message);
         return { error };
       }
       return { error: null };
     } catch (error) {
-      console.error("Unexpected error during sign out:", error);
       return {
         error: new Error("An unexpected error occurred during logout."),
       };

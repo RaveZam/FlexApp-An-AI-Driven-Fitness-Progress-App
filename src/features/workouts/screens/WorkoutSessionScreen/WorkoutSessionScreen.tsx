@@ -9,13 +9,13 @@ import SetRow from "@/src/features/workouts/components/session/SetRow";
 import WorkoutLogModal from "@/src/features/workouts/components/session/WorkoutLogModal";
 import { useActiveSession } from "@/src/features/workouts/hooks/useActiveSession";
 import { useExerciseHistory } from "@/src/features/workouts/hooks/useExerciseHistory";
-import { useRestTimerDefault } from "@/src/features/workouts/hooks/useRestTimerDefault";
+import { useRestTimer } from "@/src/features/workouts/hooks/useRestTimer";
 import { useSessionGuard } from "@/src/features/workouts/hooks/useSessionGuard";
 import { useWorkoutSession } from "@/src/features/workouts/hooks/useWorkoutSession";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
-import React, { useCallback, useEffect, useState } from "react";
+import { router, useLocalSearchParams } from "expo-router";
+import React, { useEffect, useMemo, useState } from "react";
 import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -28,7 +28,6 @@ const MUTED = "#6b6b6b";
 
 export default function WorkoutSessionScreen() {
   const { id: sessionId } = useLocalSearchParams<{ id?: string }>();
-  const { restSeconds, setRestSeconds, refresh: refreshRestTimer } = useRestTimerDefault();
   const { refresh: refreshActiveSession } = useActiveSession();
   const {
     loading,
@@ -49,7 +48,12 @@ export default function WorkoutSessionScreen() {
 
   useSessionGuard(sessionId);
 
-  useFocusEffect(useCallback(() => { refreshRestTimer(); }, [refreshRestTimer]));
+  const { getUserPreferenceRestTime } = useRestTimer();
+  
+  const restSeconds = useMemo(
+    () => getUserPreferenceRestTime(),
+    [getUserPreferenceRestTime]
+  );
 
   const [showLogModal, setShowLogModal] = useState(false);
   const [showRestTimer, setShowRestTimer] = useState(false);
@@ -216,9 +220,8 @@ export default function WorkoutSessionScreen() {
 
         <RestTimerModal
           visible={showRestTimer}
+          restSeconds={restSeconds}
           onClose={() => setShowRestTimer(false)}
-          durationSeconds={restSeconds}
-          onSaveAsDefault={setRestSeconds}
         />
 
         <WorkoutLogModal
