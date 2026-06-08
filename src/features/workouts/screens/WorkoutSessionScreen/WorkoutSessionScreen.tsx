@@ -1,140 +1,59 @@
 import ExercisesListSheet from "@/src/features/workouts/components/session/ExercisesListSheet";
 import RestTimerModal from "@/src/features/workouts/components/session/RestTimerModal";
 import SessionBottomBar from "@/src/features/workouts/components/session/SessionBottomBar";
+import SessionCompleteCard from "@/src/features/workouts/components/session/SessionCompleteCard";
 import SessionExerciseCard from "@/src/features/workouts/components/session/SessionExerciseCard";
 import SessionHeader from "@/src/features/workouts/components/session/SessionHeader";
 import SessionStatsPanel from "@/src/features/workouts/components/session/SessionStatsPanel";
 import SessionTimerHero from "@/src/features/workouts/components/session/SessionTimerHero";
 import SetRow from "@/src/features/workouts/components/session/SetRow";
 import WorkoutLogModal from "@/src/features/workouts/components/session/WorkoutLogModal";
-import { useActiveSession } from "@/src/features/workouts/hooks/useActiveSession";
-import { useExerciseHistory } from "@/src/features/workouts/hooks/useExerciseHistory";
-import { useRestTimer } from "@/src/features/workouts/hooks/useRestTimer";
-import { useSessionGuard } from "@/src/features/workouts/hooks/useSessionGuard";
-import { useWorkoutSession } from "@/src/features/workouts/hooks/useWorkoutSession";
-import { Ionicons } from "@expo/vector-icons";
+import { useWorkoutSessionScreen } from "@/src/features/workouts/hooks/useWorkoutSessionScreen";
 import { LinearGradient } from "expo-linear-gradient";
-import { router, useLocalSearchParams } from "expo-router";
-import React, { useEffect, useMemo, useState } from "react";
-import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
-import Animated, { FadeInDown } from "react-native-reanimated";
+import { useLocalSearchParams } from "expo-router";
+import React from "react";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const ACCENT = "#34d399";
-const BONE = "#f5f3ef";
 const HAIRLINE = "rgba(245,243,239,0.07)";
 const INK = "#060606";
 const MUTED = "#6b6b6b";
 
 export default function WorkoutSessionScreen() {
   const { id: sessionId } = useLocalSearchParams<{ id?: string }>();
-  const { refresh: refreshActiveSession } = useActiveSession();
   const {
     loading,
+    active,
     exercises,
     activeIndex,
-    setActiveIndex,
-    active,
     currentSetIndex,
     allSetsComplete,
     allExercisesComplete,
     elapsedSeconds,
-    logSet,
-    editSet,
-    goToNextExercise,
-    finish,
-    cancel,
-  } = useWorkoutSession(sessionId);
-
-  useSessionGuard(sessionId);
-
-  const { getUserPreferenceRestTime } = useRestTimer();
-  
-  const restSeconds = useMemo(
-    () => getUserPreferenceRestTime(),
-    [getUserPreferenceRestTime]
-  );
-
-  const [showLogModal, setShowLogModal] = useState(false);
-  const [showRestTimer, setShowRestTimer] = useState(false);
-  const [showExercisesList, setShowExercisesList] = useState(false);
-  const [editingSetId, setEditingSetId] = useState<string | null>(null);
-
-  const editingSet = editingSetId
-    ? active?.sets.find((s) => s.id === editingSetId) ?? null
-    : null;
-
-  function handleEditSave(
-    weight: number,
-    actualReps: number | null,
-    leftReps: number | null,
-    rightReps: number | null
-  ) {
-    if (!editingSetId) return;
-    editSet(editingSetId, weight, actualReps, leftReps, rightReps);
-    setEditingSetId(null);
-  }
-
-  const completedSetCount = exercises.reduce(
-    (acc, ex) => acc + ex.sets.filter((s) => s.completed).length,
-    0
-  );
-  const { best, recentSessions } = useExerciseHistory(active?.name, completedSetCount);
-
-  useEffect(() => {
-    if (!loading && !active) router.back();
-  }, [loading, active]);
+    restSeconds,
+    best,
+    recentSessions,
+    progressPct,
+    bottomMode,
+    bottomAction,
+    editingSet,
+    showLogModal,
+    showRestTimer,
+    showExercisesList,
+    handleLog,
+    handleEditSave,
+    handleExit,
+    selectExercise,
+    openExercisesList,
+    closeExercisesList,
+    openEditSet,
+    closeEditSet,
+    closeLogModal,
+    closeRestTimer,
+  } = useWorkoutSessionScreen(sessionId);
 
   if (loading || !active) return null;
-
-  function handleLog(
-    weight: number,
-    actualReps: number | null,
-    leftReps: number | null,
-    rightReps: number | null
-  ) {
-    const incomplete = exercises.reduce(
-      (acc, ex) => acc + ex.sets.filter((s) => !s.completed).length,
-      0
-    );
-    const isLastSet = incomplete === 1;
-    logSet(weight, actualReps, leftReps, rightReps);
-    setShowLogModal(false);
-    if (!isLastSet) setShowRestTimer(true);
-  }
-
-  function handleExit() {
-    Alert.alert("Cancel Workout?", "Your progress will not be saved.", [
-      { text: "Keep Going", style: "cancel" },
-      {
-        text: "Cancel Workout",
-        style: "destructive",
-        onPress: () => {
-          cancel();
-          refreshActiveSession();
-          router.back();
-        },
-      },
-    ]);
-  }
-
-  function handleFinish() {
-    finish();
-    refreshActiveSession();
-    router.back();
-  }
-
-  const bottomMode = allExercisesComplete ? "finish" : allSetsComplete ? "next" : "log";
-  const bottomAction =
-    bottomMode === "finish"
-      ? handleFinish
-      : bottomMode === "next"
-      ? goToNextExercise
-      : () => setShowLogModal(true);
-
-  const progressPct = exercises.length
-    ? ((activeIndex + (allSetsComplete ? 1 : 0)) / exercises.length) * 100
-    : 0;
 
   return (
     <SafeAreaView style={styles.safe} edges={["top"]}>
@@ -151,7 +70,7 @@ export default function WorkoutSessionScreen() {
           activeIndex={activeIndex}
           totalExercises={exercises.length}
           onExit={handleExit}
-          onShowExercises={() => setShowExercisesList(true)}
+          onShowExercises={openExercisesList}
         />
 
         <View style={styles.progressTrack}>
@@ -190,29 +109,25 @@ export default function WorkoutSessionScreen() {
                 set={set}
                 isCurrent={index === currentSetIndex}
                 index={index}
-                onEdit={(id) => setEditingSetId(id)}
+                onEdit={openEditSet}
               />
             ))}
           </View>
 
           {allSetsComplete && !allExercisesComplete && (
-            <Animated.View entering={FadeInDown.delay(80).duration(400)} style={styles.doneCard}>
-              <View style={styles.doneIconRing}>
-                <Ionicons name="checkmark" size={22} color={ACCENT} />
-              </View>
-              <Text style={styles.doneText}>All sets complete</Text>
-              <Text style={styles.doneSub}>Ready for the next lift</Text>
-            </Animated.View>
+            <SessionCompleteCard
+              icon="checkmark"
+              title="All sets complete"
+              subtitle="Ready for the next lift"
+            />
           )}
 
           {allExercisesComplete && (
-            <Animated.View entering={FadeInDown.delay(80).duration(400)} style={styles.doneCard}>
-              <View style={styles.doneIconRing}>
-                <Ionicons name="trophy" size={22} color={ACCENT} />
-              </View>
-              <Text style={styles.doneText}>Workout Complete</Text>
-              <Text style={styles.doneSub}>Lock it in</Text>
-            </Animated.View>
+            <SessionCompleteCard
+              icon="trophy"
+              title="Workout Complete"
+              subtitle="Lock it in"
+            />
           )}
         </ScrollView>
 
@@ -221,7 +136,7 @@ export default function WorkoutSessionScreen() {
         <RestTimerModal
           visible={showRestTimer}
           restSeconds={restSeconds}
-          onClose={() => setShowRestTimer(false)}
+          onClose={closeRestTimer}
         />
 
         <WorkoutLogModal
@@ -232,7 +147,7 @@ export default function WorkoutSessionScreen() {
           targetReps={allSetsComplete ? 0 : active.sets[currentSetIndex]?.targetReps ?? 0}
           isUnilateral={active.isUnilateral}
           onLog={handleLog}
-          onClose={() => setShowLogModal(false)}
+          onClose={closeLogModal}
         />
 
         <WorkoutLogModal
@@ -248,18 +163,15 @@ export default function WorkoutSessionScreen() {
           initialLeftReps={editingSet?.actualRepsLeft ?? null}
           initialRightReps={editingSet?.actualRepsRight ?? null}
           onLog={handleEditSave}
-          onClose={() => setEditingSetId(null)}
+          onClose={closeEditSet}
         />
 
         <ExercisesListSheet
           visible={showExercisesList}
           exercises={exercises}
           activeIndex={activeIndex}
-          onSelect={(i) => {
-            setActiveIndex(i);
-            setShowExercisesList(false);
-          }}
-          onClose={() => setShowExercisesList(false)}
+          onSelect={selectExercise}
+          onClose={closeExercisesList}
         />
       </View>
     </SafeAreaView>
@@ -306,40 +218,4 @@ const styles = StyleSheet.create({
     letterSpacing: 0.4,
   },
   setsContainer: { paddingHorizontal: 20, gap: 10 },
-
-  doneCard: {
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 26,
-    marginHorizontal: 20,
-    paddingVertical: 28,
-    borderRadius: 18,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: "rgba(52,211,153,0.25)",
-    backgroundColor: "rgba(52,211,153,0.03)",
-    gap: 8,
-  },
-  doneIconRing: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: "rgba(52,211,153,0.5)",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 4,
-  },
-  doneText: {
-    color: BONE,
-    fontSize: 18,
-    fontFamily: "Outfit_500Medium",
-    letterSpacing: -0.2,
-  },
-  doneSub: {
-    color: MUTED,
-    fontSize: 11,
-    fontFamily: "Inter_400Regular",
-    letterSpacing: 1.4,
-    textTransform: "uppercase",
-  },
 });
