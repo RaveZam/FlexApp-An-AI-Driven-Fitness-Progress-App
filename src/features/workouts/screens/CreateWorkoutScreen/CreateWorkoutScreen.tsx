@@ -1,3 +1,4 @@
+import "@/global.css";
 import DayPicker from "@/src/features/workouts/components/create/DayPicker";
 import ExerciseEditorRow from "@/src/features/workouts/components/create/ExerciseEditorRow";
 import { ExercisePickerModal } from "@/src/features/workouts/components/create/ExercisePickerModal";
@@ -16,7 +17,6 @@ import {
 } from "react-native";
 import Animated, { FadeInDown, FadeInRight } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
-import "@/global.css";
 
 export default function CreateWorkoutScreen() {
   const router = useRouter();

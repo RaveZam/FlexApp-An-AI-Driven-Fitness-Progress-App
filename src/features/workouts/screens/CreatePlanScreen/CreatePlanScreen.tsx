@@ -1,9 +1,7 @@
 import "@/global.css";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { useState } from "react";
 import {
-  Alert,
   KeyboardAvoidingView,
   Platform,
   Text,
@@ -17,19 +15,7 @@ import { useCreatePlan } from "../../hooks/useCreatePlan";
 
 export default function CreatePlanScreen() {
   const router = useRouter();
-  const { createPlan, saving } = useCreatePlan();
-  const [planName, setPlanName] = useState("");
-
-  async function handleSave() {
-    const name = planName.trim();
-    if (!name) {
-      Alert.alert("Name required", "Please enter a plan name.");
-      return;
-    }
-
-    const plan = await createPlan({ name });
-    router.replace({ pathname: "/(tabs)/Workouts/plan", params: { planId: plan.id } });
-  }
+  const { planName, setPlanName, handleSave, saving } = useCreatePlan();
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#0f0f0f" }} edges={["top"]}>

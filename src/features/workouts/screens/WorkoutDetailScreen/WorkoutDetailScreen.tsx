@@ -4,12 +4,12 @@ import { useState } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ExercisePickerModal } from "../components/create/ExercisePickerModal";
-import { DayChipsEditor } from "../components/detail/DayChipsEditor";
-import { ExerciseRow } from "../components/detail/ExerciseRow";
-import { WorkoutDetailHeader } from "../components/detail/WorkoutDetailHeader";
-import { useEditWorkoutExercises } from "../hooks/useEditWorkoutExercises";
-import { useWorkouts } from "../hooks/useWorkouts";
+import { ExercisePickerModal } from "../../components/create/ExercisePickerModal";
+import { DayChipsEditor } from "../../components/detail/DayChipsEditor";
+import { ExerciseRow } from "../../components/detail/ExerciseRow";
+import { WorkoutDetailHeader } from "../../components/detail/WorkoutDetailHeader";
+import { useEditWorkoutExercises } from "../../hooks/useEditWorkoutExercises";
+import { useWorkouts } from "../../hooks/useWorkouts";
 import "@/global.css";
 
 export default function WorkoutDetailScreen() {

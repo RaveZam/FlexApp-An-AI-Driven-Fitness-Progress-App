@@ -1,1 +1,1 @@
-export { default } from "@/src/features/workouts/screens/CreateWorkout/CreateWorkoutScreen";
+export { default } from "@/src/features/workouts/screens/CreateWorkoutScreen/CreateWorkoutScreen";

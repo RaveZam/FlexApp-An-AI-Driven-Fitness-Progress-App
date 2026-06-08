@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
+import { DAY_LABELS } from "../../dayLabels";
 import { useUpdateWorkoutDays } from "../../hooks/useUpdateWorkoutDays";
-
-const DAY_LABELS = ["S", "M", "T", "W", "TH", "F", "S"];
 
 export function DayChipsEditor({
   workoutId,

@@ -1,6 +1,5 @@
 import { Text, TouchableOpacity, View } from "react-native";
-
-const DAY_LABELS = ["S", "M", "T", "W", "T", "F", "S"];
+import { DAY_LABELS } from "../../dayLabels";
 
 type Props = {
   selected: number[];

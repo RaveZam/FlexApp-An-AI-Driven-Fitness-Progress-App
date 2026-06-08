@@ -1,14 +1,13 @@
+import "@/global.css";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import Animated, { FadeInDown, FadeInRight } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useActivePlan } from "../hooks/useActivePlan";
-import { usePlans } from "../hooks/usePlans";
-import type { Workout } from "../types";
-import "@/global.css";
-
-const DAY_LABELS = ["S", "M", "T", "W", "Th", "F", "S"];
+import { DAY_LABELS } from "../../dayLabels";
+import { useActivePlan } from "../../hooks/useActivePlan";
+import { usePlans } from "../../hooks/usePlans";
+import type { Workout } from "../../types";
 
 function DayChips({ days }: { days: number[] }) {
   if (days.length === 0) return null;

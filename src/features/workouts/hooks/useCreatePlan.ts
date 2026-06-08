@@ -1,11 +1,15 @@
 import { useAuth } from "@/src/features/auth/hooks/useAuth";
 import { generateUUID } from "@/src/lib/uuid";
+import { useRouter } from "expo-router";
 import { useState } from "react";
+import { Alert } from "react-native";
 import { insertPlanLocal } from "../services/workoutLocalService";
 import type { WorkoutPlan, WorkoutPlanInput } from "../types";
 
 export function useCreatePlan() {
   const { session } = useAuth();
+  const router = useRouter();
+  const [planName, setPlanName] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -41,5 +45,16 @@ export function useCreatePlan() {
     }
   }
 
-  return { createPlan, saving, error };
+  async function handleSave() {
+    const name = planName.trim();
+    if (!name) {
+      Alert.alert("Name required", "Please enter a plan name.");
+      return;
+    }
+
+    const plan = await createPlan({ name });
+    router.replace({ pathname: "/(tabs)/Workouts/plan", params: { planId: plan.id } });
+  }
+
+  return { planName, setPlanName, handleSave, createPlan, saving, error };
 }
