@@ -1,4 +1,3 @@
-import { enqueueOutbox } from "@/src/features/outbox";
 import { useAuth } from "@/src/features/auth/hooks/useAuth";
 import { generateUUID } from "@/src/lib/uuid";
 import { useState } from "react";
@@ -29,12 +28,6 @@ export function useEditWorkoutExercises(
   function removeSelected() {
     for (const id of selectedIds) {
       removeExerciseFromWorkout(id);
-      enqueueOutbox({
-        entityType: "workout_exercise",
-        entityId: id,
-        operation: "delete",
-        payload: {},
-      });
     }
     setSelectedIds(new Set());
     onRefresh();
@@ -58,36 +51,11 @@ export function useEditWorkoutExercises(
     };
 
     addExerciseToWorkout(exercise);
-    enqueueOutbox({
-      entityType: "workout_exercise",
-      entityId: exercise.id,
-      operation: "create",
-      payload: {
-        exercise: {
-          id: exercise.id,
-          workout_id: exercise.workoutId,
-          user_id: exercise.userId,
-          name: exercise.name,
-          catalog_exercise_id: exercise.catalogExerciseId,
-          target_sets: exercise.targetSets,
-          target_reps: exercise.targetReps,
-          position: exercise.position,
-          is_unilateral: exercise.isUnilateral,
-          created_at: exercise.createdAt,
-        },
-      },
-    });
     onRefresh();
   }
 
   function updateTargets(exerciseId: string, targetSets: number, targetReps: number) {
     updateExerciseTargets(exerciseId, targetSets, targetReps);
-    enqueueOutbox({
-      entityType: "workout_exercise",
-      entityId: exerciseId,
-      operation: "update",
-      payload: { targetSets, targetReps },
-    });
     onRefresh();
   }
 

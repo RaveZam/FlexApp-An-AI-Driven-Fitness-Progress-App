@@ -1,7 +1,6 @@
 import { useAuth } from "@/src/features/auth/hooks/useAuth";
 import { generateUUID } from "@/src/lib/uuid";
 import { useState } from "react";
-import { enqueueOutbox } from "@/src/features/outbox";
 import { insertPlanLocal } from "../services/workoutLocalService";
 import type { WorkoutPlan, WorkoutPlanInput } from "../types";
 
@@ -31,21 +30,6 @@ export function useCreatePlan() {
       };
 
       insertPlanLocal(plan);
-
-      enqueueOutbox({
-        entityType: "workout_plan",
-        entityId: planId,
-        operation: "create",
-        payload: {
-          plan: {
-            id: plan.id,
-            user_id: plan.userId,
-            name: plan.name,
-            created_at: plan.createdAt,
-            updated_at: plan.updatedAt,
-          },
-        },
-      });
 
       return plan;
     } catch (err) {

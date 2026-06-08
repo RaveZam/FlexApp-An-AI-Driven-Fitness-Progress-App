@@ -2,7 +2,6 @@ import { generateUUID } from "@/src/lib/uuid";
 import { useState } from "react";
 import { useAuth } from "@/src/features/auth/hooks/useAuth";
 import { insertWorkoutLocal } from "../services/workoutLocalService";
-import { enqueueOutbox } from "@/src/features/outbox";
 import type { Workout, WorkoutInput } from "../types";
 
 export function useCreateWorkout() {
@@ -44,36 +43,6 @@ export function useCreateWorkout() {
       };
 
       insertWorkoutLocal(workout);
-
-      enqueueOutbox({
-        entityType: "workout",
-        entityId: workoutId,
-        operation: "create",
-        payload: {
-          version: 1,
-          workout: {
-            id: workout.id,
-            user_id: workout.userId,
-            plan_id: workout.planId,
-            name: workout.name,
-            created_at: workout.createdAt,
-            updated_at: workout.updatedAt,
-          },
-          days: workout.daysOfWeek,
-          exercises: workout.exercises.map((e) => ({
-            id: e.id,
-            workout_id: e.workoutId,
-            user_id: e.userId,
-            name: e.name,
-            catalog_exercise_id: e.catalogExerciseId,
-            target_sets: e.targetSets,
-            target_reps: e.targetReps,
-            position: e.position,
-            is_unilateral: e.isUnilateral,
-            created_at: e.createdAt,
-          })),
-        },
-      });
 
       return workout;
     } catch (err) {
