@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useRef, useState } from "react";
-import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { AppState, Modal, Platform, StyleSheet, Text, TouchableOpacity, Vibration, View } from "react-native";
 import Animated, {
   Easing,
   FadeIn,
@@ -10,12 +10,21 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import Svg, { Circle } from "react-native-svg";
+import { endRestActivity, startRestActivity } from "@/src/features/workouts/services/liveActivity";
+import { cancelRestEndNotification, scheduleRestEndNotification } from "@/src/features/workouts/services/restNotifications";
 
 const ACCENT = "#10b981";
 const RADIUS = 110;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
+
+// ~3 seconds of vibration when rest ends. iOS buzzes are fixed-length and the
+// numbers are gaps between them; Android numbers are [wait, vibrate, ...].
+const REST_DONE_PATTERN =
+  Platform.OS === "ios"
+    ? [0, 500, 500, 500, 500, 500]
+    : [0, 500, 150, 500, 150, 500, 150, 500, 150, 500];
 
 type Props = {
   visible: boolean;
@@ -28,35 +37,57 @@ export default function RestTimerModal({ visible, restSeconds, onClose }: Props)
   const [remaining, setRemaining] = useState(0);
   const progress = useSharedValue(1);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  // Absolute end time so the countdown stays accurate across backgrounding,
+  // where JS timers are suspended and would otherwise drift.
+  const endsAtRef = useRef(0);
 
   useEffect(() => {
     if (!visible) return;
     setTotal(restSeconds);
-    setRemaining(restSeconds);
+    endsAtRef.current = Date.now() + restSeconds * 1000;
+    startRestActivity(endsAtRef.current);
+    scheduleRestEndNotification(endsAtRef.current);
 
-    progress.value = 1;
-    progress.value = withTiming(0, {
-      duration: restSeconds * 1000,
-      easing: Easing.linear,
+    const appStateSub = AppState.addEventListener("change", (state) => {
+      if (state === "active") sync();
     });
 
-    intervalRef.current = setInterval(() => {
-      setRemaining((prev) => {
-        if (prev <= 1) {
-          clearInterval(intervalRef.current!);
-          return 0;
-        }
-        return prev - 1;
+    // Recompute remaining from the end time and re-animate the ring for
+    // whatever time is left. Called on start and whenever the app returns
+    // to the foreground (the interval below doesn't tick while suspended).
+    const sync = () => {
+      const remainingMs = Math.max(0, endsAtRef.current - Date.now());
+      setRemaining(Math.ceil(remainingMs / 1000));
+      progress.value = restSeconds > 0 ? remainingMs / (restSeconds * 1000) : 0;
+      progress.value = withTiming(0, {
+        duration: remainingMs,
+        easing: Easing.linear,
       });
+    };
+
+    sync();
+
+    intervalRef.current = setInterval(() => {
+      const remainingMs = Math.max(0, endsAtRef.current - Date.now());
+      setRemaining(Math.ceil(remainingMs / 1000));
+      if (remainingMs <= 0 && intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
     }, 1000);
 
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
+      appStateSub.remove();
+      endRestActivity();
+      cancelRestEndNotification();
     };
   }, [visible, restSeconds]);
 
   useEffect(() => {
     if (remaining === 0 && visible) {
+      // Plays out even after the modal auto-closes below — it's a device-level
+      // call, not tied to this component staying mounted.
+      Vibration.vibrate(REST_DONE_PATTERN);
       const t = setTimeout(onClose, 600);
       return () => clearTimeout(t);
     }

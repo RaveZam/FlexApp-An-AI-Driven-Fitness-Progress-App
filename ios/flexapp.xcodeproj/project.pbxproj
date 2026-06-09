@@ -8,23 +8,58 @@
 
 /* Begin PBXBuildFile section */
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
+		2BEB9D7D6BEF8CCA5EB33E0F /* RestActivityWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 284AA99FB868207706917829 /* RestActivityWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
 		52CE5113DB610EF48BF801FB /* libPods-flexapp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DB9A9AD3461C23BF7A05C155 /* libPods-flexapp.a */; };
+		58D69A1F88376668EAAE3024 /* RestActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5C3EB168D2DEFFEEA94A660 /* RestActivityAttributes.swift */; };
+		5AD47FCF7A282B1FE7BB6EC3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 293E37443F90B16C02C68183 /* Foundation.framework */; };
 		63C28F86739052CE43C86C98 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C0763D145C5479D8BB0A8DA /* ExpoModulesProvider.swift */; };
+		9076AEED7FA58BDF7DDEDCA2 /* RestActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5C3EB168D2DEFFEEA94A660 /* RestActivityAttributes.swift */; };
 		B3094D638824E02D36E7DC84 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 300BC16A59FCF9AE45E5639F /* PrivacyInfo.xcprivacy */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
+		D53C8DCDA511F71988466D73 /* RestActivityLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = A58ACF18B9114AB655C49116 /* RestActivityLiveActivity.swift */; };
+		E82B7AD699E3D8D2462395E1 /* RestActivityBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1051137BC7123427C12575A /* RestActivityBundle.swift */; };
 		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		DE0F127BBE597A090322F46E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 65C0073B124FEACF1533B4F0;
+			remoteInfo = RestActivityWidget;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		7581675B05CC2B6113F4A305 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				2BEB9D7D6BEF8CCA5EB33E0F /* RestActivityWidget.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		13B07F961A680F5B00A75B9A /* flexapp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = flexapp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = flexapp/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = flexapp/Info.plist; sourceTree = "<group>"; };
+		284AA99FB868207706917829 /* RestActivityWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = RestActivityWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		293E37443F90B16C02C68183 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		300BC16A59FCF9AE45E5639F /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = flexapp/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		95AF608FE103571C6DA380A2 /* Pods-flexapp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-flexapp.debug.xcconfig"; path = "Target Support Files/Pods-flexapp/Pods-flexapp.debug.xcconfig"; sourceTree = "<group>"; };
 		9C0763D145C5479D8BB0A8DA /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-flexapp/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
+		A58ACF18B9114AB655C49116 /* RestActivityLiveActivity.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RestActivityLiveActivity.swift; sourceTree = "<group>"; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = flexapp/SplashScreen.storyboard; sourceTree = "<group>"; };
+		B5C3EB168D2DEFFEEA94A660 /* RestActivityAttributes.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RestActivityAttributes.swift; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
+		D1051137BC7123427C12575A /* RestActivityBundle.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RestActivityBundle.swift; sourceTree = "<group>"; };
 		DB9A9AD3461C23BF7A05C155 /* libPods-flexapp.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-flexapp.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		EB21B2311FBA0D7561BDE3C3 /* Pods-flexapp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-flexapp.release.xcconfig"; path = "Target Support Files/Pods-flexapp/Pods-flexapp.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
@@ -38,6 +73,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				52CE5113DB610EF48BF801FB /* libPods-flexapp.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		284D50B19EF96664099CEA44 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5AD47FCF7A282B1FE7BB6EC3 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -63,6 +106,7 @@
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				DB9A9AD3461C23BF7A05C155 /* libPods-flexapp.a */,
+				8F4F1B42E3D44FA5689AB3B1 /* iOS */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -100,6 +144,7 @@
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				588F9CAB7A57535252C8AA23 /* Pods */,
 				C998334FC05F0FA1692737FD /* ExpoModulesProviders */,
+				FEC50EEA02216FBE1E925947 /* RestActivityWidget */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -110,8 +155,17 @@
 			isa = PBXGroup;
 			children = (
 				13B07F961A680F5B00A75B9A /* flexapp.app */,
+				284AA99FB868207706917829 /* RestActivityWidget.appex */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		8F4F1B42E3D44FA5689AB3B1 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				293E37443F90B16C02C68183 /* Foundation.framework */,
+			);
+			name = iOS;
 			sourceTree = "<group>";
 		};
 		BB2F792B24A3F905000567C9 /* Supporting */ = {
@@ -131,6 +185,17 @@
 			name = ExpoModulesProviders;
 			sourceTree = "<group>";
 		};
+		FEC50EEA02216FBE1E925947 /* RestActivityWidget */ = {
+			isa = PBXGroup;
+			children = (
+				D1051137BC7123427C12575A /* RestActivityBundle.swift */,
+				A58ACF18B9114AB655C49116 /* RestActivityLiveActivity.swift */,
+				B5C3EB168D2DEFFEEA94A660 /* RestActivityAttributes.swift */,
+			);
+			name = RestActivityWidget;
+			path = RestActivityWidget;
+			sourceTree = SOURCE_ROOT;
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -146,15 +211,34 @@
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */,
 				1B6C792259CB6604C71E4F21 /* [CP] Embed Pods Frameworks */,
+				7581675B05CC2B6113F4A305 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				091EA13F98E8813B9184B7DC /* PBXTargetDependency */,
 			);
 			name = flexapp;
 			productName = flexapp;
 			productReference = 13B07F961A680F5B00A75B9A /* flexapp.app */;
 			productType = "com.apple.product-type.application";
+		};
+		65C0073B124FEACF1533B4F0 /* RestActivityWidget */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B7A5216E73B00C42B62CFB2D /* Build configuration list for PBXNativeTarget "RestActivityWidget" */;
+			buildPhases = (
+				1EDA300F53A49D373B97533B /* Sources */,
+				284D50B19EF96664099CEA44 /* Frameworks */,
+				32700811814FF13C6C2EA3BA /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = RestActivityWidget;
+			productName = RestActivityWidget;
+			productReference = 284AA99FB868207706917829 /* RestActivityWidget.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -183,6 +267,7 @@
 			projectRoot = "";
 			targets = (
 				13B07F861A680F5B00A75B9A /* flexapp */,
+				65C0073B124FEACF1533B4F0 /* RestActivityWidget */,
 			);
 		};
 /* End PBXProject section */
@@ -196,6 +281,13 @@
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
 				B3094D638824E02D36E7DC84 /* PrivacyInfo.xcprivacy in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		32700811814FF13C6C2EA3BA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -291,8 +383,10 @@
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-flexapp/Pods-flexapp-resources.sh",
 				"${PODS_CONFIGURATION_BUILD_DIR}/AppAuth/AppAuthCore_Privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/EXApplication/ExpoApplication_privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/EXConstants.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/ExpoConstants_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/EXNotifications/ExpoNotifications_privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoFileSystem/ExpoFileSystem_privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoSystemUI/ExpoSystemUI_privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/GTMAppAuth/GTMAppAuth_Privacy.bundle",
@@ -314,8 +408,10 @@
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AppAuthCore_Privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoApplication_privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXConstants.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoConstants_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoNotifications_privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoFileSystem_privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoSystemUI_privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GTMAppAuth_Privacy.bundle",
@@ -348,10 +444,30 @@
 			files = (
 				F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */,
 				63C28F86739052CE43C86C98 /* ExpoModulesProvider.swift in Sources */,
+				58D69A1F88376668EAAE3024 /* RestActivityAttributes.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1EDA300F53A49D373B97533B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E82B7AD699E3D8D2462395E1 /* RestActivityBundle.swift in Sources */,
+				D53C8DCDA511F71988466D73 /* RestActivityLiveActivity.swift in Sources */,
+				9076AEED7FA58BDF7DDEDCA2 /* RestActivityAttributes.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		091EA13F98E8813B9184B7DC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = RestActivityWidget;
+			target = 65C0073B124FEACF1533B4F0 /* RestActivityWidget */;
+			targetProxy = DE0F127BBE597A090322F46E /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
@@ -381,7 +497,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG -Xfrontend -disable-autolink-framework -Xfrontend SwiftUICore -Xfrontend -disable-autolink-framework -Xfrontend SwiftUICore -Xfrontend -disable-autolink-framework -Xfrontend SwiftUICore -Xfrontend -disable-autolink-framework -Xfrontend SwiftUICore -Xfrontend -disable-autolink-framework -Xfrontend SwiftUICore";
+				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG -Xfrontend -disable-autolink-framework -Xfrontend SwiftUICore -Xfrontend -disable-autolink-framework -Xfrontend SwiftUICore -Xfrontend -disable-autolink-framework -Xfrontend SwiftUICore -Xfrontend -disable-autolink-framework -Xfrontend SwiftUICore -Xfrontend -disable-autolink-framework -Xfrontend SwiftUICore -Xfrontend -disable-autolink-framework -Xfrontend SwiftUICore -Xfrontend -disable-autolink-framework -Xfrontend SwiftUICore -Xfrontend -disable-autolink-framework -Xfrontend SwiftUICore";
 				PRODUCT_BUNDLE_IDENTIFIER = com.anonymous.flexapp;
 				PRODUCT_NAME = flexapp;
 				SWIFT_OBJC_BRIDGING_HEADER = "flexapp/flexapp-Bridging-Header.h";
@@ -414,7 +530,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE -Xfrontend -disable-autolink-framework -Xfrontend SwiftUICore -Xfrontend -disable-autolink-framework -Xfrontend SwiftUICore -Xfrontend -disable-autolink-framework -Xfrontend SwiftUICore -Xfrontend -disable-autolink-framework -Xfrontend SwiftUICore -Xfrontend -disable-autolink-framework -Xfrontend SwiftUICore";
+				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE -Xfrontend -disable-autolink-framework -Xfrontend SwiftUICore -Xfrontend -disable-autolink-framework -Xfrontend SwiftUICore -Xfrontend -disable-autolink-framework -Xfrontend SwiftUICore -Xfrontend -disable-autolink-framework -Xfrontend SwiftUICore -Xfrontend -disable-autolink-framework -Xfrontend SwiftUICore -Xfrontend -disable-autolink-framework -Xfrontend SwiftUICore -Xfrontend -disable-autolink-framework -Xfrontend SwiftUICore -Xfrontend -disable-autolink-framework -Xfrontend SwiftUICore";
 				PRODUCT_BUNDLE_IDENTIFIER = com.anonymous.flexapp;
 				PRODUCT_NAME = flexapp;
 				SWIFT_OBJC_BRIDGING_HEADER = "flexapp/flexapp-Bridging-Header.h";
@@ -542,6 +658,61 @@
 			};
 			name = Release;
 		};
+		86FB515CFC4C87E966AEBC61 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = HS46RRJMRK;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = RestActivityWidget/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				OTHER_SWIFT_FLAGS = "$(inherited) -Xfrontend -disable-autolink-framework -Xfrontend SwiftUICore -D EXPO_CONFIGURATION_DEBUG -Xfrontend -disable-autolink-framework -Xfrontend SwiftUICore -Xfrontend -disable-autolink-framework -Xfrontend SwiftUICore";
+				PRODUCT_BUNDLE_IDENTIFIER = com.anonymous.flexapp.RestActivityWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		BFCDAF8B88818F7A3839ABA3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = HS46RRJMRK;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = RestActivityWidget/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				OTHER_SWIFT_FLAGS = "$(inherited) -Xfrontend -disable-autolink-framework -Xfrontend SwiftUICore -D EXPO_CONFIGURATION_RELEASE -Xfrontend -disable-autolink-framework -Xfrontend SwiftUICore -Xfrontend -disable-autolink-framework -Xfrontend SwiftUICore";
+				PRODUCT_BUNDLE_IDENTIFIER = com.anonymous.flexapp.RestActivityWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -559,6 +730,15 @@
 			buildConfigurations = (
 				83CBBA201A601CBA00E9B192 /* Debug */,
 				83CBBA211A601CBA00E9B192 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B7A5216E73B00C42B62CFB2D /* Build configuration list for PBXNativeTarget "RestActivityWidget" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BFCDAF8B88818F7A3839ABA3 /* Release */,
+				86FB515CFC4C87E966AEBC61 /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
