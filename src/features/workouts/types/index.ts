@@ -12,6 +12,7 @@ export type Exercise = {
   userId: string;
   name: string;
   catalogExerciseId: string | null;
+  muscleGroup?: string | null;
   targetSets: number;
   targetReps: number;
   position: number;

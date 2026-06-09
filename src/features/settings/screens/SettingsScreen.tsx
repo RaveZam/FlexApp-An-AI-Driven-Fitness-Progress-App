@@ -1,3 +1,4 @@
+import Avatar from "@/components/Avatar";
 import LoadingOverlay from "@/components/ui/LoadingOverlay";
 import Popup from "@/components/ui/Popup";
 import { useAuth } from "@/src/features/auth/hooks/useAuth";
@@ -6,7 +7,6 @@ import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   Alert,
-  Image,
   ScrollView,
   Switch,
   Text,
@@ -76,12 +76,14 @@ export default function Settings() {
 
         <View className="mb-8 bg-[#191919] p-6 rounded-xl border border-[#1a472a]/20">
           <View className="flex-row items-center mb-4">
-            <Image
-              style={{ width: 60, height: 60 }}
-              source={{
-                uri: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
-              }}
-              className="w-15 h-15 rounded-full"
+            <Avatar
+              uri={
+                user?.user_metadata?.avatar_url ??
+                user?.user_metadata?.picture
+              }
+              name={userName}
+              email={userEmail}
+              size={60}
             />
             <View className="ml-4 flex-1">
               <Text className="text-white text-lg font-semibold">

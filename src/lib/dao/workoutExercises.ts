@@ -6,6 +6,7 @@ export type WorkoutExerciseRow = {
   userId: string;
   name: string;
   catalogExerciseId: string | null;
+  muscleGroup?: string | null;
   targetSets: number;
   targetReps: number;
   position: number;
@@ -19,6 +20,7 @@ type Raw = {
   user_id: string;
   name: string;
   catalog_exercise_id: string | null;
+  muscle_group: string | null;
   target_sets: number;
   target_reps: number;
   position: number;
@@ -32,6 +34,7 @@ const fromRaw = (r: Raw): WorkoutExerciseRow => ({
   userId: r.user_id,
   name: r.name,
   catalogExerciseId: r.catalog_exercise_id,
+  muscleGroup: r.muscle_group,
   targetSets: r.target_sets,
   targetReps: r.target_reps,
   position: r.position,
@@ -42,7 +45,10 @@ const fromRaw = (r: Raw): WorkoutExerciseRow => ({
 export function listByWorkout(workoutId: string): WorkoutExerciseRow[] {
   return getDb()
     .getAllSync<Raw>(
-      "SELECT * FROM user_workout_exercises WHERE workout_id = ? ORDER BY position ASC",
+      `SELECT e.*, c.muscle_group AS muscle_group
+       FROM user_workout_exercises e
+       LEFT JOIN exercises_catalog c ON c.id = e.catalog_exercise_id
+       WHERE e.workout_id = ? ORDER BY e.position ASC`,
       [workoutId]
     )
     .map(fromRaw);

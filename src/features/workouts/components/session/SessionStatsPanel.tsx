@@ -6,9 +6,12 @@ import { LinearGradient } from "expo-linear-gradient";
 import React, { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import Animated, {
+  Easing,
   FadeInDown,
   FadeOutDown,
   useAnimatedStyle,
+  useSharedValue,
+  withDelay,
   withTiming,
 } from "react-native-reanimated";
 
@@ -125,6 +128,7 @@ export default function SessionStatsPanel({ best, recentSessions, activeExercise
                 return (
                   <HistoryBar
                     key={p.sessionId}
+                    index={i}
                     heightPx={heightPx}
                     restingOpacity={restingOpacity}
                     isSelected={selectedBarIndex === i}
@@ -144,6 +148,7 @@ export default function SessionStatsPanel({ best, recentSessions, activeExercise
 }
 
 type HistoryBarProps = {
+  index: number;
   heightPx: number;
   restingOpacity: number;
   isSelected: boolean;
@@ -151,7 +156,26 @@ type HistoryBarProps = {
   onPress: () => void;
 };
 
-function HistoryBar({ heightPx, restingOpacity, isSelected, isPR, onPress }: HistoryBarProps) {
+function HistoryBar({
+  index,
+  heightPx,
+  restingOpacity,
+  isSelected,
+  isPR,
+  onPress,
+}: HistoryBarProps) {
+  // Grows from the baseline, staggered by index so bars appear one by one.
+  const grow = useSharedValue(0);
+  React.useEffect(() => {
+    grow.value = withDelay(
+      260 + index * 70,
+      withTiming(1, { duration: 420, easing: Easing.out(Easing.cubic) })
+    );
+  }, [grow, index]);
+
+  const growStyle = useAnimatedStyle(() => ({
+    height: heightPx * grow.value,
+  }));
   const highlightStyle = useAnimatedStyle(() => ({
     opacity: withTiming(isSelected ? 1 : 0, { duration: 220 }),
   }));
@@ -162,7 +186,7 @@ function HistoryBar({ heightPx, restingOpacity, isSelected, isPR, onPress }: His
   return (
     <Pressable hitSlop={8} onPress={onPress} style={styles.barTouch}>
       <View style={styles.barColumn}>
-        <View style={{ width: 10, height: heightPx, borderRadius: 2, overflow: "hidden" }}>
+        <Animated.View style={[{ width: 10, borderRadius: 2, overflow: "hidden" }, growStyle]}>
           <Animated.View style={[StyleSheet.absoluteFill, baseStyle]}>
             <LinearGradient
               colors={isPR ? [ACCENT, ACCENT_DEEP] : [ACCENT, "rgba(52,211,153,0.35)"]}
@@ -179,7 +203,7 @@ function HistoryBar({ heightPx, restingOpacity, isSelected, isPR, onPress }: His
               style={{ flex: 1 }}
             />
           </Animated.View>
-        </View>
+        </Animated.View>
       </View>
     </Pressable>
   );

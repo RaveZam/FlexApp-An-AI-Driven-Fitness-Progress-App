@@ -1,5 +1,6 @@
 import { useAuth } from "@/src/features/auth/hooks/useAuth";
 import LoadingOverlay from "@/components/ui/LoadingOverlay";
+import { AntDesign } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Alert, Text, TextInput, TouchableOpacity, View } from "react-native";
@@ -9,7 +10,7 @@ export default function RegisterScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const { signUp, session } = useAuth();
+  const { signUp, signInWithGoogle, session } = useAuth();
 
   useEffect(() => {
     if (session) {
@@ -23,6 +24,22 @@ export default function RegisterScreen() {
     setLoading(false);
     if (error) Alert.alert("Signup Failed", error.message);
     else Alert.alert("Success", "Please check your email to confirm");
+  };
+
+  const handleGoogleSignup = async () => {
+    setLoading(true);
+    const { error, cancelled } = await signInWithGoogle();
+    setLoading(false);
+
+    if (cancelled) return;
+    if (error) {
+      Alert.alert(
+        "Google sign-in failed",
+        error.message ?? "Unknown error"
+      );
+    } else {
+      router.replace("/");
+    }
   };
 
   return (
@@ -59,6 +76,22 @@ export default function RegisterScreen() {
         >
           <Text className="text-center text-black font-semibold text-base">
             Register
+          </Text>
+        </TouchableOpacity>
+
+        <View className="flex-row items-center my-6">
+          <View className="flex-1 h-px bg-gray-700" />
+          <Text className="text-gray-500 mx-3">or</Text>
+          <View className="flex-1 h-px bg-gray-700" />
+        </View>
+
+        <TouchableOpacity
+          className="bg-white rounded-xl py-3 flex-row items-center justify-center"
+          onPress={handleGoogleSignup}
+        >
+          <AntDesign name="google" size={18} color="#000" />
+          <Text className="text-center text-black font-semibold text-base ml-2">
+            Continue with Google
           </Text>
         </TouchableOpacity>
 

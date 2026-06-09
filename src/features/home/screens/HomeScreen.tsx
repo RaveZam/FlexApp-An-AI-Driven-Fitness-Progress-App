@@ -9,7 +9,6 @@ import { FontFamilies, Palette } from "@/constants/theme";
 import {
   ProgressiveOverload,
   ScheduleBar,
-  SectionLabel,
   TodaysWorkoutSection
 } from "@/src/features/home/components";
 import { useHideNavigationBar } from "@/src/features/home/hooks/useHideNavigationBar";
@@ -86,7 +85,7 @@ export default function Index() {
  
           <TodaysWorkoutSection workouts={todaysWorkouts} activePlanId={activePlanId} />
 
-          <SectionLabel title="Your Progress" delay={220} />
+         
 
           <View style={{ gap: 14 }}>
             {/* <HomePageChartGraph />x */}

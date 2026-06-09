@@ -1,8 +1,9 @@
+import { FontFamilies, Palette } from "@/constants/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { useState } from "react";
-import { Text, TextInput, TouchableOpacity, View } from "react-native";
-import Animated, { FadeInRight } from "react-native-reanimated";
+import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import Animated, { FadeInDown } from "react-native-reanimated";
 import type { Exercise } from "../../types";
 
 const EXERCISE_IMAGES: Record<string, any> = {
@@ -55,141 +56,78 @@ export function ExerciseRow({
   }
 
   return (
-    <Animated.View entering={FadeInRight.delay(100 + index * 60).duration(400)}>
-      <View
-        style={{
-          backgroundColor: selected ? "rgba(239,68,68,0.08)" : "#191919",
-          borderRadius: 12,
-          borderWidth: 1,
-          borderColor: selected ? "rgba(239,68,68,0.35)" : "rgba(255,255,255,0.04)",
-          overflow: "hidden",
-        }}
-      >
-        <TouchableOpacity
-          activeOpacity={editing ? 0.7 : 1}
-          onPress={editing ? onToggle : undefined}
-        >
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
+    <Animated.View entering={FadeInDown.delay(100 + index * 50).duration(400)}>
+      <View style={[styles.card, selected && styles.cardSelected]}>
+        <Pressable onPress={editing ? onToggle : undefined}>
+          <View style={styles.topRow}>
             {editing && (
-              <View style={{ paddingLeft: 12 }}>
-                <View
-                  style={{
-                    width: 22,
-                    height: 22,
-                    borderRadius: 11,
-                    borderWidth: 2,
-                    borderColor: selected ? "#ef4444" : "#444",
-                    backgroundColor: selected ? "#ef4444" : "transparent",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  {selected && <Ionicons name="checkmark" size={13} color="#fff" />}
+              <View style={styles.checkWrap}>
+                <View style={[styles.checkbox, selected && styles.checkboxOn]}>
+                  {selected && <Ionicons name="checkmark" size={13} color={Palette.bone} />}
                 </View>
               </View>
             )}
+
             <View
-              style={{
-                width: 3,
-                alignSelf: "stretch",
-                backgroundColor: selected ? "#ef4444" : "#10b981",
-                opacity: 0.5,
-                marginLeft: editing ? 10 : 0,
-              }}
+              style={[
+                styles.rail,
+                { backgroundColor: selected ? Palette.danger : Palette.accent },
+                editing && { marginLeft: 10 },
+              ]}
             />
-            <View
-              style={{
-                width: 56,
-                height: 56,
-                margin: 10,
-                borderRadius: 8,
-                backgroundColor: "#0f0f0f",
-                alignItems: "center",
-                justifyContent: "center",
-                overflow: "hidden",
-              }}
-            >
+
+            <View style={[styles.thumb, editing && styles.thumbCompact]}>
               {image ? (
                 <Image
                   source={image}
-                  style={{ width: "100%", height: "100%" }}
+                  style={styles.thumbImage}
                   contentFit="cover"
                   transition={200}
                 />
               ) : (
-                <Ionicons name="barbell-outline" size={22} color="#333" />
+                <Ionicons
+                  name="barbell-outline"
+                  size={editing ? 18 : 22}
+                  color={Palette.mutedSoft}
+                />
               )}
             </View>
-            <View
-              style={{
-                flex: 1,
-                paddingVertical: 14,
-                paddingRight: 14,
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
+
+            <View style={[styles.info, editing && styles.infoCompact]}>
               <Text
-                style={{
-                  color: selected ? "#f87171" : "#e0e0e0",
-                  fontSize: 14,
-                  fontFamily: "Inter_400Regular",
-                  flex: 1,
-                }}
+                style={[styles.name, selected && { color: Palette.danger }]}
+                numberOfLines={1}
               >
                 {exercise.name}
               </Text>
-              {!showInputs && (
+
+              {showInputs ? (
+                <View style={styles.inlineInputs}>
+                  <NumberCell
+                    label="Sets"
+                    value={setsText}
+                    onChangeText={changeSets}
+                    onBlur={restoreSets}
+                    placeholder={String(exercise.targetSets)}
+                  />
+                  <NumberCell
+                    label="Reps"
+                    value={repsText}
+                    onChangeText={changeReps}
+                    onBlur={restoreReps}
+                    placeholder={String(exercise.targetReps)}
+                  />
+                </View>
+              ) : (
                 <Text
-                  style={{
-                    color: selected ? "#f87171" : "#10b981",
-                    fontSize: 13,
-                    fontFamily: "Inter_500Medium",
-                    marginLeft: 12,
-                  }}
+                  style={[styles.target, selected && { color: Palette.danger }]}
                 >
                   {exercise.targetSets} × {exercise.targetReps}
                 </Text>
               )}
             </View>
           </View>
-        </TouchableOpacity>
-
-        {showInputs && (
-          <View
-            style={{
-              flexDirection: "row",
-              paddingHorizontal: 14,
-              paddingBottom: 12,
-              paddingTop: 2,
-              gap: 12,
-            }}
-          >
-            <NumberCell
-              label="Sets"
-              value={setsText}
-              onChangeText={changeSets}
-              onBlur={restoreSets}
-              placeholder={String(exercise.targetSets)}
-            />
-            <View
-              style={{
-                width: 1,
-                alignSelf: "stretch",
-                backgroundColor: "rgba(255,255,255,0.04)",
-                marginVertical: 4,
-              }}
-            />
-            <NumberCell
-              label="Reps"
-              value={repsText}
-              onChangeText={changeReps}
-              onBlur={restoreReps}
-              placeholder={String(exercise.targetReps)}
-            />
-          </View>
-        )}
+        </Pressable>
       </View>
     </Animated.View>
   );
@@ -209,39 +147,115 @@ function NumberCell({
   placeholder: string;
 }) {
   return (
-    <View style={{ flex: 1, alignItems: "center" }}>
-      <Text
-        style={{
-          color: "#555",
-          fontSize: 10,
-          fontFamily: "Inter_400Regular",
-          letterSpacing: 0.5,
-          textTransform: "uppercase",
-          marginBottom: 6,
-        }}
-      >
-        {label}
-      </Text>
+    <View style={styles.cell}>
       <TextInput
         value={value}
         onChangeText={onChangeText}
         onBlur={onBlur}
         keyboardType="number-pad"
         placeholder={placeholder}
-        placeholderTextColor="#444"
-        style={{
-          backgroundColor: "#111",
-          borderRadius: 8,
-          borderWidth: 1,
-          borderColor: "rgba(255,255,255,0.06)",
-          color: "#fff",
-          fontFamily: "Inter_600SemiBold",
-          fontSize: 16,
-          paddingVertical: 8,
-          width: "100%",
-          textAlign: "center",
-        }}
+        placeholderTextColor={Palette.mutedSoft}
+        style={styles.cellInput}
       />
+      <Text style={styles.cellLabel}>{label}</Text>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  card: {
+    backgroundColor: Palette.inkRaised,
+    borderRadius: 14,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: Palette.hairline,
+    overflow: "hidden",
+  },
+  cardSelected: {
+    backgroundColor: "rgba(248,113,113,0.07)",
+    borderColor: "rgba(248,113,113,0.35)",
+  },
+  topRow: { flexDirection: "row", alignItems: "center" },
+  checkWrap: { paddingLeft: 12 },
+  checkbox: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    borderWidth: 2,
+    borderColor: Palette.mutedSoft,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  checkboxOn: {
+    borderColor: Palette.danger,
+    backgroundColor: Palette.danger,
+  },
+  rail: { width: 3, alignSelf: "stretch", opacity: 0.7 },
+  thumb: {
+    width: 54,
+    height: 54,
+    margin: 10,
+    borderRadius: 10,
+    backgroundColor: Palette.inkSunken,
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "hidden",
+  },
+  thumbCompact: {
+    width: 38,
+    height: 38,
+    margin: 9,
+    borderRadius: 9,
+  },
+  thumbImage: { width: "100%", height: "100%" },
+  info: {
+    flex: 1,
+    paddingVertical: 14,
+    paddingRight: 16,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12,
+  },
+  infoCompact: {
+    paddingVertical: 8,
+    paddingRight: 10,
+  },
+  name: {
+    color: Palette.bone,
+    fontSize: 14.5,
+    fontFamily: FontFamilies.medium,
+    letterSpacing: -0.2,
+    flex: 1,
+  },
+  target: {
+    color: Palette.accent,
+    fontSize: 13,
+    fontFamily: FontFamilies.displayMedium,
+    letterSpacing: 0.3,
+  },
+  inlineInputs: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  cell: { alignItems: "center", width: 46 },
+  cellLabel: {
+    color: Palette.muted,
+    fontSize: 8,
+    fontFamily: FontFamilies.medium,
+    letterSpacing: 1.2,
+    textTransform: "uppercase",
+    marginTop: 3,
+  },
+  cellInput: {
+    backgroundColor: Palette.inkSunken,
+    borderRadius: 9,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: Palette.hairlineStrong,
+    color: Palette.bone,
+    fontFamily: FontFamilies.displayMedium,
+    fontSize: 15,
+    paddingVertical: 6,
+    width: "100%",
+    textAlign: "center",
+  },
+});

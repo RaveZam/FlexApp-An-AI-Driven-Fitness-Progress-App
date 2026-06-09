@@ -10,7 +10,7 @@ import SetRow from "@/src/features/workouts/components/session/SetRow";
 import WorkoutLogModal from "@/src/features/workouts/components/session/WorkoutLogModal";
 import { useWorkoutSessionScreen } from "@/src/features/workouts/hooks/useWorkoutSessionScreen";
 import { LinearGradient } from "expo-linear-gradient";
-import { useLocalSearchParams } from "expo-router";
+import { useFocusEffect, useLocalSearchParams } from "expo-router";
 import React from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -53,6 +53,15 @@ export default function WorkoutSessionScreen() {
     closeRestTimer,
   } = useWorkoutSessionScreen(sessionId);
 
+  // Bump on every focus so the entering animations replay each time the screen
+  // refocuses (entering fires only on mount, so we remount via key).
+  const [focusKey, setFocusKey] = React.useState(0);
+  useFocusEffect(
+    React.useCallback(() => {
+      setFocusKey((k) => k + 1);
+    }, [])
+  );
+
   if (loading || !active) return null;
 
   return (
@@ -85,12 +94,14 @@ export default function WorkoutSessionScreen() {
           showsVerticalScrollIndicator={false}
         >
           <SessionExerciseCard
+            key={`exercise-${focusKey}`}
             name={active.name}
             setCount={active.sets.length}
             targetReps={active.sets[0]?.targetReps}
           />
 
           <SessionStatsPanel
+            key={`stats-${focusKey}`}
             best={best}
             recentSessions={recentSessions}
             activeExerciseId={active.id}
@@ -105,7 +116,7 @@ export default function WorkoutSessionScreen() {
           <View style={styles.setsContainer}>
             {active.sets.map((set, index) => (
               <SetRow
-                key={set.id}
+                key={`${set.id}-${focusKey}`}
                 set={set}
                 isCurrent={index === currentSetIndex}
                 index={index}
@@ -116,6 +127,7 @@ export default function WorkoutSessionScreen() {
 
           {allSetsComplete && !allExercisesComplete && (
             <SessionCompleteCard
+              key={`sets-done-${focusKey}`}
               icon="checkmark"
               title="All sets complete"
               subtitle="Ready for the next lift"
@@ -124,6 +136,7 @@ export default function WorkoutSessionScreen() {
 
           {allExercisesComplete && (
             <SessionCompleteCard
+              key={`workout-done-${focusKey}`}
               icon="trophy"
               title="Workout Complete"
               subtitle="Lock it in"

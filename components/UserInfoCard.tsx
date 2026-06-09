@@ -1,8 +1,10 @@
+import Avatar from "@/components/Avatar";
 import { FontFamilies, Palette } from "@/constants/theme";
+import { useAuth } from "@/src/features/auth/hooks/useAuth";
 import Fontisto from "@expo/vector-icons/Fontisto";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useEffect } from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -12,6 +14,14 @@ import Animated, {
 } from "react-native-reanimated";
 
 export default function UserInfoCard() {
+  const { user } = useAuth();
+  const avatarUri =
+    user?.user_metadata?.avatar_url ?? user?.user_metadata?.picture;
+  const displayName =
+    user?.user_metadata?.full_name ??
+    user?.user_metadata?.name ??
+    user?.user_metadata?.username;
+
   const opacity = useSharedValue(0);
   const translateY = useSharedValue(-8);
 
@@ -41,11 +51,11 @@ export default function UserInfoCard() {
           <Fontisto name="bell" size={14} color={Palette.muted} />
         </TouchableOpacity>
 
-        <Image
-          style={styles.avatar}
-          source={{
-            uri: "https://res.cloudinary.com/dcdgu2fxc/image/upload/v1755494500/pfp_l6k1di.jpg",
-          }}
+        <Avatar
+          uri={avatarUri}
+          name={displayName}
+          email={user?.email}
+          size={36}
         />
       </View>
     </Animated.View>
@@ -88,12 +98,5 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: Palette.hairlineStrong,
-  },
-  avatar: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: Palette.accentBorder,
   },
 });

@@ -4,7 +4,7 @@ import { router } from "expo-router";
 import React, { useMemo, useState } from "react";
 import {
   ActivityIndicator,
-  Alert,
+  Modal,
   Pressable,
   SectionList,
   StyleSheet,
@@ -110,13 +110,11 @@ function OverviewCard({ sessions }: { sessions: WorkoutSessionSummary[] }) {
 function SessionCard({
   item,
   index,
-  editing,
-  onDelete,
+  onMenu,
 }: {
   item: WorkoutSessionSummary;
   index: number;
-  editing: boolean;
-  onDelete: (id: string) => void;
+  onMenu: (item: WorkoutSessionSummary) => void;
 }) {
   const date = new Date(item.completedAt);
   const dayAbbr = DAY_ABBR[date.getDay()];
@@ -125,18 +123,11 @@ function SessionCard({
   const duration = formatDuration(item.startedAt, item.completedAt);
   const volume = formatVolume(item.volume);
 
-  const handleDeletePress = () => {
-    Alert.alert("Delete Session", `Remove "${item.name}" from history?`, [
-      { text: "Cancel", style: "cancel" },
-      { text: "Delete", style: "destructive", onPress: () => onDelete(item.id) },
-    ]);
-  };
-
   return (
     <Animated.View entering={FadeInDown.delay(index * 50).duration(320)}>
       <Pressable
         style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
-        onPress={() => !editing && router.push(`/(tabs)/History/${item.id}` as any)}
+        onPress={() => router.push(`/(tabs)/History/${item.id}` as any)}
       >
         <View style={styles.accentBar} />
         <View style={styles.dateBlock}>
@@ -145,7 +136,12 @@ function SessionCard({
           <Text style={styles.monthAbbr}>{monthAbbr}</Text>
         </View>
         <View style={styles.cardBody}>
-          <Text style={styles.cardTitle} numberOfLines={1}>{item.name}</Text>
+          <View style={styles.titleRow}>
+            <Text style={styles.cardTitle} numberOfLines={1}>{item.name}</Text>
+            <Pressable onPress={() => onMenu(item)} style={styles.menuBtn} hitSlop={10}>
+              <Ionicons name="ellipsis-horizontal" size={18} color={Palette.muted} />
+            </Pressable>
+          </View>
           <View style={styles.metaRow}>
             <Text style={styles.metaStat}>{item.exerciseCount} ex</Text>
             <View style={styles.metaDivider} />
@@ -157,15 +153,48 @@ function SessionCard({
             <Text style={styles.volumeStat}>{volume} lb lifted</Text>
           )}
         </View>
-        {editing ? (
-          <Pressable onPress={handleDeletePress} style={styles.deleteBtn} hitSlop={8}>
-            <Ionicons name="trash-outline" size={18} color="#ef4444" />
-          </Pressable>
-        ) : (
-          <Ionicons name="chevron-forward" size={16} color={Palette.muted} style={styles.chevron} />
-        )}
       </Pressable>
     </Animated.View>
+  );
+}
+
+function SessionMenu({
+  session,
+  onClose,
+  onDelete,
+}: {
+  session: WorkoutSessionSummary | null;
+  onClose: () => void;
+  onDelete: (id: string) => void;
+}) {
+  return (
+    <Modal visible={!!session} transparent animationType="fade" onRequestClose={onClose}>
+      <Pressable style={styles.menuOverlay} onPress={onClose}>
+        <Pressable style={styles.menuSheet}>
+          <View style={styles.menuHeader}>
+            <Text style={styles.menuTitle} numberOfLines={1}>{session?.name}</Text>
+            <Text style={styles.menuSubtitle}>This permanently removes the session</Text>
+          </View>
+          <View style={styles.menuActions}>
+            <Pressable
+              style={({ pressed }) => [styles.menuCancel, pressed && styles.menuPressed]}
+              onPress={onClose}
+            >
+              <Text style={styles.menuCancelLabel}>Cancel</Text>
+            </Pressable>
+            <Pressable
+              style={({ pressed }) => [styles.menuDelete, pressed && styles.menuPressed]}
+              onPress={() => {
+                if (session) onDelete(session.id);
+                onClose();
+              }}
+            >
+              <Text style={styles.menuDeleteLabel}>Delete session</Text>
+            </Pressable>
+          </View>
+        </Pressable>
+      </Pressable>
+    </Modal>
   );
 }
 
@@ -173,7 +202,7 @@ type Section = { title: string; data: WorkoutSessionSummary[] };
 
 export default function HistoryScreen() {
   const { sessions, loading, deleteOne } = useSessionHistory();
-  const [editing, setEditing] = useState(false);
+  const [menuSession, setMenuSession] = useState<WorkoutSessionSummary | null>(null);
 
   const sections: Section[] = useMemo(() => {
     const map = new Map<string, WorkoutSessionSummary[]>();
@@ -195,11 +224,6 @@ export default function HistoryScreen() {
           <Text style={styles.eyebrow}>Training log</Text>
           <Text style={styles.headerTitle}>History</Text>
         </View>
-        {sessions.length > 0 && (
-          <Pressable onPress={() => setEditing((e) => !e)} style={styles.editBtnWrap} hitSlop={8}>
-            <Text style={styles.editBtn}>{editing ? "Done" : "Edit"}</Text>
-          </Pressable>
-        )}
       </View>
 
       {loading ? (
@@ -231,10 +255,16 @@ export default function HistoryScreen() {
           )}
           renderItem={({ item }) => {
             const idx = globalIndex++;
-            return <SessionCard item={item} index={idx} editing={editing} onDelete={deleteOne} />;
+            return <SessionCard item={item} index={idx} onMenu={setMenuSession} />;
           }}
         />
       )}
+
+      <SessionMenu
+        session={menuSession}
+        onClose={() => setMenuSession(null)}
+        onDelete={deleteOne}
+      />
     </SafeAreaView>
   );
 }
@@ -396,12 +426,17 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 13,
     paddingLeft: 14,
-    paddingRight: 8,
+    paddingRight: 6,
     gap: 5,
     borderLeftWidth: 1,
     borderLeftColor: "rgba(245,243,239,0.28)",
   },
+  titleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
   cardTitle: {
+    flex: 1,
     fontFamily: FontFamilies.semibold,
     fontSize: 15,
     color: "#ffffff",
@@ -427,8 +462,9 @@ const styles = StyleSheet.create({
     color: Palette.accent,
     letterSpacing: 0.2,
   },
-  chevron: {
-    marginRight: 12,
+  menuBtn: {
+    paddingLeft: 10,
+    paddingRight: 4,
   },
 
   // States
@@ -462,16 +498,77 @@ const styles = StyleSheet.create({
     textAlign: "center",
     paddingHorizontal: 40,
   },
-  editBtnWrap: {
-    paddingBottom: 4,
+  // Session menu
+  menuOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.6)",
+    justifyContent: "center",
+    paddingHorizontal: 28,
   },
-  editBtn: {
+  menuSheet: {
+    backgroundColor: Palette.inkRaised,
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: Palette.hairlineStrong,
+    paddingHorizontal: 16,
+    paddingTop: 20,
+    paddingBottom: 16,
+  },
+  menuHeader: {
+    paddingHorizontal: 6,
+    paddingBottom: 18,
+    marginBottom: 6,
+    borderBottomWidth: 1,
+    borderBottomColor: Palette.hairline,
+    gap: 4,
+  },
+  menuTitle: {
+    fontFamily: FontFamilies.displaySemibold,
+    fontSize: 19,
+    color: Palette.bone,
+    letterSpacing: -0.3,
+  },
+  menuSubtitle: {
+    fontFamily: FontFamilies.regular,
+    fontSize: 13,
+    color: Palette.muted,
+  },
+  menuActions: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 14,
+    marginTop: 14,
+  },
+  menuDelete: {
+    flex: 1,
+    alignItems: "center",
+    paddingVertical: 16,
+    borderRadius: 14,
+    backgroundColor: "rgba(239,68,68,0.10)",
+    borderWidth: 1,
+    borderColor: "rgba(239,68,68,0.22)",
+  },
+  menuDeleteLabel: {
+    fontFamily: FontFamilies.semibold,
+    fontSize: 16,
+    color: "#ef4444",
+    letterSpacing: 0.2,
+  },
+  menuPressed: {
+    opacity: 0.6,
+  },
+  menuCancel: {
+    flex: 1,
+    alignItems: "center",
+    paddingVertical: 16,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: Palette.hairlineStrong,
+  },
+  menuCancelLabel: {
     fontFamily: FontFamilies.medium,
-    fontSize: 14,
-    color: Palette.accent,
-  },
-  deleteBtn: {
-    paddingHorizontal: 12,
-    paddingVertical: 4,
+    fontSize: 16,
+    color: Palette.bone,
+    letterSpacing: 0.2,
   },
 });

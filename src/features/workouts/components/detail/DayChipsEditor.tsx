@@ -1,5 +1,6 @@
+import { FontFamilies, Palette } from "@/constants/theme";
 import { useEffect, useState } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { DAY_LABELS } from "../../dayLabels";
 import { useUpdateWorkoutDays } from "../../hooks/useUpdateWorkoutDays";
 
@@ -28,50 +29,58 @@ export function DayChipsEditor({
 
   return (
     <View>
-      <Text
-        style={{
-          color: "#666",
-          fontSize: 11,
-          fontFamily: "Inter_500Medium",
-          letterSpacing: 0.8,
-          textTransform: "uppercase",
-          marginBottom: 10,
-        }}
-      >
-        Days
-      </Text>
-      <View style={{ flexDirection: "row", gap: 8 }}>
+      <Text style={styles.label}>Schedule</Text>
+      <View style={styles.row}>
         {DAY_LABELS.map((label, i) => {
           const selected = days.includes(i);
           return (
-            <TouchableOpacity
+            <Pressable
               key={i}
               onPress={() => toggleDay(i)}
-              activeOpacity={0.7}
-              style={{
-                flex: 1,
-                aspectRatio: 1,
-                borderRadius: 10,
-                backgroundColor: selected ? "rgba(16,185,129,0.15)" : "#191919",
-                alignItems: "center",
-                justifyContent: "center",
-                borderWidth: 1,
-                borderColor: selected ? "rgba(16,185,129,0.5)" : "rgba(255,255,255,0.06)",
-              }}
+              style={[styles.chip, selected && styles.chipOn]}
             >
-              <Text
-                style={{
-                  color: selected ? "#10b981" : "#555",
-                  fontSize: 12,
-                  fontFamily: selected ? "Inter_600SemiBold" : "Inter_400Regular",
-                }}
-              >
+              <Text style={[styles.chipText, selected && styles.chipTextOn]}>
                 {label}
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           );
         })}
       </View>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  label: {
+    color: Palette.muted,
+    fontSize: 10,
+    fontFamily: FontFamilies.medium,
+    letterSpacing: 2.4,
+    textTransform: "uppercase",
+    marginBottom: 12,
+  },
+  row: { flexDirection: "row", gap: 7 },
+  chip: {
+    flex: 1,
+    aspectRatio: 1,
+    borderRadius: 12,
+    backgroundColor: Palette.inkRaised,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: Palette.hairline,
+  },
+  chipOn: {
+    backgroundColor: Palette.accentSoft,
+    borderColor: Palette.accentBorder,
+  },
+  chipText: {
+    color: Palette.mutedSoft,
+    fontSize: 12,
+    fontFamily: FontFamilies.medium,
+  },
+  chipTextOn: {
+    color: Palette.accent,
+    fontFamily: FontFamilies.semibold,
+  },
+});

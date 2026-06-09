@@ -1,74 +1,61 @@
+import { Palette } from "@/constants/theme";
 import { Ionicons } from "@expo/vector-icons";
-import { Text, TouchableOpacity, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 
 export function WorkoutDetailHeader({
-  title,
   editing,
   onBack,
   onToggleEdit,
 }: {
-  title: string;
   editing: boolean;
   onBack: () => void;
   onToggleEdit: () => void;
 }) {
   return (
-    <View
-      style={{
-        paddingHorizontal: 20,
-        paddingTop: 8,
-        paddingBottom: 16,
-        flexDirection: "row",
-        alignItems: "center",
-      }}
-    >
-      <TouchableOpacity
-        onPress={onBack}
-        activeOpacity={0.7}
-        style={{
-          width: 36,
-          height: 36,
-          borderRadius: 10,
-          backgroundColor: "#191919",
-          alignItems: "center",
-          justifyContent: "center",
-          borderWidth: 1,
-          borderColor: "rgba(255,255,255,0.06)",
-        }}
-      >
-        <Ionicons name={editing ? "close" : "chevron-back"} size={20} color="#aaa" />
-      </TouchableOpacity>
+    <View style={styles.navRow}>
+      <Pressable onPress={onBack} style={styles.iconButton}>
+        <Ionicons
+          name={editing ? "close" : "chevron-back"}
+          size={20}
+          color={Palette.bone}
+        />
+      </Pressable>
 
-      <View style={{ flex: 1, alignItems: "center" }}>
-        <Text
-          style={{
-            color: "#ffffff",
-            fontSize: 18,
-            fontFamily: "Inter_600SemiBold",
-            letterSpacing: -0.3,
-          }}
-          numberOfLines={1}
-        >
-          {title}
-        </Text>
-      </View>
-
-      <TouchableOpacity
+      <Pressable
         onPress={onToggleEdit}
-        activeOpacity={0.7}
-        style={{
-          width: 36,
-          height: 36,
-          borderRadius: 10,
-          backgroundColor: editing ? "rgba(16,185,129,0.15)" : "#191919",
-          alignItems: "center",
-          justifyContent: "center",
-          borderWidth: 1,
-          borderColor: editing ? "rgba(16,185,129,0.4)" : "rgba(255,255,255,0.06)",
-        }}
+        style={[styles.iconButton, editing && styles.iconButtonOn]}
       >
-        <Ionicons name={editing ? "checkmark" : "pencil"} size={16} color={editing ? "#10b981" : "#aaa"} />
-      </TouchableOpacity>
+        <Ionicons
+          name={editing ? "checkmark" : "pencil"}
+          size={editing ? 18 : 15}
+          color={editing ? Palette.accent : Palette.muted}
+        />
+      </Pressable>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  navRow: {
+    paddingHorizontal: 20,
+    paddingTop: 8,
+    paddingBottom: 6,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  iconButton: {
+    width: 38,
+    height: 38,
+    borderRadius: 12,
+    backgroundColor: Palette.inkRaised,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: Palette.hairlineStrong,
+  },
+  iconButtonOn: {
+    backgroundColor: Palette.accentSoft,
+    borderColor: Palette.accentBorder,
+  },
+});

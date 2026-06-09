@@ -1,8 +1,15 @@
 import "@/global.css";
+import { FontFamilies, Palette } from "@/constants/theme";
 import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
-import Animated, { FadeInDown, FadeInRight } from "react-native-reanimated";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import Animated, {
+  FadeInDown,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { DAY_LABELS } from "../../dayLabels";
 import { useActivePlan } from "../../hooks/useActivePlan";
@@ -12,83 +19,76 @@ import type { Workout } from "../../types";
 function DayChips({ days }: { days: number[] }) {
   if (days.length === 0) return null;
   return (
-    <View style={{ flexDirection: "row", gap: 4, marginTop: 6 }}>
-      {DAY_LABELS.map((label, i) => (
-        <View
-          key={i}
-          style={{
-            width: 20,
-            height: 20,
-            borderRadius: 10,
-            backgroundColor: days.includes(i) ? "rgba(16,185,129,0.2)" : "transparent",
-            alignItems: "center",
-            justifyContent: "center",
-            borderWidth: 1,
-            borderColor: days.includes(i) ? "rgba(16,185,129,0.5)" : "rgba(255,255,255,0.06)",
-          }}
-        >
-          <Text
-            style={{
-              color: days.includes(i) ? "#10b981" : "#444",
-              fontSize: 9,
-              fontFamily: "Inter_600SemiBold",
-            }}
-          >
-            {label}
-          </Text>
-        </View>
-      ))}
+    <View style={styles.dayRow}>
+      {DAY_LABELS.map((label, i) => {
+        const on = days.includes(i);
+        return (
+          <View key={i} style={[styles.dayChip, on && styles.dayChipOn]}>
+            <Text style={[styles.dayText, on && styles.dayTextOn]}>{label}</Text>
+          </View>
+        );
+      })}
     </View>
   );
 }
 
-function WorkoutCard({ workout, index, onPress }: { workout: Workout; index: number; onPress: () => void }) {
+function WorkoutCard({
+  workout,
+  index,
+  onPress,
+}: {
+  workout: Workout;
+  index: number;
+  onPress: () => void;
+}) {
+  const scale = useSharedValue(1);
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
   return (
-    <Animated.View entering={FadeInRight.delay(200 + index * 80).duration(400)}>
-      <TouchableOpacity activeOpacity={0.7} onPress={onPress}>
-        <View
-          style={{
-            backgroundColor: "#191919",
-            borderRadius: 14,
-            overflow: "hidden",
-            borderWidth: 1,
-            borderColor: "rgba(255,255,255,0.04)",
-            flexDirection: "row",
-            alignItems: "center",
-          }}
-        >
-          <View
-            style={{
-              width: 3,
-              alignSelf: "stretch",
-              backgroundColor: "#10b981",
-              opacity: 0.7,
-            }}
+    <Animated.View entering={FadeInDown.delay(160 + index * 70).duration(420)}>
+      <Pressable
+        onPressIn={() => (scale.value = withTiming(0.97, { duration: 120 }))}
+        onPressOut={() => (scale.value = withTiming(1, { duration: 160 }))}
+        onPress={onPress}
+      >
+        <Animated.View style={[styles.card, animatedStyle]}>
+          <LinearGradient
+            colors={[Palette.accent, Palette.accentDeep]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0, y: 1 }}
+            style={styles.rail}
           />
-          <View style={{ flex: 1, padding: 16 }}>
-            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-              <Text
-                style={{
-                  color: "#ffffff",
-                  fontSize: 14,
-                  fontFamily: "Inter_500Medium",
-                  letterSpacing: 0.1,
-                }}
-              >
-                {workout.name}
+
+          <Text style={styles.ghostIndex}>
+            {String(index + 1).padStart(2, "0")}
+          </Text>
+
+          <View style={styles.cardBody}>
+            <View style={styles.cardHead}>
+              <Text style={styles.cardEyebrow}>
+                Day {String(index + 1).padStart(2, "0")}
               </Text>
-              <Ionicons name="chevron-forward" size={18} color="#333" />
+              <Ionicons name="arrow-forward" size={14} color={Palette.accent} />
             </View>
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 4, marginTop: 4 }}>
-              <Ionicons name="barbell-outline" size={11} color="#444" />
-              <Text style={{ color: "#444", fontSize: 11, fontFamily: "Inter_400Regular" }}>
-                {workout.exercises.length} exercise{workout.exercises.length !== 1 ? "s" : ""}
+
+            <Text style={styles.cardName} numberOfLines={1}>
+              {workout.name}
+            </Text>
+
+            <View style={styles.metaItem}>
+              <Ionicons name="barbell-outline" size={12} color={Palette.muted} />
+              <Text style={styles.metaText}>
+                {workout.exercises.length} exercise
+                {workout.exercises.length !== 1 ? "s" : ""}
               </Text>
             </View>
+
             <DayChips days={workout.daysOfWeek} />
           </View>
-        </View>
-      </TouchableOpacity>
+        </Animated.View>
+      </Pressable>
     </Animated.View>
   );
 }
@@ -102,164 +102,111 @@ export default function PlanDetailScreen() {
   const plan = plans.find((p) => p.id === planId);
   const isActive = activePlanId === planId;
 
+  const dayCount = plan?.workouts.length ?? 0;
+  const exerciseCount =
+    plan?.workouts.reduce((sum, w) => sum + w.exercises.length, 0) ?? 0;
+
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#0f0f0f" }} edges={["top"]}>
-      <View style={{ flex: 1, backgroundColor: "#0f0f0f" }}>
-        {/* Header */}
-        <View
-          style={{
-            paddingHorizontal: 20,
-            paddingTop: 8,
-            paddingBottom: 16,
-            flexDirection: "row",
-            alignItems: "center",
-          }}
-        >
-          <TouchableOpacity
-            onPress={() => router.back()}
-            activeOpacity={0.7}
-            style={{
-              width: 36,
-              height: 36,
-              borderRadius: 10,
-              backgroundColor: "#191919",
-              alignItems: "center",
-              justifyContent: "center",
-              borderWidth: 1,
-              borderColor: "rgba(255,255,255,0.06)",
-            }}
-          >
-            <Ionicons name="chevron-back" size={20} color="#aaa" />
-          </TouchableOpacity>
+    <SafeAreaView style={styles.safe} edges={["top"]}>
+      <LinearGradient
+        colors={["rgba(52,211,153,0.08)", "transparent"]}
+        start={{ x: 0.5, y: 0 }}
+        end={{ x: 0.5, y: 0.32 }}
+        style={StyleSheet.absoluteFillObject}
+        pointerEvents="none"
+      />
 
-          <View style={{ flex: 1, alignItems: "center" }}>
-            <Text
-              style={{
-                color: "#ffffff",
-                fontSize: 18,
-                fontFamily: "Inter_600SemiBold",
-                letterSpacing: -0.3,
-              }}
-              numberOfLines={1}
-            >
-              {plan?.name ?? "Plan"}
-            </Text>
-          </View>
+      <View style={styles.container}>
+        {/* Nav row */}
+        <View style={styles.navRow}>
+          <Pressable onPress={() => router.back()} style={styles.iconButton}>
+            <Ionicons name="chevron-back" size={20} color={Palette.bone} />
+          </Pressable>
 
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-            <TouchableOpacity
-              activeOpacity={0.7}
-              onPress={() => setActivePlan(isActive ? null : (planId ?? null))}
-              style={{
-                height: 30,
-                paddingHorizontal: 10,
-                borderRadius: 8,
-                backgroundColor: isActive ? "rgba(16,185,129,0.15)" : "#191919",
-                alignItems: "center",
-                justifyContent: "center",
-                borderWidth: 1,
-                borderColor: isActive ? "rgba(16,185,129,0.4)" : "rgba(255,255,255,0.06)",
-                flexDirection: "row",
-                gap: 4,
-              }}
-            >
-              {isActive && <Ionicons name="checkmark-circle" size={13} color="#10b981" />}
-              <Text
-                style={{
-                  color: isActive ? "#10b981" : "#666",
-                  fontSize: 11,
-                  fontFamily: "Inter_600SemiBold",
-                }}
-              >
-                {isActive ? "Active" : "Set Active"}
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              activeOpacity={0.7}
+          {plan && (
+            <Pressable
               onPress={() =>
-                router.push({ pathname: "/(tabs)/Workouts/create", params: { planId: planId ?? "" } })
+                router.push({
+                  pathname: "/(tabs)/Workouts/create",
+                  params: { planId: planId ?? "" },
+                })
               }
-              style={{
-                width: 36,
-                height: 36,
-                borderRadius: 10,
-                backgroundColor: "#1a472a",
-                alignItems: "center",
-                justifyContent: "center",
-                borderWidth: 1,
-                borderColor: "rgba(16,185,129,0.15)",
-              }}
+              style={styles.iconButton}
             >
-              <Ionicons name="add" size={22} color="#10b981" />
-            </TouchableOpacity>
-          </View>
+              <Ionicons name="add" size={22} color={Palette.accent} />
+            </Pressable>
+          )}
         </View>
 
         {!plan ? (
-          <View style={{ flex: 1, alignItems: "center", justifyContent: "center", gap: 8 }}>
-            <Ionicons name="barbell-outline" size={32} color="#333" />
-            <Text style={{ color: "#444", fontSize: 13, fontFamily: "Inter_400Regular" }}>
-              Plan not found.
-            </Text>
+          <View style={styles.notFound}>
+            <View style={styles.emptyGlyph}>
+              <Ionicons name="barbell-outline" size={26} color={Palette.muted} />
+            </View>
+            <Text style={styles.emptyTitle}>Plan not found</Text>
           </View>
         ) : (
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingBottom: 32 }}
-          >
-            <View style={{ paddingHorizontal: 20 }}>
-              <Animated.View
-                entering={FadeInDown.delay(60).duration(400)}
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  marginBottom: 14,
-                }}
-              >
-                <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-                  <View
-                    style={{ width: 4, height: 18, borderRadius: 2, backgroundColor: "#10b981" }}
-                  />
-                  <Text
-                    style={{
-                      color: "#ffffff",
-                      fontSize: 13,
-                      fontFamily: "Inter_500Medium",
-                      letterSpacing: 0.8,
-                      textTransform: "uppercase",
-                    }}
-                  >
-                    Workouts
+          <>
+            {/* Editorial masthead */}
+            <Animated.View
+              entering={FadeInDown.delay(40).duration(420)}
+              style={styles.masthead}
+            >
+              <Text style={styles.eyebrow}>Training Plan</Text>
+              <Text style={styles.title}>{plan.name}</Text>
+
+              <View style={styles.statRow}>
+                <View style={styles.metaItem}>
+                  <Ionicons name="calendar-outline" size={13} color={Palette.muted} />
+                  <Text style={styles.statText}>
+                    {dayCount} day{dayCount !== 1 ? "s" : ""}
                   </Text>
                 </View>
-                {plan.workouts.length > 0 && (
-                  <Text style={{ color: "#444", fontSize: 11, fontFamily: "Inter_400Regular" }}>
-                    {plan.workouts.length} day{plan.workouts.length !== 1 ? "s" : ""}
+                <View style={styles.metaDot} />
+                <View style={styles.metaItem}>
+                  <Ionicons name="barbell-outline" size={13} color={Palette.muted} />
+                  <Text style={styles.statText}>
+                    {exerciseCount} exercise{exerciseCount !== 1 ? "s" : ""}
                   </Text>
-                )}
-              </Animated.View>
+                </View>
+              </View>
 
+              <Pressable
+                onPress={() => setActivePlan(isActive ? null : (planId ?? null))}
+                style={[styles.activeToggle, isActive && styles.activeToggleOn]}
+              >
+                {isActive && (
+                  <Ionicons name="checkmark-circle" size={14} color={Palette.accent} />
+                )}
+                <Text
+                  style={[styles.activeText, isActive && styles.activeTextOn]}
+                >
+                  {isActive ? "Active Plan" : "Set as Active"}
+                </Text>
+              </Pressable>
+            </Animated.View>
+
+            <View style={styles.hairline} />
+
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={styles.scrollContent}
+            >
               {plan.workouts.length === 0 ? (
                 <Animated.View
-                  entering={FadeInDown.delay(120).duration(400)}
-                  style={{ paddingTop: 40, alignItems: "center", gap: 8 }}
+                  entering={FadeInDown.delay(140).duration(420)}
+                  style={styles.empty}
                 >
-                  <Ionicons name="barbell-outline" size={32} color="#333" />
-                  <Text
-                    style={{
-                      color: "#444",
-                      fontSize: 13,
-                      fontFamily: "Inter_400Regular",
-                      textAlign: "center",
-                    }}
-                  >
-                    No workouts yet.{"\n"}Tap + to add your first day.
+                  <View style={styles.emptyGlyph}>
+                    <Ionicons name="barbell-outline" size={26} color={Palette.muted} />
+                  </View>
+                  <Text style={styles.emptyTitle}>No workouts yet</Text>
+                  <Text style={styles.emptyBody}>
+                    Add your first training day{"\n"}to build out this plan.
                   </Text>
                 </Animated.View>
               ) : (
-                <View style={{ gap: 10 }}>
+                <View style={styles.list}>
                   {plan.workouts.map((workout, index) => (
                     <WorkoutCard
                       key={workout.id}
@@ -270,10 +217,204 @@ export default function PlanDetailScreen() {
                   ))}
                 </View>
               )}
-            </View>
-          </ScrollView>
+            </ScrollView>
+          </>
         )}
       </View>
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  safe: { flex: 1, backgroundColor: Palette.ink },
+  container: { flex: 1, backgroundColor: "transparent" },
+
+  navRow: {
+    paddingHorizontal: 20,
+    paddingTop: 8,
+    paddingBottom: 6,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  iconButton: {
+    width: 38,
+    height: 38,
+    borderRadius: 12,
+    backgroundColor: Palette.inkRaised,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: Palette.hairlineStrong,
+  },
+
+  masthead: { paddingHorizontal: 20, paddingTop: 10, paddingBottom: 18 },
+  eyebrow: {
+    color: Palette.accent,
+    fontSize: 10,
+    fontFamily: FontFamilies.medium,
+    letterSpacing: 3,
+    textTransform: "uppercase",
+    marginBottom: 8,
+  },
+  title: {
+    color: Palette.bone,
+    fontSize: 34,
+    fontFamily: FontFamilies.displayLight,
+    letterSpacing: -0.8,
+    lineHeight: 38,
+  },
+  statRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    marginTop: 14,
+  },
+  statText: {
+    color: Palette.muted,
+    fontSize: 12.5,
+    fontFamily: FontFamilies.regular,
+    letterSpacing: 0.2,
+  },
+
+  activeToggle: {
+    alignSelf: "flex-start",
+    marginTop: 16,
+    height: 36,
+    paddingHorizontal: 14,
+    borderRadius: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    backgroundColor: Palette.inkRaised,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: Palette.hairlineStrong,
+  },
+  activeToggleOn: {
+    backgroundColor: Palette.accentSoft,
+    borderColor: Palette.accentBorder,
+  },
+  activeText: {
+    color: Palette.muted,
+    fontSize: 11,
+    fontFamily: FontFamilies.medium,
+    letterSpacing: 1.6,
+    textTransform: "uppercase",
+  },
+  activeTextOn: { color: Palette.accent },
+
+  hairline: {
+    marginHorizontal: 20,
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: Palette.hairlineStrong,
+  },
+
+  scrollContent: { paddingHorizontal: 20, paddingTop: 18, paddingBottom: 32 },
+  list: { gap: 12 },
+
+  // Workout card
+  card: {
+    backgroundColor: Palette.inkRaised,
+    borderRadius: 16,
+    overflow: "hidden",
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: Palette.hairline,
+    flexDirection: "row",
+  },
+  rail: { width: 3, alignSelf: "stretch" },
+  ghostIndex: {
+    position: "absolute",
+    right: 8,
+    bottom: -14,
+    color: Palette.bone,
+    opacity: 0.03,
+    fontSize: 76,
+    fontFamily: FontFamilies.displaySemibold,
+    letterSpacing: -2,
+  },
+  cardBody: { flex: 1, paddingVertical: 16, paddingLeft: 16, paddingRight: 16 },
+  cardHead: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 5,
+  },
+  cardEyebrow: {
+    color: Palette.accent,
+    fontSize: 9,
+    fontFamily: FontFamilies.medium,
+    letterSpacing: 2.4,
+    textTransform: "uppercase",
+  },
+  cardName: {
+    color: Palette.bone,
+    fontSize: 18,
+    fontFamily: FontFamilies.displayMedium,
+    letterSpacing: -0.4,
+    marginBottom: 9,
+  },
+  metaItem: { flexDirection: "row", alignItems: "center", gap: 5 },
+  metaText: {
+    color: Palette.muted,
+    fontSize: 11.5,
+    fontFamily: FontFamilies.regular,
+    letterSpacing: 0.2,
+  },
+  metaDot: {
+    width: 3,
+    height: 3,
+    borderRadius: 1.5,
+    backgroundColor: Palette.mutedSoft,
+  },
+
+  // Day chips
+  dayRow: { flexDirection: "row", gap: 5, marginTop: 12 },
+  dayChip: {
+    width: 22,
+    height: 22,
+    borderRadius: 7,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: Palette.hairline,
+  },
+  dayChipOn: {
+    backgroundColor: Palette.accentSoft,
+    borderColor: Palette.accentBorder,
+  },
+  dayText: {
+    color: Palette.mutedSoft,
+    fontSize: 9,
+    fontFamily: FontFamilies.semibold,
+  },
+  dayTextOn: { color: Palette.accent },
+
+  // Empty / not found
+  notFound: { flex: 1, alignItems: "center", justifyContent: "center" },
+  empty: { paddingTop: 60, alignItems: "center" },
+  emptyGlyph: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: Palette.hairlineStrong,
+    backgroundColor: Palette.inkRaised,
+    marginBottom: 18,
+  },
+  emptyTitle: {
+    color: Palette.bone,
+    fontSize: 18,
+    fontFamily: FontFamilies.displayMedium,
+    letterSpacing: -0.3,
+    marginBottom: 7,
+  },
+  emptyBody: {
+    color: Palette.muted,
+    fontSize: 13,
+    fontFamily: FontFamilies.regular,
+    textAlign: "center",
+    lineHeight: 19,
+  },
+});

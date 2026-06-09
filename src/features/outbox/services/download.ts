@@ -1,4 +1,5 @@
 import type { SessionStatus } from "@/src/features/workouts/types";
+import * as catalogDao from "@/src/lib/dao/catalog";
 import * as plansDao from "@/src/lib/dao/plans";
 import * as preferencesDao from "@/src/lib/dao/preferences";
 import * as sessionExercisesDao from "@/src/lib/dao/sessionExercises";
@@ -17,10 +18,33 @@ export async function runDownloadSync(userId: string): Promise<void> {
   const hasNetwork = await isWifiConnected();
   if (!hasNetwork) return;
 
+  await downloadCatalog();
   await downloadPlans(userId);
   await downloadWorkouts(userId);
   await downloadPreferences(userId);
   await downloadSessions(userId);
+}
+
+// Global reference data — one-way pull, not scoped to a user.
+async function downloadCatalog(): Promise<void> {
+  try {
+    const { data, error } = await supabase
+      .from("exercises_catalog")
+      .select("id, name, muscle_group, description, is_unilateral");
+    if (error) throw error;
+
+    catalogDao.upsertMany(
+      (data ?? []).map((row) => ({
+        id: row.id,
+        name: row.name,
+        muscleGroup: row.muscle_group,
+        description: row.description,
+        isUnilateral: row.is_unilateral ?? false,
+      }))
+    );
+  } catch {
+    // Non-fatal: catalog stays at its last cached state.
+  }
 }
 
 async function downloadPlans(userId: string): Promise<void> {

@@ -104,6 +104,14 @@ export async function initDb(): Promise<void> {
     );
     CREATE INDEX IF NOT EXISTS session_sets_exercise_idx ON session_sets(session_exercise_id);
 
+    CREATE TABLE IF NOT EXISTS exercises_catalog (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      muscle_group TEXT,
+      description TEXT,
+      is_unilateral INTEGER NOT NULL DEFAULT 0
+    );
+
     CREATE TABLE IF NOT EXISTS outbox (
       id TEXT PRIMARY KEY,
       entity_type TEXT NOT NULL,

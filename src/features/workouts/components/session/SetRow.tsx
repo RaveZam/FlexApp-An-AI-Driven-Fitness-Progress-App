@@ -1,18 +1,9 @@
 import { SessionSetView } from "@/src/features/workouts/types/sessionView";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useEffect } from "react";
+import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import Animated, {
-  Easing,
-  FadeInDown,
-  ZoomIn,
-  cancelAnimation,
-  useAnimatedStyle,
-  useSharedValue,
-  withRepeat,
-  withTiming,
-} from "react-native-reanimated";
+import Animated, { FadeInDown } from "react-native-reanimated";
 
 const ACCENT = "#34d399";
 const BONE = "#f5f3ef";
@@ -34,26 +25,6 @@ type SetRowProps = {
 export default function SetRow({ set, isCurrent, index, onEdit }: SetRowProps) {
   const isCompleted = set.completed;
   const isFuture = !isCompleted && !isCurrent;
-
-  const pulse = useSharedValue(0);
-  useEffect(() => {
-    if (isCurrent) {
-      pulse.value = withRepeat(
-        withTiming(1, { duration: 1600, easing: Easing.inOut(Easing.ease) }),
-        -1,
-        true
-      );
-    } else {
-      cancelAnimation(pulse);
-      pulse.value = 0;
-    }
-    return () => cancelAnimation(pulse);
-  }, [isCurrent, pulse]);
-
-  const pulseStyle = useAnimatedStyle(() => ({
-    opacity: 0.6 + pulse.value * 0.4,
-    transform: [{ translateX: pulse.value * 2 }],
-  }));
 
   const editable = isCompleted && !!onEdit;
   const hasPerSide = set.actualRepsLeft != null || set.actualRepsRight != null;
@@ -126,13 +97,13 @@ export default function SetRow({ set, isCurrent, index, onEdit }: SetRowProps) {
         {/* Action */}
         <View style={styles.actionCol}>
           {isCompleted ? (
-            <Animated.View entering={ZoomIn.springify().damping(14)} style={styles.glyph}>
+            <View style={styles.glyph}>
               <Ionicons name="checkmark" size={14} color={ACCENT} />
-            </Animated.View>
+            </View>
           ) : isCurrent ? (
-            <Animated.View style={[styles.glyph, pulseStyle]}>
+            <View style={styles.glyph}>
               <Ionicons name="arrow-forward" size={14} color={ACCENT} />
-            </Animated.View>
+            </View>
           ) : (
             <View style={styles.dotFuture} />
           )}
