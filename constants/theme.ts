@@ -35,6 +35,7 @@ export const Palette = {
   accentBorderSoft: "rgba(52,211,153,0.25)",
   muted: "#6b6b6b",
   mutedSoft: "#3a3a3a",
+  danger: "#f87171",
   hairline: "rgba(245,243,239,0.07)",
   hairlineStrong: "rgba(245,243,239,0.14)",
 };

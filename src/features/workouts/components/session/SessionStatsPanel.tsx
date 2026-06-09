@@ -5,10 +5,17 @@ import type {
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import Animated, { FadeInDown } from "react-native-reanimated";
+import Animated, {
+  FadeInDown,
+  FadeOutDown,
+  useAnimatedStyle,
+  withTiming,
+} from "react-native-reanimated";
 
 const ACCENT = "#34d399";
 const ACCENT_DEEP = "#059669";
+const HIGHLIGHT = "#fbbf24";
+const HIGHLIGHT_DEEP = "#f59e0b";
 const BONE = "#f5f3ef";
 const HAIRLINE = "rgba(245,243,239,0.07)";
 const HAIRLINE_STRONG = "rgba(245,243,239,0.14)";
@@ -30,7 +37,10 @@ export default function SessionStatsPanel({ best, recentSessions, activeExercise
     setSelectedBarIndex(null);
   }, [activeExerciseId]);
 
-  const maxChartWeight = recentSessions.reduce((m, p) => Math.max(m, p.maxWeight), 0);
+  const maxChartVolume = recentSessions.reduce(
+    (m, p) => Math.max(m, p.maxWeight * Math.max(1, p.repsAtMax)),
+    0
+  );
   const selectedSession =
     selectedBarIndex !== null ? recentSessions[selectedBarIndex] ?? null : null;
 
@@ -69,23 +79,35 @@ export default function SessionStatsPanel({ best, recentSessions, activeExercise
       <View style={styles.historySection}>
         <View style={styles.historyHeader}>
           <Text style={styles.sectionLabel}>Last 7 Sessions</Text>
-          {selectedSession ? (
-            <Text style={styles.chartTooltip}>
-              <Text style={styles.chartTooltipValue}>{selectedSession.maxWeight}lb</Text>
-              {selectedSession.repsAtMax > 0 ? ` × ${selectedSession.repsAtMax}` : ""}
-              <Text style={styles.chartTooltipDate}>
-                {"  "}·{"  "}
-                {new Date(selectedSession.startedAt).toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "2-digit",
-                })}
-              </Text>
-            </Text>
-          ) : (
-            <Text style={styles.chartTooltipHint}>
-              {recentSessions.length > 0 ? "Tap a bar" : ""}
-            </Text>
-          )}
+          <View style={styles.tooltipWheel}>
+            {selectedSession ? (
+              <Animated.Text
+                key={selectedSession.sessionId}
+                entering={FadeInDown.duration(220)}
+                exiting={FadeOutDown.duration(220)}
+                style={[styles.chartTooltip, styles.wheelItem]}
+              >
+                <Text style={styles.chartTooltipValue}>{selectedSession.maxWeight}lb</Text>
+                {selectedSession.repsAtMax > 0 ? ` × ${selectedSession.repsAtMax}` : ""}
+                <Text style={styles.chartTooltipDate}>
+                  {"  "}·{"  "}
+                  {new Date(selectedSession.startedAt).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "2-digit",
+                  })}
+                </Text>
+              </Animated.Text>
+            ) : (
+              <Animated.Text
+                key="hint"
+                entering={FadeInDown.duration(220)}
+                exiting={FadeOutDown.duration(220)}
+                style={[styles.chartTooltipHint, styles.wheelItem]}
+              >
+                {recentSessions.length > 0 ? "Tap a bar" : ""}
+              </Animated.Text>
+            )}
+          </View>
         </View>
 
         <View style={styles.chartWrap}>
@@ -95,39 +117,22 @@ export default function SessionStatsPanel({ best, recentSessions, activeExercise
               <Text style={styles.emptyChart}>No sessions yet</Text>
             ) : (
               recentSessions.map((p, i) => {
+                const volume = p.maxWeight * Math.max(1, p.repsAtMax);
                 const heightPx =
-                  maxChartWeight > 0 ? Math.max(4, (p.maxWeight / maxChartWeight) * 56) : 4;
-                const isSelected = selectedBarIndex === i;
-                const isPR = best ? p.maxWeight >= best.weight : false;
+                  maxChartVolume > 0 ? Math.max(4, (volume / maxChartVolume) * 56) : 4;
+                const restingOpacity =
+                  0.55 + (i / Math.max(1, recentSessions.length - 1)) * 0.4;
                 return (
-                  <Pressable
+                  <HistoryBar
                     key={p.sessionId}
-                    hitSlop={8}
-                    onPress={() => setSelectedBarIndex(isSelected ? null : i)}
-                    style={styles.barTouch}
-                  >
-                    <View style={styles.barColumn}>
-                      <View
-                        style={{
-                          width: 10,
-                          height: heightPx,
-                          borderRadius: 2,
-                          overflow: "hidden",
-                          opacity: isSelected
-                            ? 1
-                            : 0.55 + (i / Math.max(1, recentSessions.length - 1)) * 0.4,
-                        }}
-                      >
-                        <LinearGradient
-                          colors={isPR ? [ACCENT, ACCENT_DEEP] : [ACCENT, "rgba(52,211,153,0.35)"]}
-                          start={{ x: 0, y: 0 }}
-                          end={{ x: 0, y: 1 }}
-                          style={{ flex: 1 }}
-                        />
-                      </View>
-                      {isSelected && <View style={styles.barIndicator} />}
-                    </View>
-                  </Pressable>
+                    heightPx={heightPx}
+                    restingOpacity={restingOpacity}
+                    isSelected={selectedBarIndex === i}
+                    isPR={best ? p.maxWeight >= best.weight : false}
+                    onPress={() =>
+                      setSelectedBarIndex(selectedBarIndex === i ? null : i)
+                    }
+                  />
                 );
               })
             )}
@@ -135,6 +140,48 @@ export default function SessionStatsPanel({ best, recentSessions, activeExercise
         </View>
       </View>
     </Animated.View>
+  );
+}
+
+type HistoryBarProps = {
+  heightPx: number;
+  restingOpacity: number;
+  isSelected: boolean;
+  isPR: boolean;
+  onPress: () => void;
+};
+
+function HistoryBar({ heightPx, restingOpacity, isSelected, isPR, onPress }: HistoryBarProps) {
+  const highlightStyle = useAnimatedStyle(() => ({
+    opacity: withTiming(isSelected ? 1 : 0, { duration: 220 }),
+  }));
+  const baseStyle = useAnimatedStyle(() => ({
+    opacity: withTiming(isSelected ? 1 : restingOpacity, { duration: 220 }),
+  }));
+
+  return (
+    <Pressable hitSlop={8} onPress={onPress} style={styles.barTouch}>
+      <View style={styles.barColumn}>
+        <View style={{ width: 10, height: heightPx, borderRadius: 2, overflow: "hidden" }}>
+          <Animated.View style={[StyleSheet.absoluteFill, baseStyle]}>
+            <LinearGradient
+              colors={isPR ? [ACCENT, ACCENT_DEEP] : [ACCENT, "rgba(52,211,153,0.35)"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 0, y: 1 }}
+              style={{ flex: 1 }}
+            />
+          </Animated.View>
+          <Animated.View style={[StyleSheet.absoluteFill, highlightStyle]}>
+            <LinearGradient
+              colors={[HIGHLIGHT, HIGHLIGHT_DEEP]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 0, y: 1 }}
+              style={{ flex: 1 }}
+            />
+          </Animated.View>
+        </View>
+      </View>
+    </Pressable>
   );
 }
 
@@ -209,12 +256,19 @@ const styles = StyleSheet.create({
   },
   historySection: { flex: 1.1 },
   historyHeader: { marginBottom: 12 },
+  tooltipWheel: {
+    position: "relative",
+    height: 18,
+    marginTop: -6,
+    overflow: "hidden",
+    justifyContent: "center",
+  },
+  wheelItem: { position: "absolute", left: 0, right: 0 },
   chartTooltip: {
     color: BONE,
     fontSize: 13,
     fontFamily: "Outfit_500Medium",
     letterSpacing: 0.2,
-    marginTop: -6,
   },
   chartTooltipValue: {
     color: ACCENT,
@@ -234,8 +288,6 @@ const styles = StyleSheet.create({
     fontFamily: "Inter_500Medium",
     letterSpacing: 1,
     textTransform: "uppercase",
-    marginTop: -6,
-    height: 16,
   },
   chartWrap: { position: "relative" },
   chartBaseline: {
@@ -249,19 +301,13 @@ const styles = StyleSheet.create({
   historyChart: {
     flexDirection: "row",
     alignItems: "flex-end",
-    justifyContent: "space-between",
+    justifyContent: "flex-start",
+    gap: 12,
     height: 64,
     paddingBottom: 8,
   },
   barTouch: { paddingHorizontal: 2, justifyContent: "flex-end", alignItems: "center" },
   barColumn: { alignItems: "center" },
-  barIndicator: {
-    width: 4,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: ACCENT,
-    marginTop: 4,
-  },
   emptyChart: {
     color: MUTED,
     fontSize: 12,

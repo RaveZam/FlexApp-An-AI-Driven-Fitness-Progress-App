@@ -33,19 +33,29 @@ export default function ScheduleBar() {
             const isToday = index === todayIdx;
             const isPlanned = plannedDays.has(index);
             const isCompleted = completedDays.has(index);
+            const isMissed = isPlanned && index < todayIdx && !isCompleted;
 
             const nameColor = isCompleted
               ? Palette.accent
+              : isMissed
+              ? Palette.danger
               : isToday
               ? Palette.accent
               : isPlanned
               ? Palette.bone
               : Palette.mutedSoft;
-            const borderColor =
-              isCompleted || isToday || isPlanned ? Palette.accent : Palette.hairline;
+            const borderColor = isCompleted
+              ? Palette.accent
+              : isMissed
+              ? Palette.danger
+              : isToday || isPlanned
+              ? Palette.accent
+              : Palette.hairline;
             const backgroundColor = isCompleted ? Palette.accent : "transparent";
             const numColor = isCompleted
               ? Palette.ink
+              : isMissed
+              ? Palette.danger
               : isToday
               ? Palette.accent
               : isPlanned
