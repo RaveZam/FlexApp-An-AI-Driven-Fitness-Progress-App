@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useRef, useState } from "react";
-import { AppState, Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { AppState, Modal, Platform, StyleSheet, Text, TouchableOpacity, Vibration, View } from "react-native";
 import Animated, {
   Easing,
   FadeIn,
@@ -18,6 +18,13 @@ const RADIUS = 110;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
+
+// ~3 buzzes when rest ends. iOS buzzes are fixed-length and the numbers are the
+// gaps between them; Android numbers are [wait, vibrate, ...].
+const REST_DONE_PATTERN =
+  Platform.OS === "ios"
+    ? [0, 500, 500, 500, 500, 500]
+    : [0, 500, 150, 500, 150, 500, 150, 500, 150, 500];
 
 type Props = {
   visible: boolean;
@@ -65,6 +72,10 @@ export default function RestTimerModal({ visible, restSeconds, onClose }: Props)
       setRemaining(Math.ceil(remainingMs / 1000));
       if (remainingMs <= 0 && intervalRef.current) {
         clearInterval(intervalRef.current);
+        // Fires only on a natural countdown-to-zero — never on mount (first tick
+        // is 1s in) and never on Skip (skip clears the interval first). In true
+        // background JS is suspended, so the OS notification handles the alert.
+        Vibration.vibrate(REST_DONE_PATTERN);
       }
     }, 1000);
 
