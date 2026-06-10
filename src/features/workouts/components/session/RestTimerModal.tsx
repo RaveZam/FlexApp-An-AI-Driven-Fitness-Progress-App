@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useRef, useState } from "react";
-import { AppState, Modal, Platform, StyleSheet, Text, TouchableOpacity, Vibration, View } from "react-native";
+import { AppState, Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Animated, {
   Easing,
   FadeIn,
@@ -18,13 +18,6 @@ const RADIUS = 110;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
-
-// ~3 seconds of vibration when rest ends. iOS buzzes are fixed-length and the
-// numbers are gaps between them; Android numbers are [wait, vibrate, ...].
-const REST_DONE_PATTERN =
-  Platform.OS === "ios"
-    ? [0, 500, 500, 500, 500, 500]
-    : [0, 500, 150, 500, 150, 500, 150, 500, 150, 500];
 
 type Props = {
   visible: boolean;
@@ -85,9 +78,6 @@ export default function RestTimerModal({ visible, restSeconds, onClose }: Props)
 
   useEffect(() => {
     if (remaining === 0 && visible) {
-      // Plays out even after the modal auto-closes below — it's a device-level
-      // call, not tied to this component staying mounted.
-      Vibration.vibrate(REST_DONE_PATTERN);
       const t = setTimeout(onClose, 600);
       return () => clearTimeout(t);
     }
