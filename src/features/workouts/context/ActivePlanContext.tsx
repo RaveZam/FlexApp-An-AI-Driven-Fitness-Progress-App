@@ -11,7 +11,7 @@ import {
   getPreferences,
   setActivePlan as setActivePlanLocal,
 } from "../services/preferencesLocalService";
-import { getActiveSession } from "../services/sessionLocalService";
+import { getActiveSession } from "../session/services/sessionLocalService";
 import type { WorkoutSession } from "../types";
 
 type ActivePlanContextValue = {

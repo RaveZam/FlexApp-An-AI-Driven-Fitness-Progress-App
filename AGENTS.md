@@ -33,6 +33,11 @@ components/ · constants/ · hooks/ · src/lib/   (shared bottom — depends on 
 src/features/<feature>/                          (depends on shared + its own internals)
         ↑
 app/                                             (routing only — thin re-exports)
+
+
+Touches supabase/sqlite → services/.
+Pure JS, no React (loops, math, transforms, validation) → core/.
+Only what's left — useState, useEffect, memo, refs, cleanup — stays in the hook.
 ```
 
 - Shared `components/`, `constants/`, root `hooks/`, and `src/lib/` must NOT import from `src/features/`.

@@ -29,15 +29,23 @@ src/features/
   home/                       # Home dashboard (charts, insights, PRs)
     components/
     screens/
-  workouts/                   # Core workout feature (plans, sessions, tracking)
-    components/
-      create/                 # Create-workout form pieces (DayPicker, ExerciseEditorRow, ExercisePickerModal)
-      session/                # Active session UI (SetRow, RestTimerModal, WorkoutLogModal, ExercisesListSheet)
-    context/workoutContext.tsx
-    hooks/                    # All workout hooks (flattened)
-    screens/                  # Layout-only screens; logic lives in hooks
-    services/                 # SQLite (*LocalService) + Supabase (*SupabaseService) reads/writes
-    types/
+  workouts/                   # Core workout feature, split by sub-domain
+    plan/                     # Workout plans (PlanCard at root)
+      screens/                # WorkoutsScreen (plan list), PlanDetailScreen, CreatePlanScreen
+      hooks/                  # usePlans, useCreatePlan, useTodaysWorkouts
+    workout/                  # Single workouts
+      screens/                # WorkoutDetailScreen, CreateWorkoutScreen, WorkoutTemplatesScreen
+      hooks/                  # useWorkouts, useCreateWorkout(+Form), useEditWorkoutExercises, useUpdateWorkoutDays
+      components/             # DayPicker, ExerciseEditorRow, ExercisePickerModal, DayChipsEditor, ExerciseRow, WorkoutDetailHeader
+    session/                  # Active workout session (sessionView types at root)
+      screens/                # WorkoutSessionScreen
+      hooks/                  # useWorkoutSession(+Screen), useStartSession, useRestTimer, useSessionGuard, useExerciseHistory
+      components/             # SetRow, RestTimerModal, WorkoutLogModal, ExercisesListSheet, Session*
+      core/                   # Pure session logic (no React)
+      services/               # sessionLocalService, liveActivity, restNotifications
+    context/ActivePlanContext.tsx  # Shared across sub-domains
+    services/                 # Shared SQLite (*LocalService) + Supabase (*SupabaseService) reads/writes
+    types/                    # Shared domain types
   outbox/                     # Offline-first write queue + Supabase sync (cross-feature)
     services/outbox.ts        # enqueueOutbox()
     services/sync.ts          # runOutboxSync() — drains pending rows, dispatches to Supabase

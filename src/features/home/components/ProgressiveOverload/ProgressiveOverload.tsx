@@ -1,6 +1,6 @@
 import { FontFamilies, Palette } from "@/constants/theme";
 import { Feather } from "@expo/vector-icons";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useProgressiveOverload } from "../../hooks/ProgressiveOverload/useProgressiveOverload";
 import { ExerciseCard } from "./ExerciseCard";
@@ -8,13 +8,6 @@ import { ExerciseCard } from "./ExerciseCard";
 export function ProgressiveOverload() {
   const [bodyFilter, setBodyFilter] = useState("");
   const { exercises, muscleGroups } = useProgressiveOverload(bodyFilter);
-
-  // Default to the first available group once the catalog data lands.
-  useEffect(() => {
-    if (muscleGroups.length > 0 && !muscleGroups.includes(bodyFilter)) {
-      setBodyFilter(muscleGroups[0]);
-    }
-  }, [muscleGroups, bodyFilter]);
 
   return (
     <View style={styles.section}>
