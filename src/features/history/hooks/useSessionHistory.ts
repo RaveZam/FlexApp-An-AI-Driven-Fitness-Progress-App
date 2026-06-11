@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useFocusEffect } from "expo-router";
 import { useAuth } from "@/src/features/auth";
 import { deleteSession } from "@/src/features/workouts";
+import { computeOverviewStats, groupByMonth } from "../sessionStats";
 import { listCompletedSessions } from "../services/historyLocalService";
 import type { WorkoutSessionSummary } from "../types";
 
@@ -34,5 +35,8 @@ export function useSessionHistory() {
     load();
   }, [load]);
 
-  return { sessions, loading, refresh: load, deleteOne };
+  const stats = useMemo(() => computeOverviewStats(sessions), [sessions]);
+  const sections = useMemo(() => groupByMonth(sessions), [sessions]);
+
+  return { sessions, stats, sections, loading, refresh: load, deleteOne };
 }

@@ -1,12 +1,8 @@
 import Avatar from "@/components/Avatar";
 import LoadingOverlay from "@/components/ui/LoadingOverlay";
 import Popup from "@/components/ui/Popup";
-import { useAuth } from "@/src/features/auth";
-import { cancelAllInProgressForUser, deleteAllSessionsForUser } from "@/src/features/workouts";
-import { router } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
-  Alert,
   ScrollView,
   Switch,
   Text,
@@ -14,54 +10,27 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useSettings } from "../hooks/useSettings";
 
 export default function Settings() {
-  const { signOut, session, user } = useAuth();
-  const [userName, setUserName] = useState("");
-  const [userEmail, setUserEmail] = useState("");
+  const { userName, userEmail, avatarUri, loggingOut, clearHistory, cancelInProgress, logout } =
+    useSettings();
   const [isLogoutPopupVisible, setLogoutPopupVisible] = useState(false);
   const [isClearHistoryPopupVisible, setClearHistoryPopupVisible] = useState(false);
   const [isCancelInProgressPopupVisible, setCancelInProgressPopupVisible] = useState(false);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (!session) {
-      router.replace("/login");
-    } else if (user) {
-      setUserEmail(user.email || "");
-      setUserName(
-        user.user_metadata?.username || user.email?.split("@")[0] || ""
-      );
-    }
-  }, [session, user]);
-
-  const handleLogout = () => {
-    setLogoutPopupVisible(true);
-  };
 
   const confirmClearHistory = () => {
-    if (user) {
-      deleteAllSessionsForUser(user.id);
-    }
+    clearHistory();
     setClearHistoryPopupVisible(false);
   };
 
   const confirmCancelInProgress = () => {
-    if (user) {
-      cancelAllInProgressForUser(user.id);
-    }
+    cancelInProgress();
     setCancelInProgressPopupVisible(false);
   };
 
   const confirmLogout = async () => {
-    setLoading(true);
-    const { error } = await signOut();
-    setLoading(false);
-    if (error) {
-      Alert.alert("Logout Failed", error.message);
-    } else {
-      router.replace("/login");
-    }
+    await logout();
     setLogoutPopupVisible(false);
   };
 
@@ -77,10 +46,7 @@ export default function Settings() {
         <View className="mb-8 bg-[#191919] p-6 rounded-xl border border-[#1a472a]/20">
           <View className="flex-row items-center mb-4">
             <Avatar
-              uri={
-                user?.user_metadata?.avatar_url ??
-                user?.user_metadata?.picture
-              }
+              uri={avatarUri}
               name={userName}
               email={userEmail}
               size={60}
@@ -118,7 +84,7 @@ export default function Settings() {
           </TouchableOpacity>
           <TouchableOpacity
             className="bg-[#191919]/60 p-4 rounded-xl border border-red-500/30 backdrop-blur-sm"
-            onPress={handleLogout}
+            onPress={() => setLogoutPopupVisible(true)}
           >
             <Text className="text-red-400 text-base font-semibold">
               Log Out
@@ -184,7 +150,7 @@ export default function Settings() {
       <Popup
           isVisible={isLogoutPopupVisible}
           onClose={() => setLogoutPopupVisible(false)}
-          iconName="questioncircleo"
+          iconName="question-circle"
           message="Are you sure you want to log out?"
           buttons={[
             { text: "Cancel", onPress: () => setLogoutPopupVisible(false) },
@@ -194,7 +160,7 @@ export default function Settings() {
         <Popup
           isVisible={isClearHistoryPopupVisible}
           onClose={() => setClearHistoryPopupVisible(false)}
-          iconName="exclamationcircleo"
+          iconName="exclamation-circle"
           message="This will permanently delete all workout history. This cannot be undone."
           buttons={[
             { text: "Cancel", onPress: () => setClearHistoryPopupVisible(false) },
@@ -204,14 +170,14 @@ export default function Settings() {
         <Popup
           isVisible={isCancelInProgressPopupVisible}
           onClose={() => setCancelInProgressPopupVisible(false)}
-          iconName="exclamationcircleo"
+          iconName="exclamation-circle"
           message="This will mark all in-progress workouts as cancelled."
           buttons={[
             { text: "Cancel", onPress: () => setCancelInProgressPopupVisible(false) },
             { text: "Cancel Workouts", onPress: confirmCancelInProgress, style: "destructive" },
           ]}
         />
-      <LoadingOverlay isVisible={loading} />
+      <LoadingOverlay isVisible={loggingOut} />
     </SafeAreaView>
   );
 }
