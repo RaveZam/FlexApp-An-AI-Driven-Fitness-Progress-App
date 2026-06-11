@@ -1,5 +1,5 @@
 import { FontFamilies, Palette } from "@/constants/theme";
-import type { SessionExercise, SessionSet } from "@/src/features/workouts/types";
+import type { SessionExercise, SessionSet } from "@/src/features/workouts";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import React from "react";

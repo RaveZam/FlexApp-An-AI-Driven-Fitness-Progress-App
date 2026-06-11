@@ -1,4 +1,4 @@
-import { useAuth } from "@/src/features/auth/hooks/useAuth";
+import { useAuth } from "@/src/features/auth";
 import * as exerciseStatsDao from "@/src/lib/dao/exerciseStats";
 import { useMemo } from "react";
 

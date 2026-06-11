@@ -1,6 +1,6 @@
-import { getSessionById } from "@/src/features/workouts/services/sessionLocalService";
+import { getSessionById } from "@/src/features/workouts";
 import * as sessionSummaryDao from "@/src/lib/dao/sessionSummary";
-import type { WorkoutSession } from "@/src/features/workouts/types";
+import type { WorkoutSession } from "@/src/features/workouts";
 import type { WorkoutSessionSummary } from "../types";
 
 export function listCompletedSessions(userId: string): WorkoutSessionSummary[] {

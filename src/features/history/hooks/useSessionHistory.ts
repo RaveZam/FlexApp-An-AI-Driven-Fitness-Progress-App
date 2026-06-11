@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useFocusEffect } from "expo-router";
-import { useAuth } from "@/src/features/auth/hooks/useAuth";
-import { deleteSession } from "@/src/features/workouts/services/sessionLocalService";
+import { useAuth } from "@/src/features/auth";
+import { deleteSession } from "@/src/features/workouts";
 import { listCompletedSessions } from "../services/historyLocalService";
 import type { WorkoutSessionSummary } from "../types";
 

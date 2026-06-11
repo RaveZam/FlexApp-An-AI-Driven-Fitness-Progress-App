@@ -1,4 +1,4 @@
-import { useAuth } from "@/src/features/auth/hooks/useAuth";
+import { useAuth } from "@/src/features/auth";
 import { listLoggedWorkouts } from "@/src/features/home/services/ProgressiveOverloadDao/progressiveOverloadDao";
 import type {
   ExerciseProgress,

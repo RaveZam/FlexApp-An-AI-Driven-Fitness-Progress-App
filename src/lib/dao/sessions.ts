@@ -1,5 +1,6 @@
-import type { SessionStatus } from "@/src/features/workouts/types";
 import { getDb } from "@/src/lib/db";
+
+export type SessionStatus = "in_progress" | "completed" | "cancelled";
 
 export type SessionRow = {
   id: string;

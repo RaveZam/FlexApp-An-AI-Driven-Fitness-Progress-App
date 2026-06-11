@@ -1,10 +1,12 @@
-import { useAuth } from "@/src/features/auth/hooks/useAuth";
+import { useAuth } from "@/src/features/auth";
 import { deriveStartButton } from "@/src/features/home/helpers/startButton";
-import { useActivePlan } from "@/src/features/workouts/hooks/useActivePlan";
-import { useActiveSession } from "@/src/features/workouts/hooks/useActiveSession";
-import { useStartSession } from "@/src/features/workouts/hooks/useStartSession";
-import { useTodaysWorkouts } from "@/src/features/workouts/hooks/useTodaysWorkouts";
-import type { Workout } from "@/src/features/workouts/types";
+import {
+  useActivePlan,
+  useActiveSession,
+  useStartSession,
+  useTodaysWorkouts,
+  type Workout,
+} from "@/src/features/workouts";
 import { router, useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 

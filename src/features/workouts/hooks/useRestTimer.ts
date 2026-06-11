@@ -1,4 +1,4 @@
-import { useAuth } from "@/src/features/auth/hooks/useAuth";
+import { useAuth } from "@/src/features/auth";
 import { useCallback } from "react";
 import { getRestTimerSeconds } from "../services/preferencesLocalService";
 import { DEFAULT_REST_TIMER_SECONDS } from "../types";

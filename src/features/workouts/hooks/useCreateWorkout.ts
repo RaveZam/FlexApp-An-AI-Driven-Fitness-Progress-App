@@ -1,6 +1,6 @@
 import { generateUUID } from "@/src/lib/uuid";
 import { useState } from "react";
-import { useAuth } from "@/src/features/auth/hooks/useAuth";
+import { useAuth } from "@/src/features/auth";
 import { insertWorkoutLocal } from "../services/workoutLocalService";
 import type { Workout, WorkoutInput } from "../types";
 

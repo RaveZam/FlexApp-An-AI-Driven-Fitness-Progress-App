@@ -1,4 +1,4 @@
-import { useAuth } from "@/src/features/auth/hooks/useAuth";
+import { useAuth } from "@/src/features/auth";
 import { generateUUID } from "@/src/lib/uuid";
 import { useRouter } from "expo-router";
 import { useState } from "react";

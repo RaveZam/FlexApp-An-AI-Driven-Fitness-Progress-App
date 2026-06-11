@@ -4,7 +4,7 @@ import "react-native-reanimated";
 import BlurOverlay from "@/components/ui/BlurOverlay";
 import LoadingOverlay from "@/components/ui/LoadingOverlay";
 import Popup from "@/components/ui/Popup";
-import UserInfoCard from "@/components/UserInfoCard";
+import UserInfoCard from "@/src/features/home/components/UserInfoCard";
 import { FontFamilies, Palette } from "@/constants/theme";
 import {
   ProgressiveOverload,

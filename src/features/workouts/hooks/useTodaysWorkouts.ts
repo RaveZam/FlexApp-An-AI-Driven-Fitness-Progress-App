@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { usePlans } from "./usePlans";
-import { useActivePlan } from "./useActivePlan";
+import { useActivePlan } from "../context/ActivePlanContext";
 import type { Workout } from "../types";
 
 export function useTodaysWorkouts(): { workouts: Workout[]; loading: boolean } {

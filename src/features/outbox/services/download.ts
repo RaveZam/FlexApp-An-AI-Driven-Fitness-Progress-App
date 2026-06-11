@@ -1,4 +1,4 @@
-import type { SessionStatus } from "@/src/features/workouts/types";
+import type { SessionStatus } from "@/src/lib/dao/sessions";
 import * as catalogDao from "@/src/lib/dao/catalog";
 import * as plansDao from "@/src/lib/dao/plans";
 import * as preferencesDao from "@/src/lib/dao/preferences";

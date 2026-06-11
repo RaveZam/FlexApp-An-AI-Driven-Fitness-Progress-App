@@ -1,4 +1,4 @@
-import { useActiveSession } from "@/src/features/workouts/hooks/useActiveSession";
+import { useActiveSession } from "../context/ActivePlanContext";
 import { useExerciseHistory } from "@/src/features/workouts/hooks/useExerciseHistory";
 import { useRestTimer } from "@/src/features/workouts/hooks/useRestTimer";
 import { useSessionGuard } from "@/src/features/workouts/hooks/useSessionGuard";

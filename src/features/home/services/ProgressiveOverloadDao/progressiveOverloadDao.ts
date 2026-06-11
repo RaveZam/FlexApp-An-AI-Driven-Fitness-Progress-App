@@ -1,4 +1,4 @@
-import type { SessionStatus } from "@/src/features/workouts/types";
+import type { SessionStatus } from "@/src/lib/dao/sessions";
 import { getDb } from "@/src/lib/db";
 import type {
   ExerciseRaw,

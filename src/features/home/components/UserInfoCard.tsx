@@ -1,6 +1,6 @@
 import Avatar from "@/components/Avatar";
 import { FontFamilies, Palette } from "@/constants/theme";
-import { useAuth } from "@/src/features/auth/hooks/useAuth";
+import { useAuth } from "@/src/features/auth";
 import Fontisto from "@expo/vector-icons/Fontisto";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useEffect } from "react";

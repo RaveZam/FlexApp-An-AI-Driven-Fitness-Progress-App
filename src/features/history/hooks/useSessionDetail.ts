@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getCompletedSessionDetail } from "../services/historyLocalService";
-import type { WorkoutSession } from "@/src/features/workouts/types";
+import type { WorkoutSession } from "@/src/features/workouts";
 
 export function useSessionDetail(sessionId: string) {
   const [session, setSession] = useState<WorkoutSession | null>(null);

@@ -12,7 +12,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { DAY_LABELS } from "../../dayLabels";
-import { useActivePlan } from "../../hooks/useActivePlan";
+import { useActivePlan } from "../../context/ActivePlanContext";
 import { usePlans } from "../../hooks/usePlans";
 import type { Workout } from "../../types";
 

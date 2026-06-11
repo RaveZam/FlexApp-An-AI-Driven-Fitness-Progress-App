@@ -1,6 +1,6 @@
 import { FontFamilies, Palette } from "@/constants/theme";
 import { getTodayLabel } from "@/src/features/home/helpers/dayLabels";
-import type { Workout } from "@/src/features/workouts/types";
+import type { Workout } from "@/src/features/workouts";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";

@@ -1,3 +1,7 @@
+import type { SessionStatus } from "@/src/lib/dao/sessions";
+
+export type { SessionStatus };
+
 export type CatalogExercise = {
   id: string;
   name: string;
@@ -57,7 +61,6 @@ export type WorkoutPlanInput = {
   name: string;
 };
 
-export type SessionStatus = "in_progress" | "completed" | "cancelled";
 
 export type SessionSet = {
   id: string;

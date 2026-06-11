@@ -1,8 +1,8 @@
 import Avatar from "@/components/Avatar";
 import LoadingOverlay from "@/components/ui/LoadingOverlay";
 import Popup from "@/components/ui/Popup";
-import { useAuth } from "@/src/features/auth/hooks/useAuth";
-import { cancelAllInProgressForUser, deleteAllSessionsForUser } from "@/src/features/workouts/services/sessionLocalService";
+import { useAuth } from "@/src/features/auth";
+import { cancelAllInProgressForUser, deleteAllSessionsForUser } from "@/src/features/workouts";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {

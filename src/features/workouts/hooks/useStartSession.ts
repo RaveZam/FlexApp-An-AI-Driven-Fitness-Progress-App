@@ -1,4 +1,4 @@
-import { useAuth } from "@/src/features/auth/hooks/useAuth";
+import { useAuth } from "@/src/features/auth";
 import { useCallback } from "react";
 import { createSessionFromWorkout } from "../services/sessionLocalService";
 import type { Workout } from "../types";

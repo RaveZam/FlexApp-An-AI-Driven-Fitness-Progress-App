@@ -1,4 +1,4 @@
-import { useAuth } from "@/src/features/auth/hooks/useAuth";
+import { useAuth } from "@/src/features/auth";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
 import { fetchPlans } from "../services/workoutSupabaseService";
