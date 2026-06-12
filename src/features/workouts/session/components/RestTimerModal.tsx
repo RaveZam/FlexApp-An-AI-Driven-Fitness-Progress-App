@@ -1,3 +1,6 @@
+import { useRestTimer } from "@/src/features/workouts/session/hooks/useRestTimer";
+import { endRestActivity, startRestActivity } from "@/src/features/workouts/session/services/liveActivity";
+import { cancelRestEndNotification, scheduleRestEndNotification } from "@/src/features/workouts/session/services/restNotifications";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useRef, useState } from "react";
 import { AppState, Modal, Platform, StyleSheet, Text, TouchableOpacity, Vibration, View } from "react-native";
@@ -10,8 +13,6 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import Svg, { Circle } from "react-native-svg";
-import { endRestActivity, startRestActivity } from "@/src/features/workouts/session/services/liveActivity";
-import { cancelRestEndNotification, scheduleRestEndNotification } from "@/src/features/workouts/session/services/restNotifications";
 
 const ACCENT = "#10b981";
 const RADIUS = 110;
@@ -28,23 +29,22 @@ const REST_DONE_PATTERN =
 
 type Props = {
   visible: boolean;
-  restSeconds: number;
   onClose: () => void;
 };
 
-export default function RestTimerModal({ visible, restSeconds, onClose }: Props) {
-  const [total, setTotal] = useState(0);
+export default function RestTimerModal({ visible, onClose }: Props) {
+  const { getUserPreferenceRestTime } = useRestTimer();
   const [remaining, setRemaining] = useState(0);
   const progress = useSharedValue(1);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const restTime = getUserPreferenceRestTime
   // Absolute end time so the countdown stays accurate across backgrounding,
   // where JS timers are suspended and would otherwise drift.
   const endsAtRef = useRef(0);
 
   useEffect(() => {
     if (!visible) return;
-    setTotal(restSeconds);
-    endsAtRef.current = Date.now() + restSeconds * 1000;
+    endsAtRef.current = Date.now() + restTime * 1000;
     startRestActivity(endsAtRef.current);
     scheduleRestEndNotification(endsAtRef.current);
 
@@ -58,7 +58,7 @@ export default function RestTimerModal({ visible, restSeconds, onClose }: Props)
     const sync = () => {
       const remainingMs = Math.max(0, endsAtRef.current - Date.now());
       setRemaining(Math.ceil(remainingMs / 1000));
-      progress.value = restSeconds > 0 ? remainingMs / (restSeconds * 1000) : 0;
+      progress.value = restTime > 0 ? remainingMs / (restTime * 1000) : 0;
       progress.value = withTiming(0, {
         duration: remainingMs,
         easing: Easing.linear,
@@ -85,7 +85,7 @@ export default function RestTimerModal({ visible, restSeconds, onClose }: Props)
       endRestActivity();
       cancelRestEndNotification();
     };
-  }, [visible, restSeconds]);
+  }, [visible, restTime]);
 
   useEffect(() => {
     if (remaining === 0 && visible) {
@@ -111,7 +111,7 @@ export default function RestTimerModal({ visible, restSeconds, onClose }: Props)
     return `${m}:${sec.toString().padStart(2, "0")}`;
   };
 
-  const pct = total > 0 ? Math.round((remaining / total) * 100) : 0;
+  const pct = restTime > 0 ? Math.round((remaining / restTime) * 100) : 0;
 
   return (
     <Modal
@@ -158,7 +158,7 @@ export default function RestTimerModal({ visible, restSeconds, onClose }: Props)
 
             <View style={styles.timerCenter}>
               <Text style={styles.timerDigits}>{formatTime(remaining)}</Text>
-              <Text style={styles.timerSub}>of {formatTime(total)} · {pct}%</Text>
+              <Text style={styles.timerSub}>of {formatTime(restTime)} · {pct}%</Text>
             </View>
           </View>
 

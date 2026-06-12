@@ -1,9 +1,8 @@
 import { useExerciseHistory } from "@/src/features/workouts/session/hooks/useExerciseHistory";
-import { useRestTimer } from "@/src/features/workouts/session/hooks/useRestTimer";
 import { useSessionGuard } from "@/src/features/workouts/session/hooks/useSessionGuard";
 import { useWorkoutSession } from "@/src/features/workouts/session/hooks/useWorkoutSession";
 import { router } from "expo-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Alert } from "react-native";
 import { useActiveSession } from "../../context/ActivePlanContext";
 import { getBottomMode, getCompletedSetCount, getEditingSet, getProgressPct } from "../core/workoutSession";
@@ -20,7 +19,6 @@ export function useWorkoutSessionScreen(sessionId: string | undefined) {
     currentSetIndex,
     allSetsComplete,
     allExercisesComplete,
-    elapsedSeconds,
     logSet,
     editSet,
     goToNextExercise,
@@ -29,12 +27,6 @@ export function useWorkoutSessionScreen(sessionId: string | undefined) {
   } = useWorkoutSession(sessionId);
 
   useSessionGuard(sessionId);
-
-  const { getUserPreferenceRestTime } = useRestTimer();
-  const restSeconds = useMemo(
-    () => getUserPreferenceRestTime(),
-    [getUserPreferenceRestTime]
-  );
 
   const [showLogModal, setShowLogModal] = useState(false);
   const [showRestTimer, setShowRestTimer] = useState(false);
@@ -121,8 +113,6 @@ export function useWorkoutSessionScreen(sessionId: string | undefined) {
     currentSetIndex,
     allSetsComplete,
     allExercisesComplete,
-    elapsedSeconds,
-    restSeconds,
     best,
     recentSessions,
     progressPct,

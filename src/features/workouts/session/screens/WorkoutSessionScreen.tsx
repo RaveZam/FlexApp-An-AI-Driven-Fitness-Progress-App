@@ -30,8 +30,6 @@ export default function WorkoutSessionScreen() {
     currentSetIndex,
     allSetsComplete,
     allExercisesComplete,
-    elapsedSeconds,
-    restSeconds,
     best,
     recentSessions,
     progressPct,
@@ -86,7 +84,7 @@ export default function WorkoutSessionScreen() {
           <View style={[styles.progressFill, { width: `${progressPct}%` }]} />
         </View>
 
-        <SessionTimerHero elapsedSeconds={elapsedSeconds} restSeconds={restSeconds} />
+        <SessionTimerHero sessionId={sessionId} />
 
         <ScrollView
           style={styles.scroll}
@@ -146,11 +144,7 @@ export default function WorkoutSessionScreen() {
 
         <SessionBottomBar mode={bottomMode} onPress={bottomAction} />
 
-        <RestTimerModal
-          visible={showRestTimer}
-          restSeconds={restSeconds}
-          onClose={closeRestTimer}
-        />
+        <RestTimerModal visible={showRestTimer} onClose={closeRestTimer} />
 
         <WorkoutLogModal
           visible={showLogModal}

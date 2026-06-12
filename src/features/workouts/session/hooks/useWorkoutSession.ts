@@ -1,8 +1,7 @@
 import { cancelSession, completeSession, getSessionById, updateSet } from "@/src/features/workouts/session/services/sessionLocalService";
-import type { WorkoutSession } from "@/src/features/workouts/types";
 import type { SessionExerciseView } from "@/src/features/workouts/session/sessionView";
-import { getElapsedSeconds } from "@/src/features/workouts/session/core/sessionElapsed";
-import { useCallback, useEffect, useRef, useState } from "react";
+import type { WorkoutSession } from "@/src/features/workouts/types";
+import { useCallback, useEffect, useState } from "react";
 
 function sessionToView(session: WorkoutSession): SessionExerciseView[] {
   return session.exercises.map((ex) => ({
@@ -26,9 +25,7 @@ export function useWorkoutSession(sessionId: string | undefined) {
   const [name, setName] = useState("Today's Workout");
   const [exercises, setExercises] = useState<SessionExerciseView[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [loading, setLoading] = useState(true);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     const session = sessionId ? getSessionById(sessionId) : null;
@@ -36,19 +33,6 @@ export function useWorkoutSession(sessionId: string | undefined) {
     setExercises(session ? sessionToView(session) : []);
     setActiveIndex(0);
     setLoading(false);
-
-    const startedAt = session?.startedAt ?? null;
-    setElapsedSeconds(getElapsedSeconds(startedAt));
-    if (timerRef.current) clearInterval(timerRef.current);
-    if (startedAt) {
-      timerRef.current = setInterval(
-        () => setElapsedSeconds(getElapsedSeconds(startedAt)),
-        1000
-      );
-    }
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
   }, [sessionId]);
 
   const active = exercises[activeIndex];
@@ -162,7 +146,6 @@ export function useWorkoutSession(sessionId: string | undefined) {
     currentSetIndex,
     allSetsComplete,
     allExercisesComplete,
-    elapsedSeconds,
     logSet,
     editSet,
     goToNextExercise,
