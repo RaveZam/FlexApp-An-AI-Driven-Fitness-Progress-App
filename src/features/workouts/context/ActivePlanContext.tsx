@@ -11,8 +11,13 @@ import {
   getPreferences,
   setActivePlan as setActivePlanLocal,
 } from "../services/preferencesLocalService";
-import { getActiveSession } from "../session/services/sessionLocalService";
 import type { WorkoutSession } from "../types";
+
+// TODO(session-rebuild): sessionLocalService was removed for the session
+// reconstruction; restore the real lookup once the new service exists.
+function getActiveSession(_userId: string): WorkoutSession | null {
+  return null;
+}
 
 type ActivePlanContextValue = {
   activePlanId: string | null;

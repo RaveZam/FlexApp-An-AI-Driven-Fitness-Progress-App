@@ -7,7 +7,7 @@ import { ExerciseCard } from "./ExerciseCard";
 
 export function ProgressiveOverload() {
   const [bodyFilter, setBodyFilter] = useState("");
-  const { exercises, muscleGroups } = useProgressiveOverload(bodyFilter);
+  const { exercises, muscleGroups, selectedGroup } = useProgressiveOverload(bodyFilter);
 
   return (
     <View style={styles.section}>
@@ -23,7 +23,7 @@ export function ProgressiveOverload() {
           contentContainerStyle={styles.chipRow}
         >
           {muscleGroups.map((chip) => {
-            const active = chip === bodyFilter;
+            const active = chip === selectedGroup;
             return (
               <Pressable
                 key={chip}

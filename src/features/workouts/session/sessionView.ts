@@ -15,3 +15,16 @@ export type SessionExerciseView = {
   sets: SessionSetView[];
   isUnilateral: boolean;
 };
+
+export type ExerciseBestRecord = {
+  weight: number;
+  reps: number;
+  date: string;
+};
+
+export type ExerciseSessionPoint = {
+  sessionId: string;
+  startedAt: string;
+  maxWeight: number;
+  repsAtMax: number;
+};

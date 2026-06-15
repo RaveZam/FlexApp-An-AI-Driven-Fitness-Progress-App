@@ -13,5 +13,6 @@
     "expo-env.d.ts",
     "nativewind-env.d.ts",
     "globals.d.ts"
-  ]
+  ],
+  "exclude": ["src/features/workouts/session copy"]
 }

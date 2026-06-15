@@ -1,8 +1,6 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
-import { useRestTimer } from "../hooks/useRestTimer";
-import { useSessionElapsed } from "../hooks/useSessionElapsed";
 
 const ACCENT = "#34d399";
 const BONE = "#f5f3ef";
@@ -18,11 +16,12 @@ function formatTime(totalSec: number): string {
 }
 
 
-export default function SessionTimerHero({ sessionId }: { sessionId: string | undefined }) {
-  const { elapsedSeconds } = useSessionElapsed(sessionId);
-  const { getUserPreferenceRestTime } = useRestTimer()
-  const restSeconds = getUserPreferenceRestTime
+type Props = {
+  elapsedSeconds: number;
+  restSeconds: number;
+};
 
+export default function SessionTimerHero({ elapsedSeconds, restSeconds }: Props) {
   const restMin = Math.floor(restSeconds / 60);
   const restSec = (restSeconds % 60).toString().padStart(2, "0");
 

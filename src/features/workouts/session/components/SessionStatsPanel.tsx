@@ -1,7 +1,7 @@
 import type {
   ExerciseBestRecord,
   ExerciseSessionPoint,
-} from "@/src/features/workouts/session/hooks/useExerciseHistory";
+} from "@/src/features/workouts/session/sessionView";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";

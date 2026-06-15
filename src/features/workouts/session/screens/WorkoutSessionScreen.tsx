@@ -7,10 +7,9 @@ import SessionHeader from "@/src/features/workouts/session/components/SessionHea
 import SessionStatsPanel from "@/src/features/workouts/session/components/SessionStatsPanel";
 import SessionTimerHero from "@/src/features/workouts/session/components/SessionTimerHero";
 import SetRow from "@/src/features/workouts/session/components/SetRow";
-import WorkoutLogModal from "@/src/features/workouts/session/components/WorkoutLogModal";
-import { useWorkoutSessionScreen } from "@/src/features/workouts/session/hooks/useWorkoutSessionScreen";
+import type { SessionExerciseView } from "@/src/features/workouts/session/sessionView";
 import { LinearGradient } from "expo-linear-gradient";
-import { useFocusEffect, useLocalSearchParams } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import React from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -20,36 +19,43 @@ const HAIRLINE = "rgba(245,243,239,0.07)";
 const INK = "#060606";
 const MUTED = "#6b6b6b";
 
+// Placeholder data while the session feature is reconstructed. The screen is
+// pure UI for now — hooks/services will be reintroduced one by one.
+const PLACEHOLDER_EXERCISES: SessionExerciseView[] = [
+  {
+    id: "placeholder-1",
+    name: "Bench Press",
+    isUnilateral: false,
+    sets: [
+      { id: "s1", setNumber: 1, targetReps: 8, weight: 135, actualReps: 8, actualRepsLeft: null, actualRepsRight: null, completed: true },
+      { id: "s2", setNumber: 2, targetReps: 8, weight: 135, actualReps: null, actualRepsLeft: null, actualRepsRight: null, completed: false },
+      { id: "s3", setNumber: 3, targetReps: 8, weight: null, actualReps: null, actualRepsLeft: null, actualRepsRight: null, completed: false },
+    ],
+  },
+  {
+    id: "placeholder-2",
+    name: "Incline Dumbbell Press",
+    isUnilateral: false,
+    sets: [
+      { id: "s4", setNumber: 1, targetReps: 10, weight: null, actualReps: null, actualRepsLeft: null, actualRepsRight: null, completed: false },
+      { id: "s5", setNumber: 2, targetReps: 10, weight: null, actualReps: null, actualRepsLeft: null, actualRepsRight: null, completed: false },
+    ],
+  },
+];
+
 export default function WorkoutSessionScreen() {
-  const { id: sessionId } = useLocalSearchParams<{ id?: string }>();
-  const {
-    loading,
-    active,
-    exercises,
-    activeIndex,
-    currentSetIndex,
-    allSetsComplete,
-    allExercisesComplete,
-    best,
-    recentSessions,
-    progressPct,
-    bottomMode,
-    bottomAction,
-    editingSet,
-    showLogModal,
-    showRestTimer,
-    showExercisesList,
-    handleLog,
-    handleEditSave,
-    handleExit,
-    selectExercise,
-    openExercisesList,
-    closeExercisesList,
-    openEditSet,
-    closeEditSet,
-    closeLogModal,
-    closeRestTimer,
-  } = useWorkoutSessionScreen(sessionId);
+  const exercises = PLACEHOLDER_EXERCISES;
+  const [activeIndex, setActiveIndex] = React.useState(0);
+  const [showRestTimer, setShowRestTimer] = React.useState(false);
+  const [showExercisesList, setShowExercisesList] = React.useState(false);
+
+  const active = exercises[activeIndex];
+  const currentSetIndex = active.sets.findIndex((s) => !s.completed);
+  const allSetsComplete = currentSetIndex === -1;
+  const allExercisesComplete = exercises.every((e) => e.sets.every((s) => s.completed));
+  const completedSets = exercises.flatMap((e) => e.sets).filter((s) => s.completed).length;
+  const totalSets = exercises.flatMap((e) => e.sets).length;
+  const progressPct = totalSets > 0 ? Math.round((completedSets / totalSets) * 100) : 0;
 
   // Bump on every focus so the entering animations replay each time the screen
   // refocuses (entering fires only on mount, so we remount via key).
@@ -59,8 +65,6 @@ export default function WorkoutSessionScreen() {
       setFocusKey((k) => k + 1);
     }, [])
   );
-
-  if (loading || !active) return null;
 
   return (
     <SafeAreaView style={styles.safe} edges={["top"]}>
@@ -76,15 +80,15 @@ export default function WorkoutSessionScreen() {
         <SessionHeader
           activeIndex={activeIndex}
           totalExercises={exercises.length}
-          onExit={handleExit}
-          onShowExercises={openExercisesList}
+          onExit={() => router.back()}
+          onShowExercises={() => setShowExercisesList(true)}
         />
 
         <View style={styles.progressTrack}>
           <View style={[styles.progressFill, { width: `${progressPct}%` }]} />
         </View>
 
-        <SessionTimerHero sessionId={sessionId} />
+        <SessionTimerHero elapsedSeconds={0} restSeconds={90} />
 
         <ScrollView
           style={styles.scroll}
@@ -100,8 +104,8 @@ export default function WorkoutSessionScreen() {
 
           <SessionStatsPanel
             key={`stats-${focusKey}`}
-            best={best}
-            recentSessions={recentSessions}
+            best={null}
+            recentSessions={[]}
             activeExerciseId={active.id}
           />
 
@@ -118,7 +122,7 @@ export default function WorkoutSessionScreen() {
                 set={set}
                 isCurrent={index === currentSetIndex}
                 index={index}
-                onEdit={openEditSet}
+                onEdit={() => {}}
               />
             ))}
           </View>
@@ -142,43 +146,19 @@ export default function WorkoutSessionScreen() {
           )}
         </ScrollView>
 
-        <SessionBottomBar mode={bottomMode} onPress={bottomAction} />
+        <SessionBottomBar mode="log" onPress={() => setShowRestTimer(true)} />
 
-        <RestTimerModal visible={showRestTimer} onClose={closeRestTimer} />
-
-        <WorkoutLogModal
-          visible={showLogModal}
-          exerciseName={active.name}
-          setNumber={allSetsComplete ? active.sets.length : currentSetIndex + 1}
-          totalSets={active.sets.length}
-          targetReps={allSetsComplete ? 0 : active.sets[currentSetIndex]?.targetReps ?? 0}
-          isUnilateral={active.isUnilateral}
-          onLog={handleLog}
-          onClose={closeLogModal}
-        />
-
-        <WorkoutLogModal
-          visible={!!editingSet}
-          exerciseName={active.name}
-          setNumber={editingSet?.setNumber ?? 0}
-          totalSets={active.sets.length}
-          targetReps={editingSet?.targetReps ?? 0}
-          isUnilateral={active.isUnilateral}
-          mode="edit"
-          initialWeight={editingSet?.weight ?? null}
-          initialReps={editingSet?.actualReps ?? null}
-          initialLeftReps={editingSet?.actualRepsLeft ?? null}
-          initialRightReps={editingSet?.actualRepsRight ?? null}
-          onLog={handleEditSave}
-          onClose={closeEditSet}
-        />
+        <RestTimerModal visible={showRestTimer} onClose={() => setShowRestTimer(false)} />
 
         <ExercisesListSheet
           visible={showExercisesList}
           exercises={exercises}
           activeIndex={activeIndex}
-          onSelect={selectExercise}
-          onClose={closeExercisesList}
+          onSelect={(index) => {
+            setActiveIndex(index);
+            setShowExercisesList(false);
+          }}
+          onClose={() => setShowExercisesList(false)}
         />
       </View>
     </SafeAreaView>

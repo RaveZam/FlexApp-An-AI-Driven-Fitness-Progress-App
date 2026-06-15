@@ -68,10 +68,14 @@ export function useProgressiveOverload(bodyFilter: string = ALL_BODY_PARTS) {
     return [...groups].sort();
   }, [all]);
 
-  const exercises = useMemo(() => {
-    if (bodyFilter === ALL_BODY_PARTS) return all;
-    return all.filter((e) => e.muscleGroup === bodyFilter);
-  }, [all, bodyFilter]);
+  // No explicit filter yet? Fall back to the first available group so the
+  // initial render isn't empty.
+  const selectedGroup = bodyFilter || muscleGroups[0] || ALL_BODY_PARTS;
 
-  return { exercises, muscleGroups };
+  const exercises = useMemo(() => {
+    if (selectedGroup === ALL_BODY_PARTS) return all;
+    return all.filter((e) => e.muscleGroup === selectedGroup);
+  }, [all, selectedGroup]);
+
+  return { exercises, muscleGroups, selectedGroup };
 }

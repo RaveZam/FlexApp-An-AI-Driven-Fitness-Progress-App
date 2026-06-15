@@ -1,6 +1,3 @@
-import { useRestTimer } from "@/src/features/workouts/session/hooks/useRestTimer";
-import { endRestActivity, startRestActivity } from "@/src/features/workouts/session/services/liveActivity";
-import { cancelRestEndNotification, scheduleRestEndNotification } from "@/src/features/workouts/session/services/restNotifications";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useRef, useState } from "react";
 import { AppState, Modal, Platform, StyleSheet, Text, TouchableOpacity, Vibration, View } from "react-native";
@@ -30,23 +27,22 @@ const REST_DONE_PATTERN =
 type Props = {
   visible: boolean;
   onClose: () => void;
+  restSeconds?: number;
 };
 
-export default function RestTimerModal({ visible, onClose }: Props) {
-  const { getUserPreferenceRestTime } = useRestTimer();
+export default function RestTimerModal({ visible, onClose, restSeconds = 90 }: Props) {
   const [remaining, setRemaining] = useState(0);
   const progress = useSharedValue(1);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const restTime = getUserPreferenceRestTime
+  const restTime = restSeconds;
   // Absolute end time so the countdown stays accurate across backgrounding,
   // where JS timers are suspended and would otherwise drift.
+
   const endsAtRef = useRef(0);
 
   useEffect(() => {
     if (!visible) return;
     endsAtRef.current = Date.now() + restTime * 1000;
-    startRestActivity(endsAtRef.current);
-    scheduleRestEndNotification(endsAtRef.current);
 
     const appStateSub = AppState.addEventListener("change", (state) => {
       if (state === "active") sync();
@@ -82,8 +78,6 @@ export default function RestTimerModal({ visible, onClose }: Props) {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
       appStateSub.remove();
-      endRestActivity();
-      cancelRestEndNotification();
     };
   }, [visible, restTime]);
 
