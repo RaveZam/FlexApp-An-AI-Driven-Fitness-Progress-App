@@ -10,6 +10,7 @@ const MUTED = "#6b6b6b";
 
 export default function SessionExerciseCard() {
   const { exercises, activeIndex } = useWorkoutSession();
+
   const active = exercises[activeIndex];
   const setLabel = `${active.targetSets} set${active.targetSets !== 1 ? "s" : ""}`;
   const meta = `${setLabel} · ${active.targetReps} reps target`;

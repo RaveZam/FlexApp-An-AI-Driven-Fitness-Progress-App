@@ -10,6 +10,7 @@ import { Redirect, router, useFocusEffect } from "expo-router";
 import React from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import SessionStatsPanel from "../components/SessionStatsPanel";
 import { useWorkoutSession } from "../hooks/useWorkoutSession";
 
 const ACCENT = "#34d399";
@@ -71,12 +72,7 @@ export default function WorkoutSessionScreenInner() {
         >
           <SessionExerciseCard key={`exercise-${focusKey}`} />
 
-          {/* <SessionStatsPanel
-            key={`stats-${focusKey}`}
-            best={null}
-            recentSessions={[]}
-            activeExerciseId={active.id}
-          /> */}
+          <SessionStatsPanel key={`stats-${focusKey}`} />
 
           {/* <View style={styles.setsHeader}>
             <Text style={styles.sectionLabel}>Sets</Text>
