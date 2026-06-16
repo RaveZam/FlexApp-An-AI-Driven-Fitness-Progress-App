@@ -1,10 +1,11 @@
-import type { SessionExerciseView } from "@/src/features/workouts/session/sessionView";
+import type { WorkoutExerciseRow } from "@/src/lib/dao/workoutExercises";
 import type { ReactNode } from "react";
-import { createContext, useEffect, useMemo, useState } from "react";
+import { createContext, useMemo, useState } from "react";
+import { useGetCurrentWorkoutExercises } from "../hooks/useGetCurrentWorkoutExercises";
 
 
 type SessionContextValue = {
-  exercises: SessionExerciseView[];
+  exercises: WorkoutExerciseRow[];
   activeIndex: number;
   setActiveIndex: (index: number) => void;
 };
@@ -16,16 +17,9 @@ export const SessionContext = createContext<SessionContextValue | null>(null);
 
 export function WorkoutSessionProvider({ children }: { children: ReactNode }) {
  
-  
-  useEffect(() => {
-    if (workouts && workouts.length > 0) {
-      const sessionExercises: SessionExerciseView[] = [];
-      setExercises(sessionExercises);
-    }
-  }, [workouts]);
-
-  const [exercises, setExercises] = useState<SessionExerciseView[]>([]);
+  const exercises: WorkoutExerciseRow[] = useGetCurrentWorkoutExercises();
   const [activeIndex, setActiveIndex] = useState(0);
+
 
   const value = useMemo<SessionContextValue>(
     () => ({ exercises, activeIndex, setActiveIndex }),

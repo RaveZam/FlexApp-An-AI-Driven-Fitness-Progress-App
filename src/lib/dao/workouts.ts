@@ -16,7 +16,7 @@ type Raw = {
   name: string;
   created_at: string;
   updated_at: string;
-};
+}; 
 
 const fromRaw = (r: Raw): WorkoutRow => ({
   id: r.id,
@@ -43,6 +43,19 @@ export function listWorkoutsByPlan(planId: string): WorkoutRow[] {
       [planId]
     )
     .map(fromRaw);
+}
+
+export function getWorkoutIDForDay(planId: string, day: number): string | null {
+
+  return getDb()
+    .getFirstSync<{ id: string }>(
+      `SELECT w.id FROM user_workouts w
+       JOIN user_workout_days d ON d.workout_id = w.id
+       WHERE w.plan_id = ? AND d.day_of_week = ?
+       ORDER BY w.created_at ASC`,
+      [planId, day]
+    )?.id ?? null
+
 }
 
 export function getWorkoutUpdatedAt(workoutId: string): string | null {

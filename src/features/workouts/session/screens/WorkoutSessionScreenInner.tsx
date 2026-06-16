@@ -23,13 +23,11 @@ export default function WorkoutSessionScreenInner() {
   const [showRestTimer, setShowRestTimer] = React.useState(false);
   const [showExercisesList, setShowExercisesList] = React.useState(false);
 
-  const active = exercises[activeIndex];
-  const currentSetIndex = active?.sets.findIndex((s) => !s.completed);
-  const allSetsComplete = currentSetIndex === -1;
-  const allExercisesComplete = exercises.every((e) => e.sets.every((s) => s.completed));
-  const completedSets = exercises.flatMap((e) => e.sets).filter((s) => s.completed).length;
-  const totalSets = exercises.flatMap((e) => e.sets).length;
-  const progressPct = totalSets > 0 ? Math.round((completedSets / totalSets) * 100) : 0;
+  // Set tracking isn't wired into the data model yet (session rebuild in
+  // progress), so these stay neutral until per-set state lands.
+  const allSetsComplete = false;
+  const allExercisesComplete = false;
+  const progressPct = 0;
 
   // Bump on every focus so the entering animations replay each time the screen
   // refocuses (entering fires only on mount, so we remount via key).

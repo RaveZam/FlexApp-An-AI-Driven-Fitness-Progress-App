@@ -17,6 +17,16 @@ export function getActivePlanIdForUser(userId: string): string | null {
   return row?.active_plan_id ?? null;
 }
 
+export function getRestTimerSecondsForUser(userId: string): number {
+  const row = getDb().getFirstSync<{
+    rest_timer_seconds: number;
+  }>(
+    "SELECT rest_timer_seconds FROM user_preferences WHERE user_id = ?",
+    [userId]
+  );
+  return row?.rest_timer_seconds ?? 120;
+}
+
 export function getPreferencesForUser(userId: string): PreferencesRow | null {
   const row = getDb().getFirstSync<{
     user_id: string;
