@@ -1,9 +1,9 @@
 import { useAuth } from "@/src/features/auth";
 import { getWeekRange } from "@/src/features/home/helpers/weekDates";
 import { useActivePlan } from "@/src/features/workouts";
-import { listCompletedInRange } from "@/src/lib/dao/sessions";
-import { listByWorkoutIds as listDaysByWorkoutIds } from "@/src/lib/dao/workoutDays";
-import { listByPlan as listWorkoutsByPlan } from "@/src/lib/dao/workouts";
+import { listCompletedSessionsInRange } from "@/src/lib/dao/sessions";
+import { listWorkoutDaysByWorkoutIds as listDaysByWorkoutIds } from "@/src/lib/dao/workoutDays";
+import { listWorkoutsByPlan } from "@/src/lib/dao/workouts";
 import { useMemo } from "react";
 
 export function useScheduleBar() {
@@ -25,7 +25,7 @@ export function useScheduleBar() {
   const completedDays = useMemo<Set<number>>(() => {
     if (!user) return new Set();
     const { start, end } = getWeekRange(new Date());
-    const sessions = listCompletedInRange(user.id, start.toISOString(), end.toISOString());
+    const sessions = listCompletedSessionsInRange(user.id, start.toISOString(), end.toISOString());
     const set = new Set<number>();
     for (const s of sessions) {
       if (!s.completedAt) continue;

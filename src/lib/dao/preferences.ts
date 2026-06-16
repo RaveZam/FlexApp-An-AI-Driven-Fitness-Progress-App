@@ -7,7 +7,17 @@ export type PreferencesRow = {
   updatedAt: string;
 };
 
-export function get(userId: string): PreferencesRow | null {
+export function getActivePlanIdForUser(userId: string): string | null {
+  const row = getDb().getFirstSync<{
+    active_plan_id: string | null;
+  }>(
+    "SELECT active_plan_id FROM user_preferences WHERE user_id = ?",
+    [userId]
+  );
+  return row?.active_plan_id ?? null;
+}
+
+export function getPreferencesForUser(userId: string): PreferencesRow | null {
   const row = getDb().getFirstSync<{
     user_id: string;
     active_plan_id: string | null;
@@ -26,7 +36,7 @@ export function get(userId: string): PreferencesRow | null {
   };
 }
 
-export function upsertActivePlan(userId: string, planId: string | null, now: string): void {
+export function upsertActivePlanIdForUser(userId: string, planId: string | null, now: string): void {
   getDb().runSync(
     `INSERT INTO user_preferences (user_id, active_plan_id, updated_at)
      VALUES (?, ?, ?)
@@ -37,7 +47,7 @@ export function upsertActivePlan(userId: string, planId: string | null, now: str
   );
 }
 
-export function upsertRestTimerSeconds(
+export function upsertRestTimerSecondsForUser(
   userId: string,
   seconds: number,
   now: string
@@ -52,7 +62,7 @@ export function upsertRestTimerSeconds(
   );
 }
 
-export function upsertFromRemote(row: PreferencesRow): void {
+export function upsertPreferencesFromRemote(row: PreferencesRow): void {
   getDb().runSync(
     `INSERT INTO user_preferences (user_id, active_plan_id, rest_timer_seconds, updated_at)
      VALUES (?, ?, ?, ?)

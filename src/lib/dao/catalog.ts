@@ -8,7 +8,7 @@ export type CatalogRow = {
   isUnilateral: boolean;
 };
 
-export function upsertMany(rows: CatalogRow[]): void {
+export function upsertManyCatalogExercises(rows: CatalogRow[]): void {
   const db = getDb();
   db.withTransactionSync(() => {
     for (const r of rows) {

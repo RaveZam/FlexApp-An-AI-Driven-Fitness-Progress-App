@@ -42,7 +42,7 @@ const fromRaw = (r: Raw): WorkoutExerciseRow => ({
   createdAt: r.created_at,
 });
 
-export function listByWorkout(workoutId: string): WorkoutExerciseRow[] {
+export function listWorkoutExercisesByWorkout(workoutId: string): WorkoutExerciseRow[] {
   return getDb()
     .getAllSync<Raw>(
       `SELECT e.*, c.muscle_group AS muscle_group
@@ -54,7 +54,7 @@ export function listByWorkout(workoutId: string): WorkoutExerciseRow[] {
     .map(fromRaw);
 }
 
-export function insert(ex: WorkoutExerciseRow): void {
+export function insertWorkoutExercise(ex: WorkoutExerciseRow): void {
   getDb().runSync(
     `INSERT INTO user_workout_exercises
      (id, workout_id, user_id, name, catalog_exercise_id, target_sets, target_reps, position, is_unilateral, created_at)
@@ -74,7 +74,7 @@ export function insert(ex: WorkoutExerciseRow): void {
   );
 }
 
-export function upsert(ex: WorkoutExerciseRow): void {
+export function upsertWorkoutExercise(ex: WorkoutExerciseRow): void {
   getDb().runSync(
     `INSERT OR REPLACE INTO user_workout_exercises
      (id, workout_id, user_id, name, catalog_exercise_id, target_sets, target_reps, position, is_unilateral, created_at)
@@ -94,17 +94,17 @@ export function upsert(ex: WorkoutExerciseRow): void {
   );
 }
 
-export function updateTargets(id: string, targetSets: number, targetReps: number): void {
+export function updateWorkoutExerciseTargets(id: string, targetSets: number, targetReps: number): void {
   getDb().runSync(
     "UPDATE user_workout_exercises SET target_sets = ?, target_reps = ? WHERE id = ?",
     [targetSets, targetReps, id]
   );
 }
 
-export function deleteById(id: string): void {
+export function deleteWorkoutExerciseById(id: string): void {
   getDb().runSync("DELETE FROM user_workout_exercises WHERE id = ?", [id]);
 }
 
-export function deleteByWorkout(workoutId: string): void {
+export function deleteWorkoutExercisesByWorkout(workoutId: string): void {
   getDb().runSync("DELETE FROM user_workout_exercises WHERE workout_id = ?", [workoutId]);
 }

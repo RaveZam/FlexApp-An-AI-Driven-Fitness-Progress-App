@@ -1,6 +1,6 @@
 import { getDb } from "@/src/lib/db";
 
-export function listByWorkoutIds(workoutIds: string[]): Map<string, number[]> {
+export function listWorkoutDaysByWorkoutIds(workoutIds: string[]): Map<string, number[]> {
   const map = new Map<string, number[]>();
   if (workoutIds.length === 0) return map;
   const placeholders = workoutIds.map(() => "?").join(",");
@@ -17,7 +17,7 @@ export function listByWorkoutIds(workoutIds: string[]): Map<string, number[]> {
   return map;
 }
 
-export function replace(workoutId: string, daysOfWeek: number[], now: string): void {
+export function replaceWorkoutDays(workoutId: string, daysOfWeek: number[], now: string): void {
   const db = getDb();
   db.runSync("DELETE FROM user_workout_days WHERE workout_id = ?", [workoutId]);
   for (const d of daysOfWeek) {

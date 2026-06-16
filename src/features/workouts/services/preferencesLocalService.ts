@@ -8,18 +8,18 @@ import {
 } from "../types";
 
 export function getPreferences(userId: string): UserPreferences | null {
-  const userPreferences = preferencesDao.get(userId);
+  const userPreferences = preferencesDao.getPreferencesForUser(userId);
   console.log("[userPreferences]", JSON.stringify(userPreferences, null, 2));
   return userPreferences;
 }
 
 export function getRestTimerSeconds(userId: string): number {
-  return preferencesDao.get(userId)?.restTimerSeconds ?? DEFAULT_REST_TIMER_SECONDS;
+  return preferencesDao.getPreferencesForUser(userId)?.restTimerSeconds ?? DEFAULT_REST_TIMER_SECONDS;
 }
 
 export function setActivePlan(userId: string, planId: string | null): void {
   const now = new Date().toISOString();
-  preferencesDao.upsertActivePlan(userId, planId, now);
+  preferencesDao.upsertActivePlanIdForUser(userId, planId, now);
   enqueueOutbox({
     entityType: "user_preferences",
     entityId: userId,
@@ -34,7 +34,7 @@ export function setRestTimerSeconds(userId: string, seconds: number): void {
     Math.max(MIN_REST_TIMER_SECONDS, Math.round(seconds))
   );
   const now = new Date().toISOString();
-  preferencesDao.upsertRestTimerSeconds(userId, clamped, now);
+  preferencesDao.upsertRestTimerSecondsForUser(userId, clamped, now);
   enqueueOutbox({
     entityType: "user_preferences",
     entityId: userId,
@@ -44,5 +44,5 @@ export function setRestTimerSeconds(userId: string, seconds: number): void {
 }
 
 export function upsertPreferencesFromRemote(row: UserPreferences): void {
-  preferencesDao.upsertFromRemote(row);
+  preferencesDao.upsertPreferencesFromRemote(row);
 }

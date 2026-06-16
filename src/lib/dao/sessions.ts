@@ -41,7 +41,7 @@ const fromRaw = (r: Raw): SessionRow => ({
   updatedAt: r.updated_at,
 });
 
-export function getActive(userId: string): SessionRow | null {
+export function getActiveSessionForUser(userId: string): SessionRow | null {
   const row = getDb().getFirstSync<Raw>(
     "SELECT * FROM workout_sessions WHERE user_id = ? AND status = 'in_progress' ORDER BY started_at DESC LIMIT 1",
     [userId]
@@ -49,7 +49,7 @@ export function getActive(userId: string): SessionRow | null {
   return row ? fromRaw(row) : null;
 }
 
-export function getById(sessionId: string): SessionRow | null {
+export function getSessionById(sessionId: string): SessionRow | null {
   const row = getDb().getFirstSync<Raw>(
     "SELECT * FROM workout_sessions WHERE id = ?",
     [sessionId]
@@ -57,7 +57,7 @@ export function getById(sessionId: string): SessionRow | null {
   return row ? fromRaw(row) : null;
 }
 
-export function listCompletedInRange(
+export function listCompletedSessionsInRange(
   userId: string,
   startISO: string,
   endISO: string
@@ -72,7 +72,7 @@ export function listCompletedInRange(
     .map(fromRaw);
 }
 
-export function listIdsByUser(userId: string): string[] {
+export function listSessionIdsByUser(userId: string): string[] {
   return getDb()
     .getAllSync<{ id: string }>(
       "SELECT id FROM workout_sessions WHERE user_id = ?",
@@ -81,7 +81,7 @@ export function listIdsByUser(userId: string): string[] {
     .map((r) => r.id);
 }
 
-export function listInProgressIdsByUser(userId: string): string[] {
+export function listInProgressSessionIdsByUser(userId: string): string[] {
   return getDb()
     .getAllSync<{ id: string }>(
       "SELECT id FROM workout_sessions WHERE user_id = ? AND status = 'in_progress'",
@@ -90,7 +90,7 @@ export function listInProgressIdsByUser(userId: string): string[] {
     .map((r) => r.id);
 }
 
-export function insert(row: SessionRow): void {
+export function insertSession(row: SessionRow): void {
   getDb().runSync(
     `INSERT INTO workout_sessions
      (id, user_id, workout_id, plan_id, name, status, started_at, completed_at, created_at, updated_at)
@@ -110,7 +110,7 @@ export function insert(row: SessionRow): void {
   );
 }
 
-export function updateStatus(
+export function updateSessionStatus(
   sessionId: string,
   status: SessionStatus,
   completedAt: string,
@@ -122,11 +122,11 @@ export function updateStatus(
   );
 }
 
-export function remove(sessionId: string): void {
+export function deleteSession(sessionId: string): void {
   getDb().runSync("DELETE FROM workout_sessions WHERE id = ?", [sessionId]);
 }
 
-export function listAll(): SessionRow[] {
+export function listAllSessions(): SessionRow[] {
   return getDb()
     .getAllSync<Raw>("SELECT * FROM workout_sessions ORDER BY created_at DESC")
     .map(fromRaw);

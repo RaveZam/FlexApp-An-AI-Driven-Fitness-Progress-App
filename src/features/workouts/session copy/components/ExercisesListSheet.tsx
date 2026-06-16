@@ -1,7 +1,6 @@
 import { SessionExerciseView } from "@/src/features/workouts/session/sessionView";
 import { Ionicons } from "@expo/vector-icons";
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { useWorkoutSession } from "../hooks/useWorkoutSession";
 
 const ACCENT = "#10b981";
 
@@ -13,11 +12,7 @@ type Props = {
   onClose: () => void;
 };
 
-export default function ExercisesListSheet({ visible, activeIndex, onSelect, onClose }: Props) {
-
-  const { exercises } = useWorkoutSession();
-
-  console.log('exercises from ExerciseListsheet', exercises);
+export default function ExercisesListSheet({ visible, exercises, activeIndex, onSelect, onClose }: Props) {
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <View style={styles.overlay}>

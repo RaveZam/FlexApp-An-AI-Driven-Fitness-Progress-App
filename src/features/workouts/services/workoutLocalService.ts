@@ -7,25 +7,25 @@ import { getDb } from "@/src/lib/db";
 import type { Exercise, Workout, WorkoutPlan } from "../types";
 
 function hydrateWorkouts(workoutRows: workoutsDao.WorkoutRow[]): Workout[] {
-  const daysByWorkout = workoutDaysDao.listByWorkoutIds(workoutRows.map((w) => w.id));
+  const daysByWorkout = workoutDaysDao.listWorkoutDaysByWorkoutIds(workoutRows.map((w) => w.id));
   return workoutRows.map((w) => ({
     ...w,
     daysOfWeek: daysByWorkout.get(w.id) ?? [],
-    exercises: workoutExercisesDao.listByWorkout(w.id),
+    exercises: workoutExercisesDao.listWorkoutExercisesByWorkout(w.id),
   }));
 }
 
 export function listPlans(userId: string): WorkoutPlan[] {
-  return plansDao.listByUser(userId).map((p) => ({
+  return plansDao.listPlansByUser(userId).map((p) => ({
     ...p,
-    workouts: hydrateWorkouts(workoutsDao.listByPlan(p.id)),
+    workouts: hydrateWorkouts(workoutsDao.listWorkoutsByPlan(p.id)),
   }));
 }
 
 export function insertPlanLocal(plan: WorkoutPlan): void {
   const db = getDb();
   db.withTransactionSync(() => {
-    plansDao.insert(plan);
+    plansDao.insertPlan(plan);
     enqueueOutbox({
       entityType: "workout_plan",
       entityId: plan.id,
@@ -47,17 +47,17 @@ export function upsertPlans(plans: WorkoutPlan[]): void {
   const db = getDb();
   db.withTransactionSync(() => {
     for (const p of plans) {
-      plansDao.upsert(p);
+      plansDao.upsertPlan(p);
       for (const w of p.workouts) {
-        const existingUpdatedAt = workoutsDao.getUpdatedAt(w.id);
+        const existingUpdatedAt = workoutsDao.getWorkoutUpdatedAt(w.id);
         const remoteIsNewer = !existingUpdatedAt || w.updatedAt >= existingUpdatedAt;
 
-        workoutsDao.upsert(w);
+        workoutsDao.upsertWorkout(w);
         if (remoteIsNewer) {
-          workoutDaysDao.replace(w.id, w.daysOfWeek, w.updatedAt);
+          workoutDaysDao.replaceWorkoutDays(w.id, w.daysOfWeek, w.updatedAt);
         }
         for (const e of w.exercises) {
-          workoutExercisesDao.upsert(e);
+          workoutExercisesDao.upsertWorkoutExercise(e);
         }
       }
     }
@@ -65,22 +65,22 @@ export function upsertPlans(plans: WorkoutPlan[]): void {
 }
 
 export function listWorkouts(userId: string): Workout[] {
-  return hydrateWorkouts(workoutsDao.listByUser(userId));
+  return hydrateWorkouts(workoutsDao.listWorkoutsByUser(userId));
 }
 
 export function upsertWorkouts(workouts: Workout[]): void {
   const db = getDb();
   db.withTransactionSync(() => {
     for (const w of workouts) {
-      const existingUpdatedAt = workoutsDao.getUpdatedAt(w.id);
+      const existingUpdatedAt = workoutsDao.getWorkoutUpdatedAt(w.id);
       const remoteIsNewer = !existingUpdatedAt || w.updatedAt >= existingUpdatedAt;
 
-      workoutsDao.upsert(w);
+      workoutsDao.upsertWorkout(w);
       if (remoteIsNewer) {
-        workoutDaysDao.replace(w.id, w.daysOfWeek, w.updatedAt);
+        workoutDaysDao.replaceWorkoutDays(w.id, w.daysOfWeek, w.updatedAt);
       }
       for (const e of w.exercises) {
-        workoutExercisesDao.upsert(e);
+        workoutExercisesDao.upsertWorkoutExercise(e);
       }
     }
   });
@@ -90,8 +90,8 @@ export function updateWorkoutDays(workoutId: string, daysOfWeek: number[]): void
   const db = getDb();
   const now = new Date().toISOString();
   db.withTransactionSync(() => {
-    workoutDaysDao.replace(workoutId, daysOfWeek, now);
-    workoutsDao.touch(workoutId, now);
+    workoutDaysDao.replaceWorkoutDays(workoutId, daysOfWeek, now);
+    workoutsDao.touchWorkoutUpdatedAt(workoutId, now);
     enqueueOutbox({
       entityType: "workout_days",
       entityId: workoutId,
@@ -104,7 +104,7 @@ export function updateWorkoutDays(workoutId: string, daysOfWeek: number[]): void
 export function addExerciseToWorkout(exercise: Exercise): void {
   const db = getDb();
   db.withTransactionSync(() => {
-    workoutExercisesDao.insert(exercise);
+    workoutExercisesDao.insertWorkoutExercise(exercise);
     enqueueOutbox({
       entityType: "workout_exercise",
       entityId: exercise.id,
@@ -130,7 +130,7 @@ export function addExerciseToWorkout(exercise: Exercise): void {
 export function removeExerciseFromWorkout(exerciseId: string): void {
   const db = getDb();
   db.withTransactionSync(() => {
-    workoutExercisesDao.deleteById(exerciseId);
+    workoutExercisesDao.deleteWorkoutExerciseById(exerciseId);
     enqueueOutbox({
       entityType: "workout_exercise",
       entityId: exerciseId,
@@ -147,7 +147,7 @@ export function updateExerciseTargets(
 ): void {
   const db = getDb();
   db.withTransactionSync(() => {
-    workoutExercisesDao.updateTargets(exerciseId, targetSets, targetReps);
+    workoutExercisesDao.updateWorkoutExerciseTargets(exerciseId, targetSets, targetReps);
     enqueueOutbox({
       entityType: "workout_exercise",
       entityId: exerciseId,
@@ -160,10 +160,10 @@ export function updateExerciseTargets(
 export function insertWorkoutLocal(workout: Workout): void {
   const db = getDb();
   db.withTransactionSync(() => {
-    workoutsDao.insert(workout);
-    workoutDaysDao.replace(workout.id, workout.daysOfWeek, workout.createdAt);
+    workoutsDao.insertWorkout(workout);
+    workoutDaysDao.replaceWorkoutDays(workout.id, workout.daysOfWeek, workout.createdAt);
     for (const e of workout.exercises) {
-      workoutExercisesDao.insert(e);
+      workoutExercisesDao.insertWorkoutExercise(e);
     }
     enqueueOutbox({
       entityType: "workout",

@@ -33,7 +33,7 @@ async function downloadCatalog(): Promise<void> {
       .select("id, name, muscle_group, description, is_unilateral");
     if (error) throw error;
 
-    catalogDao.upsertMany(
+    catalogDao.upsertManyCatalogExercises(
       (data ?? []).map((row) => ({
         id: row.id,
         name: row.name,
@@ -57,7 +57,7 @@ async function downloadPlans(userId: string): Promise<void> {
 
     for (const row of data ?? []) {
       // upsert is guarded by `excluded.updated_at >= updated_at` in SQL.
-      plansDao.upsert({
+      plansDao.upsertPlan({
         id: row.id,
         userId: row.user_id,
         name: row.name,
@@ -79,12 +79,12 @@ async function downloadWorkouts(userId: string): Promise<void> {
 
     // Decide which workouts are newer than local before touching children.
     const applied = workouts.filter((w) => {
-      const localUpdatedAt = workoutsDao.getUpdatedAt(w.id);
+      const localUpdatedAt = workoutsDao.getWorkoutUpdatedAt(w.id);
       return !localUpdatedAt || w.updated_at > localUpdatedAt;
     });
 
     for (const w of applied) {
-      workoutsDao.upsert({
+      workoutsDao.upsertWorkout({
         id: w.id,
         userId: w.user_id,
         planId: w.plan_id ?? "",
@@ -113,10 +113,10 @@ async function downloadWorkouts(userId: string): Promise<void> {
 
     const now = new Date().toISOString();
     for (const workoutId of appliedIds) {
-      workoutExercisesDao.deleteByWorkout(workoutId);
+      workoutExercisesDao.deleteWorkoutExercisesByWorkout(workoutId);
       const workoutExercises = (exercises ?? []).filter((e) => e.workout_id === workoutId);
       for (const e of workoutExercises) {
-        workoutExercisesDao.insert({
+        workoutExercisesDao.insertWorkoutExercise({
           id: e.id,
           workoutId: e.workout_id,
           userId: e.user_id,
@@ -133,7 +133,7 @@ async function downloadWorkouts(userId: string): Promise<void> {
       const workoutDays = (days ?? [])
         .filter((d) => d.workout_id === workoutId)
         .map((d) => d.day_of_week);
-      daysDao.replace(workoutId, workoutDays, now);
+      daysDao.replaceWorkoutDays(workoutId, workoutDays, now);
     }
   } catch {}
 }
@@ -148,10 +148,10 @@ async function downloadPreferences(userId: string): Promise<void> {
     if (error) throw error;
     if (!data) return;
 
-    const local = preferencesDao.get(userId);
+    const local = preferencesDao.getPreferencesForUser(userId);
     if (local && data.updated_at <= local.updatedAt) return;
 
-    preferencesDao.upsertFromRemote({
+    preferencesDao.upsertPreferencesFromRemote({
       userId: data.user_id,
       activePlanId: data.active_plan_id,
       restTimerSeconds: data.rest_timer_seconds,
@@ -172,15 +172,15 @@ async function downloadSessions(userId: string): Promise<void> {
     if (!sessions || sessions.length === 0) return;
 
     const applied = sessions.filter((s) => {
-      const local = sessionsDao.getById(s.id);
+      const local = sessionsDao.getSessionById(s.id);
       return !local || s.updated_at > local.updatedAt;
     });
     if (applied.length === 0) return;
 
     for (const s of applied) {
       // Removing first cascades old children; insert re-creates the row clean.
-      if (sessionsDao.getById(s.id)) sessionsDao.remove(s.id);
-      sessionsDao.insert({
+      if (sessionsDao.getSessionById(s.id)) sessionsDao.deleteSession(s.id);
+      sessionsDao.insertSession({
         id: s.id,
         userId: s.user_id,
         workoutId: s.workout_id,
@@ -216,7 +216,7 @@ async function downloadSessions(userId: string): Promise<void> {
     if (setsErr) throw setsErr;
 
     for (const e of exercises ?? []) {
-      sessionExercisesDao.insert({
+      sessionExercisesDao.insertSessionExercise({
         id: e.id,
         sessionId: e.session_id,
         sourceExerciseId: e.source_exercise_id,
@@ -230,13 +230,13 @@ async function downloadSessions(userId: string): Promise<void> {
     }
 
     for (const s of sets ?? []) {
-      sessionSetsDao.insert({
+      sessionSetsDao.insertSessionSet({
         id: s.id,
         sessionExerciseId: s.session_exercise_id,
         setIndex: s.set_index,
         targetReps: s.target_reps,
       });
-      sessionSetsDao.update({
+      sessionSetsDao.updateSessionSet({
         id: s.id,
         actualReps: s.actual_reps,
         actualRepsLeft: s.actual_reps_left ?? null,

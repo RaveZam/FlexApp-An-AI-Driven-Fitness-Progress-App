@@ -1,7 +1,7 @@
 import { useMemo } from "react";
-import { usePlans } from "./usePlans";
 import { useActivePlan } from "../../context/ActivePlanContext";
 import type { Workout } from "../../types";
+import { usePlans } from "./usePlans";
 
 export function useTodaysWorkouts(): { workouts: Workout[]; loading: boolean } {
   const { activePlanId, loading: prefLoading } = useActivePlan();

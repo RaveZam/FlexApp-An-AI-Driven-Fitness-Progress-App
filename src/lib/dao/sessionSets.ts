@@ -39,7 +39,7 @@ const fromRaw = (r: Raw): SessionSetRow => ({
   completedAt: r.completed_at,
 });
 
-export function listByExercise(sessionExerciseId: string): SessionSetRow[] {
+export function listSessionSetsByExercise(sessionExerciseId: string): SessionSetRow[] {
   return getDb()
     .getAllSync<Raw>(
       "SELECT * FROM session_sets WHERE session_exercise_id = ? ORDER BY set_index ASC",
@@ -48,12 +48,12 @@ export function listByExercise(sessionExerciseId: string): SessionSetRow[] {
     .map(fromRaw);
 }
 
-export function getById(setId: string): SessionSetRow | null {
+export function getSessionSetById(setId: string): SessionSetRow | null {
   const row = getDb().getFirstSync<Raw>("SELECT * FROM session_sets WHERE id = ?", [setId]);
   return row ? fromRaw(row) : null;
 }
 
-export function insert(params: {
+export function insertSessionSet(params: {
   id: string;
   sessionExerciseId: string;
   setIndex: number;
@@ -67,7 +67,7 @@ export function insert(params: {
   );
 }
 
-export function update(params: {
+export function updateSessionSet(params: {
   id: string;
   actualReps: number | null;
   actualRepsLeft: number | null;
@@ -90,7 +90,7 @@ export function update(params: {
   );
 }
 
-export function deleteBySession(sessionId: string): void {
+export function deleteSessionSetsBySession(sessionId: string): void {
   getDb().runSync(
     "DELETE FROM session_sets WHERE session_exercise_id IN (SELECT id FROM session_exercises WHERE session_id = ?)",
     [sessionId]

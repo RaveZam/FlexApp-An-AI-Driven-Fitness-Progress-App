@@ -11,7 +11,7 @@ export type CompletedSessionSummaryRow = {
   volume: number;
 };
 
-export function listCompletedSummariesByUser(userId: string): CompletedSessionSummaryRow[] {
+export function listCompletedSessionSummariesByUser(userId: string): CompletedSessionSummaryRow[] {
   return getDb()
     .getAllSync<{
       id: string;

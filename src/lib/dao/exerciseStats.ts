@@ -14,7 +14,7 @@ export type ExerciseTopSetRow = {
   actualReps: number | null;
 };
 
-export function getBestRecord(userId: string, exerciseName: string): ExerciseBestRow | null {
+export function getExerciseBestRecord(userId: string, exerciseName: string): ExerciseBestRow | null {
   const row = getDb().getFirstSync<{
     weight: number;
     actual_reps: number | null;
@@ -52,7 +52,7 @@ export type RecentTopSetRow = {
   actualReps: number | null;
 };
 
-export function listRecentTopSets(
+export function listRecentExerciseTopSets(
   userId: string,
   exerciseName: string,
   sessionLimit: number
@@ -97,7 +97,7 @@ export function listRecentTopSets(
     .reverse();
 }
  
-export function listTopSetsByExercise(
+export function listAllExerciseTopSets(
   userId: string,
   exerciseName: string
 ): ExerciseTopSetRow[] {

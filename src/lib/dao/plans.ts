@@ -24,7 +24,7 @@ const fromRaw = (r: Raw): PlanRow => ({
   updatedAt: r.updated_at,
 });
 
-export function listByUser(userId: string): PlanRow[] {
+export function listPlansByUser(userId: string): PlanRow[] {
   return getDb()
     .getAllSync<Raw>(
       "SELECT * FROM user_workout_plans WHERE user_id = ? ORDER BY created_at DESC",
@@ -33,14 +33,14 @@ export function listByUser(userId: string): PlanRow[] {
     .map(fromRaw);
 }
 
-export function insert(plan: PlanRow): void {
+export function insertPlan(plan: PlanRow): void {
   getDb().runSync(
     "INSERT INTO user_workout_plans (id, user_id, name, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",
     [plan.id, plan.userId, plan.name, plan.createdAt, plan.updatedAt]
   );
 }
 
-export function upsert(plan: PlanRow): void {
+export function upsertPlan(plan: PlanRow): void {
   getDb().runSync(
     `INSERT INTO user_workout_plans (id, user_id, name, created_at, updated_at)
      VALUES (?, ?, ?, ?, ?)

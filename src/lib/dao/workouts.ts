@@ -27,7 +27,7 @@ const fromRaw = (r: Raw): WorkoutRow => ({
   updatedAt: r.updated_at,
 });
 
-export function listByUser(userId: string): WorkoutRow[] {
+export function listWorkoutsByUser(userId: string): WorkoutRow[] {
   return getDb()
     .getAllSync<Raw>(
       "SELECT * FROM user_workouts WHERE user_id = ? ORDER BY created_at DESC",
@@ -36,7 +36,7 @@ export function listByUser(userId: string): WorkoutRow[] {
     .map(fromRaw);
 }
 
-export function listByPlan(planId: string): WorkoutRow[] {
+export function listWorkoutsByPlan(planId: string): WorkoutRow[] {
   return getDb()
     .getAllSync<Raw>(
       "SELECT * FROM user_workouts WHERE plan_id = ? ORDER BY created_at ASC",
@@ -45,7 +45,7 @@ export function listByPlan(planId: string): WorkoutRow[] {
     .map(fromRaw);
 }
 
-export function getUpdatedAt(workoutId: string): string | null {
+export function getWorkoutUpdatedAt(workoutId: string): string | null {
   return (
     getDb().getFirstSync<{ updated_at: string }>(
       "SELECT updated_at FROM user_workouts WHERE id = ?",
@@ -54,7 +54,7 @@ export function getUpdatedAt(workoutId: string): string | null {
   );
 }
 
-export function insert(workout: WorkoutRow): void {
+export function insertWorkout(workout: WorkoutRow): void {
   getDb().runSync(
     `INSERT INTO user_workouts (id, user_id, plan_id, name, created_at, updated_at)
      VALUES (?, ?, ?, ?, ?, ?)`,
@@ -62,7 +62,7 @@ export function insert(workout: WorkoutRow): void {
   );
 }
 
-export function upsert(workout: WorkoutRow): void {
+export function upsertWorkout(workout: WorkoutRow): void {
   getDb().runSync(
     `INSERT INTO user_workouts (id, user_id, plan_id, name, created_at, updated_at)
      VALUES (?, ?, ?, ?, ?, ?)
@@ -75,7 +75,7 @@ export function upsert(workout: WorkoutRow): void {
   );
 }
 
-export function touch(workoutId: string, updatedAt: string): void {
+export function touchWorkoutUpdatedAt(workoutId: string, updatedAt: string): void {
   getDb().runSync("UPDATE user_workouts SET updated_at = ? WHERE id = ?", [
     updatedAt,
     workoutId,

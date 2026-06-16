@@ -22,6 +22,7 @@ GoogleSignin.configure({
 type AuthContextType = {
   user: User | null;
   session: Session | null;
+  userId: string | null;
   signIn: (email: string, password: string) => Promise<any>;
   signUp: (email: string, password: string) => Promise<any>;
   signInWithGoogle: () => Promise<any>;
@@ -33,6 +34,8 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: PropsWithChildren) {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
+
+  const userId = user?.id ?? null;
   const syncedUserIdsRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
@@ -95,7 +98,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
   return (
     <AuthContext.Provider
-      value={{ user, session, signIn, signUp, signInWithGoogle, signOut }}
+      value={{ user, session, userId, signIn, signUp, signInWithGoogle, signOut }}
     >
       {children}
     </AuthContext.Provider>

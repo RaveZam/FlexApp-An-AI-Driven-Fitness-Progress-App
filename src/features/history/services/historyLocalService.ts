@@ -4,7 +4,7 @@ import type { WorkoutSession } from "@/src/features/workouts";
 import type { WorkoutSessionSummary } from "../types";
 
 export function listCompletedSessions(userId: string): WorkoutSessionSummary[] {
-  return sessionSummaryDao.listCompletedSummariesByUser(userId).map((r) => ({
+  return sessionSummaryDao.listCompletedSessionSummariesByUser(userId).map((r) => ({
     id: r.id,
     name: r.name,
     startedAt: r.startedAt,

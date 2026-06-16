@@ -36,7 +36,7 @@ const fromRaw = (r: Raw): SessionExerciseRow => ({
   isUnilateral: r.is_unilateral === 1,
 });
 
-export function listBySession(sessionId: string): SessionExerciseRow[] {
+export function listSessionExercisesBySession(sessionId: string): SessionExerciseRow[] {
   return getDb()
     .getAllSync<Raw>(
       "SELECT * FROM session_exercises WHERE session_id = ? ORDER BY position ASC",
@@ -45,7 +45,7 @@ export function listBySession(sessionId: string): SessionExerciseRow[] {
     .map(fromRaw);
 }
 
-export function insert(ex: SessionExerciseRow): void {
+export function insertSessionExercise(ex: SessionExerciseRow): void {
   getDb().runSync(
     `INSERT INTO session_exercises
      (id, session_id, source_exercise_id, catalog_exercise_id, name, target_sets, target_reps, position, is_unilateral)
@@ -64,6 +64,6 @@ export function insert(ex: SessionExerciseRow): void {
   );
 }
 
-export function deleteBySession(sessionId: string): void {
+export function deleteSessionExercisesBySession(sessionId: string): void {
   getDb().runSync("DELETE FROM session_exercises WHERE session_id = ?", [sessionId]);
 }

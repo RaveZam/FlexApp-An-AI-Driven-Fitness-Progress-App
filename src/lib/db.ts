@@ -32,7 +32,6 @@ export async function initDb(): Promise<void> {
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL
     );
-    CREATE INDEX IF NOT EXISTS user_workouts_plan_id_idx ON user_workouts(plan_id);
 
     CREATE TABLE IF NOT EXISTS user_workout_exercises (
       id TEXT PRIMARY KEY,
@@ -46,7 +45,6 @@ export async function initDb(): Promise<void> {
       is_unilateral INTEGER NOT NULL DEFAULT 0,
       created_at TEXT NOT NULL
     );
-    CREATE INDEX IF NOT EXISTS user_workout_exercises_workout_id_idx ON user_workout_exercises(workout_id);
 
     CREATE TABLE IF NOT EXISTS user_workout_days (
       workout_id TEXT NOT NULL REFERENCES user_workouts(id) ON DELETE CASCADE,
@@ -54,7 +52,6 @@ export async function initDb(): Promise<void> {
       created_at TEXT NOT NULL,
       PRIMARY KEY (workout_id, day_of_week)
     );
-    CREATE INDEX IF NOT EXISTS user_workout_days_day_idx ON user_workout_days(day_of_week);
 
     CREATE TABLE IF NOT EXISTS user_preferences (
       user_id TEXT PRIMARY KEY,
@@ -75,7 +72,6 @@ export async function initDb(): Promise<void> {
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL
     );
-    CREATE INDEX IF NOT EXISTS workout_sessions_user_status_idx ON workout_sessions(user_id, status);
 
     CREATE TABLE IF NOT EXISTS session_exercises (
       id TEXT PRIMARY KEY,
@@ -88,7 +84,6 @@ export async function initDb(): Promise<void> {
       position INTEGER NOT NULL,
       is_unilateral INTEGER NOT NULL DEFAULT 0
     );
-    CREATE INDEX IF NOT EXISTS session_exercises_session_idx ON session_exercises(session_id);
 
     CREATE TABLE IF NOT EXISTS session_sets (
       id TEXT PRIMARY KEY,
@@ -102,7 +97,6 @@ export async function initDb(): Promise<void> {
       completed INTEGER NOT NULL DEFAULT 0,
       completed_at TEXT
     );
-    CREATE INDEX IF NOT EXISTS session_sets_exercise_idx ON session_sets(session_exercise_id);
 
     CREATE TABLE IF NOT EXISTS exercises_catalog (
       id TEXT PRIMARY KEY,
@@ -121,43 +115,14 @@ export async function initDb(): Promise<void> {
       created_at TEXT NOT NULL,
       synced_at TEXT
     );
+
+    -- Indexes
+    CREATE INDEX IF NOT EXISTS user_workouts_plan_id_idx ON user_workouts(plan_id);
+    CREATE INDEX IF NOT EXISTS user_workout_exercises_workout_id_idx ON user_workout_exercises(workout_id);
+    CREATE INDEX IF NOT EXISTS user_workout_days_day_idx ON user_workout_days(day_of_week);
+    CREATE INDEX IF NOT EXISTS workout_sessions_user_status_idx ON workout_sessions(user_id, status);
+    CREATE INDEX IF NOT EXISTS session_exercises_session_idx ON session_exercises(session_id);
+    CREATE INDEX IF NOT EXISTS session_sets_exercise_idx ON session_sets(session_exercise_id);
     CREATE INDEX IF NOT EXISTS outbox_pending_idx ON outbox(synced_at) WHERE synced_at IS NULL;
   `);
-
-  const prefCols = database.getAllSync<{ name: string }>(
-    "PRAGMA table_info(user_preferences)"
-  );
-  if (!prefCols.some((c) => c.name === "rest_timer_seconds")) {
-    database.execSync(
-      "ALTER TABLE user_preferences ADD COLUMN rest_timer_seconds INTEGER NOT NULL DEFAULT 120"
-    );
-  }
-
-  const workoutExCols = database.getAllSync<{ name: string }>(
-    "PRAGMA table_info(user_workout_exercises)"
-  );
-  if (!workoutExCols.some((c) => c.name === "is_unilateral")) {
-    database.execSync(
-      "ALTER TABLE user_workout_exercises ADD COLUMN is_unilateral INTEGER NOT NULL DEFAULT 0"
-    );
-  }
-
-  const sessionExCols = database.getAllSync<{ name: string }>(
-    "PRAGMA table_info(session_exercises)"
-  );
-  if (!sessionExCols.some((c) => c.name === "is_unilateral")) {
-    database.execSync(
-      "ALTER TABLE session_exercises ADD COLUMN is_unilateral INTEGER NOT NULL DEFAULT 0"
-    );
-  }
-
-  const sessionSetCols = database.getAllSync<{ name: string }>(
-    "PRAGMA table_info(session_sets)"
-  );
-  if (!sessionSetCols.some((c) => c.name === "actual_reps_left")) {
-    database.execSync("ALTER TABLE session_sets ADD COLUMN actual_reps_left INTEGER");
-  }
-  if (!sessionSetCols.some((c) => c.name === "actual_reps_right")) {
-    database.execSync("ALTER TABLE session_sets ADD COLUMN actual_reps_right INTEGER");
-  }
 }
