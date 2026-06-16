@@ -2,14 +2,15 @@ import ExercisesListSheet from "@/src/features/workouts/session/components/Exerc
 import RestTimerModal from "@/src/features/workouts/session/components/RestTimerModal";
 import SessionBottomBar from "@/src/features/workouts/session/components/SessionBottomBar";
 import SessionCompleteCard from "@/src/features/workouts/session/components/SessionCompleteCard";
+import SessionExerciseCard from "@/src/features/workouts/session/components/SessionExerciseCard";
 import SessionHeader from "@/src/features/workouts/session/components/SessionHeader";
 import SessionTimerHero from "@/src/features/workouts/session/components/SessionTimerHero";
-import { useWorkoutSession } from "@/src/features/workouts/session/hooks/useWorkoutSession";
 import { LinearGradient } from "expo-linear-gradient";
-import { router, useFocusEffect } from "expo-router";
+import { Redirect, router, useFocusEffect } from "expo-router";
 import React from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useWorkoutSession } from "../hooks/useWorkoutSession";
 
 const ACCENT = "#34d399";
 const HAIRLINE = "rgba(245,243,239,0.07)";
@@ -17,8 +18,7 @@ const INK = "#060606";
 const MUTED = "#6b6b6b";
 
 export default function WorkoutSessionScreenInner() {
-  const { exercises, activeIndex, setActiveIndex } = useWorkoutSession();
-
+  const { exercises } = useWorkoutSession();
 
   const [showRestTimer, setShowRestTimer] = React.useState(false);
   const [showExercisesList, setShowExercisesList] = React.useState(false);
@@ -27,7 +27,7 @@ export default function WorkoutSessionScreenInner() {
   // progress), so these stay neutral until per-set state lands.
   const allSetsComplete = false;
   const allExercisesComplete = false;
-  const progressPct = 0;
+  const progressPct = 50;
 
   // Bump on every focus so the entering animations replay each time the screen
   // refocuses (entering fires only on mount, so we remount via key).
@@ -35,8 +35,12 @@ export default function WorkoutSessionScreenInner() {
   useFocusEffect(
     React.useCallback(() => {
       setFocusKey((k) => k + 1);
-    }, [])
+    }, []),
   );
+
+  if (exercises.length === 0) {
+    return <Redirect href="/(tabs)" />;
+  }
 
   return (
     <SafeAreaView style={styles.safe} edges={["top"]}>
@@ -50,8 +54,6 @@ export default function WorkoutSessionScreenInner() {
 
       <View style={styles.container}>
         <SessionHeader
-          activeIndex={activeIndex}
-          totalExercises={exercises.length}
           onExit={() => router.back()}
           onShowExercises={() => setShowExercisesList(true)}
         />
@@ -67,12 +69,7 @@ export default function WorkoutSessionScreenInner() {
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          {/* <SessionExerciseCard
-            key={`exercise-${focusKey}`}
-            name={active.name}
-            setCount={active.sets.length}
-            targetReps={active.sets[0]?.targetReps}
-          /> */}
+          <SessionExerciseCard key={`exercise-${focusKey}`} />
 
           {/* <SessionStatsPanel
             key={`stats-${focusKey}`}
@@ -120,16 +117,13 @@ export default function WorkoutSessionScreenInner() {
 
         <SessionBottomBar mode="log" onPress={() => setShowRestTimer(true)} />
 
-        <RestTimerModal visible={showRestTimer} onClose={() => setShowRestTimer(false)} />
+        <RestTimerModal
+          visible={showRestTimer}
+          onClose={() => setShowRestTimer(false)}
+        />
 
         <ExercisesListSheet
           visible={showExercisesList}
-          exercises={exercises}
-          activeIndex={activeIndex}
-          onSelect={(index) => {
-            setActiveIndex(index);
-            setShowExercisesList(false);
-          }}
           onClose={() => setShowExercisesList(false)}
         />
       </View>

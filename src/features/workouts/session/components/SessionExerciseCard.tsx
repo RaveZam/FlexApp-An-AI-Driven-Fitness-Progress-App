@@ -2,23 +2,23 @@ import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
+import { useWorkoutSession } from "../hooks/useWorkoutSession";
 
 const ACCENT = "#34d399";
 const BONE = "#f5f3ef";
 const MUTED = "#6b6b6b";
 
-type Props = {
-  name: string;
-  setCount: number;
-  targetReps: number | undefined;
-};
-
-export default function SessionExerciseCard({ name, setCount, targetReps }: Props) {
-  const setLabel = `${setCount} set${setCount !== 1 ? "s" : ""}`;
-  const meta = targetReps != null ? `${setLabel} · ${targetReps} reps target` : setLabel;
+export default function SessionExerciseCard() {
+  const { exercises, activeIndex } = useWorkoutSession();
+  const active = exercises[activeIndex];
+  const setLabel = `${active.targetSets} set${active.targetSets !== 1 ? "s" : ""}`;
+  const meta = `${setLabel} · ${active.targetReps} reps target`;
 
   return (
-    <Animated.View entering={FadeInDown.delay(120).duration(500)} style={styles.card}>
+    <Animated.View
+      entering={FadeInDown.delay(120).duration(500)}
+      style={styles.card}
+    >
       <LinearGradient
         colors={["rgba(52,211,153,0.10)", "rgba(52,211,153,0.0)"]}
         start={{ x: 0, y: 0 }}
@@ -31,7 +31,7 @@ export default function SessionExerciseCard({ name, setCount, targetReps }: Prop
       <View style={styles.body}>
         <Text style={styles.eyebrow}>Now Lifting</Text>
         <Text style={styles.name} numberOfLines={2}>
-          {name}
+          {active.name}
         </Text>
         <Text style={styles.meta}>{meta}</Text>
       </View>

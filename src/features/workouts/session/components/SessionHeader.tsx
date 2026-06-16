@@ -1,24 +1,22 @@
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
+import { useWorkoutSession } from "../hooks/useWorkoutSession";
 
 const ACCENT = "#34d399";
 const BONE = "#f5f3ef";
 const MUTED_SOFT = "#3a3a3a";
 
 type Props = {
-  activeIndex: number;
-  totalExercises: number;
   onExit: () => void;
   onShowExercises: () => void;
 };
 
-export default function SessionHeader({
-  activeIndex,
-  totalExercises,
-  onExit,
-  onShowExercises,
-}: Props) {
+export default function SessionHeader({ onExit, onShowExercises }: Props) {
+  const { exercises, activeIndex } = useWorkoutSession();
+
+  const totalExercisesCount = exercises.length;
+
   return (
     <Animated.View entering={FadeIn.duration(400)} style={styles.header}>
       <TouchableOpacity onPress={onExit} activeOpacity={0.6} hitSlop={10}>
@@ -29,11 +27,15 @@ export default function SessionHeader({
         <Text style={styles.headerTitle}>
           {(activeIndex + 1).toString().padStart(2, "0")}{" "}
           <Text style={styles.headerTitleDim}>
-            / {totalExercises.toString().padStart(2, "0")}
+            / {totalExercisesCount.toString().padStart(2, "0")}
           </Text>
         </Text>
       </View>
-      <TouchableOpacity onPress={onShowExercises} activeOpacity={0.6} hitSlop={10}>
+      <TouchableOpacity
+        onPress={onShowExercises}
+        activeOpacity={0.6}
+        hitSlop={10}
+      >
         <Text style={styles.headerAction}>Exercises</Text>
       </TouchableOpacity>
     </Animated.View>
