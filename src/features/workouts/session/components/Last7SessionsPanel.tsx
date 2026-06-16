@@ -11,31 +11,30 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
-import { calculateSessionStats } from "../core/sessionStats";
-import { useGetExercisePR } from "../hooks/useGetExercisePR";
+import {
+  ACCENT,
+  BONE,
+  HAIRLINE,
+  HIGHLIGHT,
+  HIGHLIGHT_DEEP,
+  LABEL,
+  MUTED,
+} from "../constants/color";
+import { buildSessionBars } from "../core/sessionBars";
 import { useGetLast7TopSetsExercise } from "../hooks/useGetLast7TopSets";
 import { useWorkoutSession } from "../hooks/useWorkoutSession";
 
-const ACCENT = "#34d399";
-const ACCENT_DEEP = "#059669";
-const HIGHLIGHT = "#fbbf24";
-const HIGHLIGHT_DEEP = "#f59e0b";
-const BONE = "#f5f3ef";
-const HAIRLINE = "rgba(245,243,239,0.07)";
-const MUTED = "#6b6b6b";
-const LABEL = "#9b9b9b";
-
 export default function Last7SessionsPanel() {
   const { activeExerciseId } = useWorkoutSession();
-  const best = useGetExercisePR(activeExerciseId);
   const recentSessions = useGetLast7TopSetsExercise(activeExerciseId);
 
   const [selectedBarIndex, setSelectedBarIndex] = useState<number | null>(null);
 
-  const { maxChartVolume, selectedSession } = calculateSessionStats(
-    recentSessions,
-    selectedBarIndex,
-  );
+  const bars = buildSessionBars(recentSessions);
+  const selectedSession =
+    selectedBarIndex !== null
+      ? (recentSessions[selectedBarIndex] ?? null)
+      : null;
 
   useEffect(() => {
     setSelectedBarIndex(null);
@@ -86,31 +85,21 @@ export default function Last7SessionsPanel() {
       <View style={styles.chartWrap}>
         <View style={styles.chartBaseline} />
         <View style={styles.historyChart}>
-          {recentSessions.length === 0 ? (
+          {bars.length === 0 ? (
             <Text style={styles.emptyChart}>No sessions yet</Text>
           ) : (
-            recentSessions.map((p, i) => {
-              const volume = p.maxWeight * Math.max(1, p.repsAtMax);
-              const heightPx =
-                maxChartVolume > 0
-                  ? Math.max(4, (volume / maxChartVolume) * 56)
-                  : 4;
-              const restingOpacity =
-                0.55 + (i / Math.max(1, recentSessions.length - 1)) * 0.4;
-              return (
-                <HistoryBar
-                  key={p.sessionId}
-                  index={i}
-                  heightPx={heightPx}
-                  restingOpacity={restingOpacity}
-                  isSelected={selectedBarIndex === i}
-                  isPR={best ? p.maxWeight >= best.weight : false}
-                  onPress={() =>
-                    setSelectedBarIndex(selectedBarIndex === i ? null : i)
-                  }
-                />
-              );
-            })
+            bars.map(({ point, heightPx, restingOpacity }, i) => (
+              <HistoryBar
+                key={point.sessionId}
+                index={i}
+                heightPx={heightPx}
+                restingOpacity={restingOpacity}
+                isSelected={selectedBarIndex === i}
+                onPress={() =>
+                  setSelectedBarIndex(selectedBarIndex === i ? null : i)
+                }
+              />
+            ))
           )}
         </View>
       </View>
@@ -123,7 +112,6 @@ type HistoryBarProps = {
   heightPx: number;
   restingOpacity: number;
   isSelected: boolean;
-  isPR: boolean;
   onPress: () => void;
 };
 
@@ -132,7 +120,6 @@ function HistoryBar({
   heightPx,
   restingOpacity,
   isSelected,
-  isPR,
   onPress,
 }: HistoryBarProps) {
   // Grows from the baseline, staggered by index so bars appear one by one.
@@ -158,13 +145,14 @@ function HistoryBar({
     <Pressable hitSlop={8} onPress={onPress} style={styles.barTouch}>
       <View style={styles.barColumn}>
         <Animated.View
-          style={[{ width: 10, borderRadius: 2, overflow: "hidden" }, growStyle]}
+          style={[
+            { width: 10, borderRadius: 2, overflow: "hidden" },
+            growStyle,
+          ]}
         >
           <Animated.View style={[StyleSheet.absoluteFill, baseStyle]}>
             <LinearGradient
-              colors={
-                isPR ? [ACCENT, ACCENT_DEEP] : [ACCENT, "rgba(52,211,153,0.35)"]
-              }
+              colors={[ACCENT, "rgba(52,211,153,0.35)"]}
               start={{ x: 0, y: 0 }}
               end={{ x: 0, y: 1 }}
               style={{ flex: 1 }}

@@ -1,12 +1,10 @@
 import { StyleSheet, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
+import { HAIRLINE, HAIRLINE_STRONG } from "../constants/color";
 import { useWorkoutSession } from "../hooks/useWorkoutSession";
 import Last7SessionsPanel from "./Last7SessionsPanel";
 import PersonalRecordPanel from "./PersonalRecordPanel";
-
-const HAIRLINE = "rgba(245,243,239,0.07)";
-const HAIRLINE_STRONG = "rgba(245,243,239,0.14)";
 
 export default function SessionStatsPanel() {
   const { activeExerciseId } = useWorkoutSession();

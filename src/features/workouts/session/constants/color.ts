@@ -1,5 +1,9 @@
 export const ACCENT = "#34d399";
+export const ACCENT_DEEP = "#059669";
+export const HIGHLIGHT = "#fbbf24";
+export const HIGHLIGHT_DEEP = "#f59e0b";
 export const BONE = "#f5f3ef";
+export const HAIRLINE = "rgba(245,243,239,0.07)";
 export const HAIRLINE_STRONG = "rgba(245,243,239,0.14)";
 export const MUTED = "#6b6b6b";
 export const MUTED_SOFT = "#3a3a3a";

@@ -15,7 +15,6 @@ import { useWorkoutSession } from "../hooks/useWorkoutSession";
 export default function PersonalRecordPanel() {
   const { activeExerciseId } = useWorkoutSession();
   const best = useGetExercisePR(activeExerciseId);
-
   return (
     <View style={styles.prSection}>
       <Text style={styles.sectionLabel}>Personal Record</Text>
