@@ -3,8 +3,8 @@ import { getDb } from "@/src/lib/db";
 export type SessionStatus = "in_progress" | "completed" | "cancelled";
 
 export type SessionRow = {
-  id: string;
-  userId: string;
+  id: string | null;
+  userId: string | null;
   workoutId: string;
   planId: string | null;
   name: string;
@@ -16,7 +16,7 @@ export type SessionRow = {
 };
 
 type Raw = {
-  id: string;
+  id: string | null;
   user_id: string;
   workout_id: string;
   plan_id: string | null;
@@ -41,10 +41,13 @@ const fromRaw = (r: Raw): SessionRow => ({
   updatedAt: r.updated_at,
 });
 
-export function getActiveSessionForUser(userId: string): SessionRow | null {
+export function getActiveSessionForUser(
+  userId: string | null,
+): SessionRow | null {
+  if (!userId) return null;
   const row = getDb().getFirstSync<Raw>(
     "SELECT * FROM workout_sessions WHERE user_id = ? AND status = 'in_progress' ORDER BY started_at DESC LIMIT 1",
-    [userId]
+    [userId],
   );
   return row ? fromRaw(row) : null;
 }
@@ -52,7 +55,7 @@ export function getActiveSessionForUser(userId: string): SessionRow | null {
 export function getSessionById(sessionId: string): SessionRow | null {
   const row = getDb().getFirstSync<Raw>(
     "SELECT * FROM workout_sessions WHERE id = ?",
-    [sessionId]
+    [sessionId],
   );
   return row ? fromRaw(row) : null;
 }
@@ -60,14 +63,14 @@ export function getSessionById(sessionId: string): SessionRow | null {
 export function listCompletedSessionsInRange(
   userId: string,
   startISO: string,
-  endISO: string
+  endISO: string,
 ): SessionRow[] {
   return getDb()
     .getAllSync<Raw>(
       `SELECT * FROM workout_sessions
        WHERE user_id = ? AND status = 'completed'
        AND completed_at >= ? AND completed_at < ?`,
-      [userId, startISO, endISO]
+      [userId, startISO, endISO],
     )
     .map(fromRaw);
 }
@@ -76,7 +79,7 @@ export function listSessionIdsByUser(userId: string): string[] {
   return getDb()
     .getAllSync<{ id: string }>(
       "SELECT id FROM workout_sessions WHERE user_id = ?",
-      [userId]
+      [userId],
     )
     .map((r) => r.id);
 }
@@ -85,7 +88,7 @@ export function listInProgressSessionIdsByUser(userId: string): string[] {
   return getDb()
     .getAllSync<{ id: string }>(
       "SELECT id FROM workout_sessions WHERE user_id = ? AND status = 'in_progress'",
-      [userId]
+      [userId],
     )
     .map((r) => r.id);
 }
@@ -106,7 +109,7 @@ export function insertSession(row: SessionRow): void {
       row.completedAt,
       row.createdAt,
       row.updatedAt,
-    ]
+    ],
   );
 }
 
@@ -114,11 +117,11 @@ export function updateSessionStatus(
   sessionId: string,
   status: SessionStatus,
   completedAt: string,
-  updatedAt: string
+  updatedAt: string,
 ): void {
   getDb().runSync(
     "UPDATE workout_sessions SET status = ?, completed_at = ?, updated_at = ? WHERE id = ?",
-    [status, completedAt, updatedAt, sessionId]
+    [status, completedAt, updatedAt, sessionId],
   );
 }
 
