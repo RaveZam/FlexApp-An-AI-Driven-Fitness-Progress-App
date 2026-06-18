@@ -10,10 +10,8 @@ export default function useTimeElapsed(createdAt: string | null) {
 
   useEffect(() => {
     if (!createdAt) return;
-
     setElapsed(computeElapsed(createdAt)); // resume immediately
     const id = setInterval(() => setElapsed(computeElapsed(createdAt)), 1000);
-
     return () => clearInterval(id);
   }, [createdAt]);
 

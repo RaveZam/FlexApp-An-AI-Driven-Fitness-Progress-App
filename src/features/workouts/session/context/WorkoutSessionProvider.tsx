@@ -22,15 +22,9 @@ export function WorkoutSessionProvider({ children }: { children: ReactNode }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [activeExerciseId, setActiveExerciseId] = useState<string | null>(null);
 
-  if (!user) {
-    return null;
-  }
-  const session = getActiveSessionForUser(user.id);
+  const session = getActiveSessionForUser(user?.id ?? "");
 
-  if (!session) {
-    return null;
-  }
-  const createdAt = session.createdAt;
+  const createdAt = session?.createdAt ?? null;
 
   useEffect(() => {
     if (exercises.length > 0) {
