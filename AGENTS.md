@@ -54,6 +54,24 @@ Only what's left — useState, useEffect, memo, refs, cleanup — stays in the h
 - This is the same idea as "never expose the Supabase client outside the data layer,"
   applied to the *data shapes* the client returns.
 
+## DAO null-tolerance
+
+The contract: a DAO function accepts every argument as possibly-null and absorbs
+the null itself — so the caller passes data straight through without guarding.
+Null at the start → don't run anything. The reader never writes `if (!x) return`
+before a DAO call; the DAO already did.
+
+- Args that can be null are typed `T | null` (e.g. `userId: string | null`).
+- Guard at the top, before any DB work: if a required arg is null, bail out
+  immediately. `if (!userId) return null;` — the query never runs.
+- Reads return `null` (single) or `[]` (list) when bailing — never throw.
+  `getActiveSessionForUser(userId: string | null)` returns `null` on a null userId.
+- Writes (insert/update/delete) no-op when bailing — return without touching the
+  DB, don't throw. The mutation simply doesn't happen.
+- This keeps null-handling in one place (the DAO) instead of scattered across
+  every call site. Call sites read clean: `getActiveSessionForUser(userId)`,
+  not `userId ? getActiveSessionForUser(userId) : null`.
+
 ## Imports
 
 - Avoid barrel/`index.ts` re-export files in general — they hurt tree-shaking and invite cycles.
