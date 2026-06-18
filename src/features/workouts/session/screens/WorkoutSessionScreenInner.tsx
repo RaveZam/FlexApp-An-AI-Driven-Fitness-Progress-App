@@ -1,3 +1,4 @@
+import Popup from "@/components/ui/Popup";
 import ExercisesListSheet from "@/src/features/workouts/session/components/ExercisesListSheet";
 import RestTimerModal from "@/src/features/workouts/session/components/RestTimerModal";
 import SessionBottomBar from "@/src/features/workouts/session/components/SessionBottomBar";
@@ -7,10 +8,11 @@ import SessionHeader from "@/src/features/workouts/session/components/SessionHea
 import SessionTimerHero from "@/src/features/workouts/session/components/SessionTimerHero";
 import { LinearGradient } from "expo-linear-gradient";
 import { Redirect, router, useFocusEffect } from "expo-router";
-import React from "react";
+import { useCallback, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import SessionStatsPanel from "../components/SessionStatsPanel";
+import { cancelOngoingSession } from "../core/cancelOngoingSession";
 import { useWorkoutSession } from "../hooks/useWorkoutSession";
 
 const ACCENT = "#34d399";
@@ -19,10 +21,11 @@ const INK = "#060606";
 const MUTED = "#6b6b6b";
 
 export default function WorkoutSessionScreenInner() {
-  const { exercises } = useWorkoutSession();
+  const { exercises, activeSessionId } = useWorkoutSession();
 
-  const [showRestTimer, setShowRestTimer] = React.useState(false);
-  const [showExercisesList, setShowExercisesList] = React.useState(false);
+  const [showRestTimer, setShowRestTimer] = useState(false);
+  const [showExercisesList, setShowExercisesList] = useState(false);
+  const [showExitConfirm, setShowExitConfirm] = useState(false);
 
   // Set tracking isn't wired into the data model yet (session rebuild in
   // progress), so these stay neutral until per-set state lands.
@@ -32,9 +35,9 @@ export default function WorkoutSessionScreenInner() {
 
   // Bump on every focus so the entering animations replay each time the screen
   // refocuses (entering fires only on mount, so we remount via key).
-  const [focusKey, setFocusKey] = React.useState(0);
+  const [focusKey, setFocusKey] = useState(0);
   useFocusEffect(
-    React.useCallback(() => {
+    useCallback(() => {
       setFocusKey((k) => k + 1);
     }, []),
   );
@@ -55,7 +58,7 @@ export default function WorkoutSessionScreenInner() {
 
       <View style={styles.container}>
         <SessionHeader
-          onExit={() => router.back()}
+          onExit={() => setShowExitConfirm(true)}
           onShowExercises={() => setShowExercisesList(true)}
         />
 
@@ -121,6 +124,24 @@ export default function WorkoutSessionScreenInner() {
         <ExercisesListSheet
           visible={showExercisesList}
           onClose={() => setShowExercisesList(false)}
+        />
+
+        <Popup
+          isVisible={showExitConfirm}
+          onClose={() => setShowExitConfirm(false)}
+          iconName="help-circle-outline"
+          message="Exit this session? Your progress won't be saved."
+          buttons={[
+            { text: "Stay", onPress: () => setShowExitConfirm(false) },
+            {
+              text: "Exit",
+              onPress: () => {
+                cancelOngoingSession(activeSessionId);
+                router.back();
+              },
+              style: "destructive",
+            },
+          ]}
         />
       </View>
     </SafeAreaView>

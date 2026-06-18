@@ -125,6 +125,14 @@ export function updateSessionStatus(
   );
 }
 
+export function cancelSession(sessionId: string): void {
+  const now = new Date().toISOString();
+  getDb().runSync(
+    "UPDATE workout_sessions SET status = 'cancelled', completed_at = ?, updated_at = ? WHERE id = ?",
+    [now, now, sessionId],
+  );
+}
+
 export function deleteSession(sessionId: string): void {
   getDb().runSync("DELETE FROM workout_sessions WHERE id = ?", [sessionId]);
 }

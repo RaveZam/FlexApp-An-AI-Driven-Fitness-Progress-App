@@ -12,6 +12,7 @@ type SessionContextValue = {
   setActiveIndex: (index: number) => void;
   setActiveExerciseId: (id: string | null) => void;
   createdAt: string | null;
+  activeSessionId: string | null;
 };
 
 export const SessionContext = createContext<SessionContextValue | null>(null);
@@ -25,6 +26,7 @@ export function WorkoutSessionProvider({ children }: { children: ReactNode }) {
   const session = getActiveSessionForUser(user?.id ?? "");
 
   const createdAt = session?.createdAt ?? null;
+  const activeSessionId = session?.id ?? null;
 
   useEffect(() => {
     if (exercises.length > 0) {
@@ -42,8 +44,9 @@ export function WorkoutSessionProvider({ children }: { children: ReactNode }) {
       setActiveIndex,
       setActiveExerciseId,
       createdAt,
+      activeSessionId,
     }),
-    [exercises, activeIndex, activeExerciseId, createdAt],
+    [exercises, activeIndex, activeExerciseId, createdAt, activeSessionId],
   );
 
   return (
