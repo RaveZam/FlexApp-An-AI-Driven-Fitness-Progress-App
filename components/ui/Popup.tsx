@@ -1,17 +1,24 @@
-import { AntDesign } from "@expo/vector-icons";
+import { FontFamilies, Palette } from "@/constants/theme";
+import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import Animated, { FadeInDown } from "react-native-reanimated";
+
+const DANGER_BORDER = "rgba(248,113,113,0.45)";
+
+type ButtonStyle = "default" | "cancel" | "destructive";
 
 interface PopupProps {
   isVisible: boolean;
   onClose: () => void;
-  iconName?: keyof typeof AntDesign.glyphMap;
+  iconName?: keyof typeof Ionicons.glyphMap;
+  /** Overrides the icon ring tint. Defaults to the accent green. */
   iconColor?: string;
   message: string;
   buttons: Array<{
     text: string;
     onPress: () => void;
-    style?: "default" | "cancel" | "destructive";
+    style?: ButtonStyle;
   }>;
 }
 
@@ -19,114 +26,124 @@ const Popup: React.FC<PopupProps> = ({
   isVisible,
   onClose,
   iconName,
-  iconColor = "#FFFFFF",
+  iconColor = Palette.accent,
   message,
   buttons,
 }) => {
   return (
     <Modal
-      transparent={true}
+      transparent
       animationType="fade"
       visible={isVisible}
       onRequestClose={onClose}
+      statusBarTranslucent
     >
-      <View style={styles.overlay}>
-        <View style={styles.popupContainer}>
+      <View style={styles.scrim}>
+        <Animated.View
+          entering={FadeInDown.delay(40).duration(360)}
+          style={styles.card}
+        >
           {iconName && (
-            <AntDesign
-              name={iconName}
-              size={56}
-              color={iconColor}
-              style={styles.icon}
-            />
+            <View style={[styles.iconRing, { borderColor: iconColor }]}>
+              <Ionicons name={iconName} size={22} color={iconColor} />
+            </View>
           )}
-          <Text style={styles.messageText}>{message}</Text>
-          <View style={styles.buttonsContainer}>
-            {buttons.map((button, index) => (
-              <TouchableOpacity
-                key={index}
-                style={[
-                  styles.button,
-                  button.style === "destructive" && styles.destructiveButton,
-                ]}
-                onPress={() => {
-                  button.onPress();
-                  onClose(); // Close popup after button press
-                }}
-              >
-                <Text
-                  style={[
-                    styles.buttonText,
-                    button.style === "destructive" &&
-                      styles.destructiveButtonText,
-                  ]}
+
+          <Text style={styles.message}>{message}</Text>
+
+          <View style={styles.actions}>
+            {buttons.map((button, index) => {
+              const isDestructive = button.style === "destructive";
+              const isCancel = button.style === "cancel";
+              const borderColor = isDestructive
+                ? DANGER_BORDER
+                : isCancel
+                ? Palette.hairlineStrong
+                : Palette.accentBorder;
+              const labelColor = isDestructive
+                ? Palette.danger
+                : isCancel
+                ? Palette.muted
+                : Palette.bone;
+              return (
+                <TouchableOpacity
+                  key={index}
+                  activeOpacity={0.85}
+                  style={[styles.button, { borderColor }]}
+                  onPress={() => {
+                    button.onPress();
+                    onClose();
+                  }}
                 >
-                  {button.text}
-                </Text>
-              </TouchableOpacity>
-            ))}
+                  <Text style={[styles.buttonText, { color: labelColor }]}>
+                    {button.text}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
           </View>
-        </View>
+        </Animated.View>
       </View>
     </Modal>
   );
 };
 
 const styles = StyleSheet.create({
-  overlay: {
+  scrim: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    paddingHorizontal: 28,
+    backgroundColor: "rgba(0,0,0,0.78)",
   },
-  popupContainer: {
-    width: "80%",
-    backgroundColor: "rgba(25, 25, 25, 0.8)", // Translucent dark background
-    borderRadius: 10,
-    padding: 20,
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "rgba(26, 71, 42, 0.3)", // Subtle border for glassmorphism
-    // Add shadow for depth if desired, but might not be visible on all platforms
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  icon: {
-    marginBottom: 15,
-  },
-  messageText: {
-    fontSize: 18,
-    color: "#FFFFFF",
-    textAlign: "center",
-    marginBottom: 20,
-  },
-  buttonsContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
+  card: {
     width: "100%",
+    maxWidth: 360,
+    alignItems: "center",
+    paddingTop: 30,
+    paddingBottom: 22,
+    paddingHorizontal: 22,
+    borderRadius: 18,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: Palette.accentBorderSoft,
+    backgroundColor: Palette.inkRaised,
+    overflow: "hidden",
+  },
+  iconRing: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    borderWidth: StyleSheet.hairlineWidth,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 18,
+  },
+  message: {
+    color: Palette.bone,
+    fontSize: 18,
+    lineHeight: 25,
+    fontFamily: FontFamilies.displayMedium,
+    letterSpacing: -0.2,
+    textAlign: "center",
+    marginBottom: 26,
+  },
+  actions: {
+    width: "100%",
+    gap: 10,
   },
   button: {
-    backgroundColor: "#10b981",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-    marginHorizontal: 5,
-    flex: 1,
+    height: 54,
+    borderRadius: 14,
     alignItems: "center",
-  },
-  destructiveButton: {
-    backgroundColor: "#EF4444",
+    justifyContent: "center",
+    backgroundColor: Palette.inkRaised,
+    borderWidth: StyleSheet.hairlineWidth,
   },
   buttonText: {
-    color: "#000000",
-    fontSize: 16,
-    fontWeight: "medium",
-  },
-  destructiveButtonText: {
-    color: "#FFFFFF",
+    fontSize: 13,
+    fontFamily: FontFamilies.displayMedium,
+    letterSpacing: 2.4,
+    textTransform: "uppercase",
   },
 });
 

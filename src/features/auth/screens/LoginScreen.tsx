@@ -118,8 +118,8 @@ export default function LoginScreen() {
         <Popup
           isVisible={isErrorPopupVisible}
           onClose={() => setErrorPopupVisible(false)}
-          iconName="exclamationcircleo"
-          iconColor="#FF4D4D"
+          iconName="alert-circle-outline"
+          iconColor="#f87171"
           message={errorMessage}
           buttons={[{ text: "OK", onPress: () => setErrorPopupVisible(false) }]}
         />

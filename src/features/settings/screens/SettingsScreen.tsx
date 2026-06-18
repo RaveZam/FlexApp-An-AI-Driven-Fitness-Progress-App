@@ -150,7 +150,7 @@ export default function Settings() {
       <Popup
           isVisible={isLogoutPopupVisible}
           onClose={() => setLogoutPopupVisible(false)}
-          iconName="question-circle"
+          iconName="log-out-outline"
           message="Are you sure you want to log out?"
           buttons={[
             { text: "Cancel", onPress: () => setLogoutPopupVisible(false) },
@@ -160,7 +160,7 @@ export default function Settings() {
         <Popup
           isVisible={isClearHistoryPopupVisible}
           onClose={() => setClearHistoryPopupVisible(false)}
-          iconName="exclamation-circle"
+          iconName="trash-outline"
           message="This will permanently delete all workout history. This cannot be undone."
           buttons={[
             { text: "Cancel", onPress: () => setClearHistoryPopupVisible(false) },
@@ -170,7 +170,7 @@ export default function Settings() {
         <Popup
           isVisible={isCancelInProgressPopupVisible}
           onClose={() => setCancelInProgressPopupVisible(false)}
-          iconName="exclamation-circle"
+          iconName="warning-outline"
           message="This will mark all in-progress workouts as cancelled."
           buttons={[
             { text: "Cancel", onPress: () => setCancelInProgressPopupVisible(false) },
