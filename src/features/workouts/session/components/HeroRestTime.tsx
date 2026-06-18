@@ -1,23 +1,18 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
+import formatMinutesSeconds from "../core/formatMinutesSeconds";
+import useRestTimer from "../hooks/useRestTimer";
 
 const ACCENT = "#34d399";
 const MUTED = "#6b6b6b";
 
-type Props = {
-  restSeconds: number;
-};
-
-export default function HeroRestTime({ restSeconds }: Props) {
-  const restMin = Math.floor(restSeconds / 60);
-  const restSec = (restSeconds % 60).toString().padStart(2, "0");
+export default function HeroRestTime() {
+  const restSeconds = useRestTimer();
 
   return (
     <View style={[styles.block, { alignItems: "flex-end" }]}>
       <Text style={styles.label}>Rest Interval</Text>
-      <Text style={styles.value}>
-        {restMin}:{restSec}
-      </Text>
+      <Text style={styles.value}>{formatMinutesSeconds(restSeconds)}</Text>
     </View>
   );
 }

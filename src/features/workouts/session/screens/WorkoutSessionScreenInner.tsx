@@ -63,7 +63,7 @@ export default function WorkoutSessionScreenInner() {
           <View style={[styles.progressFill, { width: `${progressPct}%` }]} />
         </View>
 
-        <SessionTimerHero elapsedSeconds={0} restSeconds={90} />
+        <SessionTimerHero />
 
         <ScrollView
           style={styles.scroll}

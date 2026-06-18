@@ -8,8 +8,6 @@ const HAIRLINE = "rgba(245,243,239,0.07)";
 const HAIRLINE_STRONG = "rgba(245,243,239,0.14)";
 
 export default function SessionTimerHero() {
-  const restSeconds = 0;
-
   return (
     <Animated.View
       entering={FadeInDown.delay(60).duration(400)}
@@ -17,7 +15,7 @@ export default function SessionTimerHero() {
     >
       <HeroElapsedTime />
       <View style={styles.timerDivider} />
-      <HeroRestTime restSeconds={restSeconds} />
+      <HeroRestTime />
     </Animated.View>
   );
 }
