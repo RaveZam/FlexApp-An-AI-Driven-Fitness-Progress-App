@@ -1,8 +1,10 @@
 // Public entry point for the workouts feature. Other features import from here only.
-import type { Workout, WorkoutSession } from "./types";
+import type { Workout } from "./types";
 
 export { useActivePlan, useActiveSession } from "./context/ActivePlanContext";
 export { useTodaysWorkouts } from "./plan/hooks/useTodaysWorkouts";
+export { default as getSessionById } from "./session/services/getSessionById";
+export { default as deleteSession } from "./session/services/deleteSession";
 export type {
   SessionExercise,
   SessionSet,
@@ -11,20 +13,13 @@ export type {
   WorkoutSession,
 } from "./types";
 
-// TODO(session-rebuild): the session hooks/services were removed for the full
-// session reconstruction. These no-op stubs keep home/settings/history
+// TODO(session-rebuild): the remaining stubs below keep home/settings
 // compiling until the rebuilt session feature provides real implementations.
 export function useStartSession() {
   return {
     startSession: (_workout: Workout): string => "placeholder-session",
   };
 }
-
-export function getSessionById(_sessionId: string): WorkoutSession | null {
-  return null;
-}
-
-export function deleteSession(_sessionId: string): void {}
 
 export function deleteAllSessionsForUser(_userId: string): void {}
 
