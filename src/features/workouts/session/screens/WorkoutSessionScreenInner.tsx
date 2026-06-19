@@ -5,6 +5,7 @@ import SessionBottomBar from "@/src/features/workouts/session/components/Session
 import SessionCompleteCard from "@/src/features/workouts/session/components/SessionCompleteCard";
 import SessionExerciseCard from "@/src/features/workouts/session/components/SessionExerciseCard";
 import SessionHeader from "@/src/features/workouts/session/components/SessionHeader";
+import SessionSetList from "@/src/features/workouts/session/components/SessionSetList";
 import SessionTimerHero from "@/src/features/workouts/session/components/SessionTimerHero";
 import { LinearGradient } from "expo-linear-gradient";
 import { Redirect, router, useFocusEffect } from "expo-router";
@@ -18,7 +19,6 @@ import { useWorkoutSession } from "../hooks/useWorkoutSession";
 const ACCENT = "#34d399";
 const HAIRLINE = "rgba(245,243,239,0.07)";
 const INK = "#060606";
-const MUTED = "#6b6b6b";
 
 export default function WorkoutSessionScreenInner() {
   const { exercises, activeSessionId, refreshActiveSession } =
@@ -41,18 +41,14 @@ export default function WorkoutSessionScreenInner() {
     }, []),
   );
 
-  // Re-read the active session from SQLite on every focus. The provider holds it
-  // in state, so refreshing here re-renders with a fresh activeSessionId after a
-  // session was finished or cancelled elsewhere.
+  //Re read active session to fetch new active session data, without this it will still read the old active session even tho it was cancelled
   useFocusEffect(
     useCallback(() => {
       refreshActiveSession();
     }, [refreshActiveSession]),
   );
 
-  // React to the fresh value: if there's no active session (e.g. a stale
-  // navigation back to this route, or one that was just finished/cancelled while
-  // focused), bounce to the Train page instead of showing an empty session.
+  // If there is no active session reroute to the Train page
   useEffect(() => {
     if (!activeSessionId) {
       router.replace("/(tabs)/Workouts");
@@ -94,23 +90,7 @@ export default function WorkoutSessionScreenInner() {
 
           <SessionStatsPanel key={`stats-${focusKey}`} />
 
-          {/* <View style={styles.setsHeader}>
-            <Text style={styles.sectionLabel}>Sets</Text>
-            <Text style={styles.setsCounter}>
-              {active.sets.filter((s) => s.completed).length} / {active.sets.length}
-            </Text>
-          </View>
-          <View style={styles.setsContainer}>
-            {active.sets.map((set, index) => (
-              <SetRow
-                key={`${set.id}-${focusKey}`}
-                set={set}
-                isCurrent={index === currentSetIndex}
-                index={index}
-                onEdit={() => {}}
-              />
-            ))}
-          </View> */}
+          <SessionSetList key={`sets-${focusKey}`} />
 
           {allSetsComplete && !allExercisesComplete && (
             <SessionCompleteCard
@@ -179,30 +159,4 @@ const styles = StyleSheet.create({
 
   scroll: { flex: 1 },
   scrollContent: { paddingBottom: 32 },
-
-  sectionLabel: {
-    color: MUTED,
-    fontSize: 9,
-    fontFamily: "Inter_500Medium",
-    letterSpacing: 2,
-    textTransform: "uppercase",
-    marginBottom: 12,
-  },
-
-  setsHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    marginTop: 26,
-    marginBottom: 14,
-  },
-  setsCounter: {
-    color: MUTED,
-    fontSize: 11,
-    fontFamily: "Outfit_400Regular",
-    fontVariant: ["tabular-nums"],
-    letterSpacing: 0.4,
-  },
-  setsContainer: { paddingHorizontal: 20, gap: 10 },
 });

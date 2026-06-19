@@ -1,4 +1,4 @@
-import { SessionSetView } from "@/src/features/workouts/session/sessionView";
+import { SessionSetRow } from "@/src/lib/dao/sessionSets";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
@@ -16,7 +16,7 @@ const ACCENT_BORDER_SOFT = "rgba(52,211,153,0.18)";
 const ACCENT_TINT = "rgba(52,211,153,0.12)";
 
 type SetRowProps = {
-  set: SessionSetView;
+  set: SessionSetRow;
   isCurrent: boolean;
   index: number;
   onEdit?: (setId: string) => void;
@@ -25,7 +25,6 @@ type SetRowProps = {
 export default function SetRow({ set, isCurrent, index, onEdit }: SetRowProps) {
   const isCompleted = set.completed;
   const isFuture = !isCompleted && !isCurrent;
-
   const editable = isCompleted && !!onEdit;
   const hasPerSide = set.actualRepsLeft != null || set.actualRepsRight != null;
 
@@ -60,8 +59,16 @@ export default function SetRow({ set, isCurrent, index, onEdit }: SetRowProps) {
             </View>
           ) : (
             <View style={styles.inline}>
-              <Text style={isCurrent ? styles.weightDash : styles.weightDashFuture}>—</Text>
-              <Text style={isCurrent ? styles.weightUnit : styles.weightUnitFuture}>lb</Text>
+              <Text
+                style={isCurrent ? styles.weightDash : styles.weightDashFuture}
+              >
+                —
+              </Text>
+              <Text
+                style={isCurrent ? styles.weightUnit : styles.weightUnitFuture}
+              >
+                lb
+              </Text>
             </View>
           )}
         </View>
@@ -83,11 +90,13 @@ export default function SetRow({ set, isCurrent, index, onEdit }: SetRowProps) {
             )
           ) : isCurrent ? (
             <Text style={styles.repsValue}>
-              {set.targetReps} <Text style={styles.repsLabelAccent}>target</Text>
+              {set.targetReps}{" "}
+              <Text style={styles.repsLabelAccent}>target</Text>
             </Text>
           ) : (
             <Text style={styles.repsValueFuture}>
-              {set.targetReps} <Text style={styles.repsLabelFuture}>target</Text>
+              {set.targetReps}{" "}
+              <Text style={styles.repsLabelFuture}>target</Text>
             </Text>
           )}
         </View>
@@ -194,7 +203,11 @@ const styles = StyleSheet.create({
     fontVariant: ["tabular-nums"],
   },
   repsLabel: { color: MUTED, fontSize: 13, fontFamily: "Inter_400Regular" },
-  repsLabelAccent: { color: ACCENT, fontSize: 13, fontFamily: "Inter_500Medium" },
+  repsLabelAccent: {
+    color: ACCENT,
+    fontSize: 13,
+    fontFamily: "Inter_500Medium",
+  },
   repsLabelFuture: {
     color: MUTED_SOFT,
     fontSize: 13,
