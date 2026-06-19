@@ -39,17 +39,22 @@ const fromRaw = (r: Raw): SessionSetRow => ({
   completedAt: r.completed_at,
 });
 
-export function listSessionSetsByExercise(sessionExerciseId: string): SessionSetRow[] {
+export function listSessionSetsByExercise(
+  sessionExerciseId: string,
+): SessionSetRow[] {
   return getDb()
     .getAllSync<Raw>(
       "SELECT * FROM session_sets WHERE session_exercise_id = ? ORDER BY set_index ASC",
-      [sessionExerciseId]
+      [sessionExerciseId],
     )
     .map(fromRaw);
 }
 
 export function getSessionSetById(setId: string): SessionSetRow | null {
-  const row = getDb().getFirstSync<Raw>("SELECT * FROM session_sets WHERE id = ?", [setId]);
+  const row = getDb().getFirstSync<Raw>(
+    "SELECT * FROM session_sets WHERE id = ?",
+    [setId],
+  );
   return row ? fromRaw(row) : null;
 }
 
@@ -63,7 +68,7 @@ export function insertSessionSet(params: {
     `INSERT INTO session_sets
      (id, session_exercise_id, set_index, target_reps, actual_reps, weight, completed, completed_at)
      VALUES (?, ?, ?, ?, NULL, NULL, 0, NULL)`,
-    [params.id, params.sessionExerciseId, params.setIndex, params.targetReps]
+    [params.id, params.sessionExerciseId, params.setIndex, params.targetReps],
   );
 }
 
@@ -86,13 +91,13 @@ export function updateSessionSet(params: {
       params.completed ? 1 : 0,
       params.completedAt,
       params.id,
-    ]
+    ],
   );
 }
 
 export function deleteSessionSetsBySession(sessionId: string): void {
   getDb().runSync(
     "DELETE FROM session_sets WHERE session_exercise_id IN (SELECT id FROM session_exercises WHERE session_id = ?)",
-    [sessionId]
+    [sessionId],
   );
 }
