@@ -1,5 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import type { SessionExerciseRow } from "@/src/lib/dao/sessionExercises";
+import { useGetCompletedSetCount } from "../hooks/useGetCompletedSetCount";
 import { useWorkoutSession } from "../hooks/useWorkoutSession";
 
 type Props = {
@@ -25,29 +27,47 @@ export default function ExercisesListSheet({ visible, onClose }: Props) {
               <Ionicons name="close" size={24} color="#fff" />
             </TouchableOpacity>
           </View>
-          {exercises.map((ex, i) => {
-            const isActive = i === activeIndex;
-            return (
-              <TouchableOpacity
-                key={ex.id}
-                activeOpacity={0.7}
-                onPress={() => {
-                  setActiveIndex(i);
-                  onClose();
-                }}
-                style={[styles.item, isActive && styles.itemActive]}
-              >
-                <Text
-                  style={[styles.itemText, isActive && styles.itemTextActive]}
-                >
-                  {ex.name}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
+          {exercises.map((ex, i) => (
+            <ExerciseRow
+              key={ex.id}
+              exercise={ex}
+              isActive={i === activeIndex}
+              onPress={() => {
+                setActiveIndex(i);
+                onClose();
+              }}
+            />
+          ))}
         </View>
       </View>
     </Modal>
+  );
+}
+
+function ExerciseRow({
+  exercise,
+  isActive,
+  onPress,
+}: {
+  exercise: SessionExerciseRow;
+  isActive: boolean;
+  onPress: () => void;
+}) {
+  const completed = useGetCompletedSetCount(exercise.id);
+
+  return (
+    <TouchableOpacity
+      activeOpacity={0.7}
+      onPress={onPress}
+      style={[styles.item, isActive && styles.itemActive]}
+    >
+      <Text style={[styles.itemText, isActive && styles.itemTextActive]}>
+        {exercise.name}
+      </Text>
+      <Text style={[styles.setCount, isActive && styles.setCountActive]}>
+        {completed}/{exercise.targetSets} sets
+      </Text>
+    </TouchableOpacity>
   );
 }
 
@@ -94,4 +114,12 @@ const styles = StyleSheet.create({
     letterSpacing: 0.2,
   },
   itemTextActive: { color: "#fff", fontFamily: "Inter_500Medium" },
+  setCount: {
+    color: "#666",
+    fontSize: 12,
+    fontFamily: "Outfit_400Regular",
+    fontVariant: ["tabular-nums"],
+    letterSpacing: 0.3,
+  },
+  setCountActive: { color: "#34d399" },
 });
