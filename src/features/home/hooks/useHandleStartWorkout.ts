@@ -9,17 +9,12 @@ export function useHandleStartWorkout() {
 
   function handleStartWorkout() {
     if (activeSession) {
-      console.log("Navigating to active session", activeSession.id);
       router.push(`/(tabs)/Workouts/session?id=${activeSession.id}` as any);
       return;
-    } else {
-      console.log("Creating new session");
-      const sessionId = createSession(user?.id ?? null);
-      if (sessionId) {
-        console.log("Navigating to session", sessionId);
-        router.push(`/(tabs)/Workouts/session?id=${sessionId}` as any);
-      }
-      return;
+    }
+    const sessionId = createSession(user?.id ?? null);
+    if (sessionId) {
+      router.push(`/(tabs)/Workouts/session?id=${sessionId}` as any);
     }
   }
 

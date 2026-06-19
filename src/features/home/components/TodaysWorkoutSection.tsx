@@ -1,7 +1,7 @@
 import { FontFamilies, Palette } from "@/constants/theme";
 import { getTodayLabel } from "@/src/features/home/helpers/dayLabels";
 import useGetActivePlan from "@/src/features/home/hooks/useGetActivePlan";
-import useGetActiveWorkout from "@/src/features/home/hooks/usetGetActiveWorkout";
+import useGetActiveWorkout from "@/src/features/home/hooks/useGetActiveWorkout";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
