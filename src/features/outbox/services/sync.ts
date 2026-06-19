@@ -309,6 +309,13 @@ export async function runOutboxSync(): Promise<void> {
     try {
       await dispatchRow(row);
       markSynced(row.id);
-    } catch {}
+    } catch (err) {
+      // leave the row pending so it retries; surface why for offline debugging
+      console.warn(
+        `Outbox sync failed for ${row.entity_type}/${row.entity_id} (${row.operation}): ${
+          err instanceof Error ? err.message : String(err)
+        }`,
+      );
+    }
   }
 }
