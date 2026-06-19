@@ -8,7 +8,7 @@ import SessionHeader from "@/src/features/workouts/session/components/SessionHea
 import SessionTimerHero from "@/src/features/workouts/session/components/SessionTimerHero";
 import { LinearGradient } from "expo-linear-gradient";
 import { Redirect, router, useFocusEffect } from "expo-router";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import SessionStatsPanel from "../components/SessionStatsPanel";
@@ -21,14 +21,13 @@ const INK = "#060606";
 const MUTED = "#6b6b6b";
 
 export default function WorkoutSessionScreenInner() {
-  const { exercises, activeSessionId } = useWorkoutSession();
+  const { exercises, activeSessionId, refreshActiveSession } =
+    useWorkoutSession();
 
   const [showRestTimer, setShowRestTimer] = useState(false);
   const [showExercisesList, setShowExercisesList] = useState(false);
   const [showExitConfirm, setShowExitConfirm] = useState(false);
 
-  // Set tracking isn't wired into the data model yet (session rebuild in
-  // progress), so these stay neutral until per-set state lands.
   const allSetsComplete = false;
   const allExercisesComplete = false;
   const progressPct = 50;
@@ -42,15 +41,23 @@ export default function WorkoutSessionScreenInner() {
     }, []),
   );
 
-  // If we land here without an active session (e.g. a stale navigation back to
-  // this route), bounce to the Train page instead of showing an empty session.
+  // Re-read the active session from SQLite on every focus. The provider holds it
+  // in state, so refreshing here re-renders with a fresh activeSessionId after a
+  // session was finished or cancelled elsewhere.
   useFocusEffect(
     useCallback(() => {
-      if (!activeSessionId) {
-        router.replace("/(tabs)/Workouts");
-      }
-    }, [activeSessionId]),
+      refreshActiveSession();
+    }, [refreshActiveSession]),
   );
+
+  // React to the fresh value: if there's no active session (e.g. a stale
+  // navigation back to this route, or one that was just finished/cancelled while
+  // focused), bounce to the Train page instead of showing an empty session.
+  useEffect(() => {
+    if (!activeSessionId) {
+      router.replace("/(tabs)/Workouts");
+    }
+  }, [activeSessionId]);
 
   if (exercises.length === 0) {
     return <Redirect href="/(tabs)" />;
