@@ -4,7 +4,7 @@ import { insertSessionExercise } from "@/src/lib/dao/sessionExercises";
 import { insertSession } from "@/src/lib/dao/sessions";
 import { insertSessionSet } from "@/src/lib/dao/sessionSets";
 import { listWorkoutExercisesByWorkout } from "@/src/lib/dao/workoutExercises";
-import { getWorkoutIDForDay, listWorkoutsByPlan } from "@/src/lib/dao/workouts";
+import { getWorkoutById, getWorkoutIDForDay } from "@/src/lib/dao/workouts";
 import { getDb } from "@/src/lib/db";
 import { generateUUID } from "@/src/lib/uuid";
 
@@ -23,7 +23,7 @@ export default function createSession(userId: string | null) {
   const workoutId = getWorkoutIDForDay(planId, today);
   if (!workoutId) return null;
 
-  const workout = listWorkoutsByPlan(planId).find((w) => w.id === workoutId);
+  const workout = getWorkoutById(workoutId);
   if (!workout) return null;
 
   const exercises = listWorkoutExercisesByWorkout(workoutId); // sorted by position
