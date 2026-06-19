@@ -42,6 +42,16 @@ export default function WorkoutSessionScreenInner() {
     }, []),
   );
 
+  // If we land here without an active session (e.g. a stale navigation back to
+  // this route), bounce to the Train page instead of showing an empty session.
+  useFocusEffect(
+    useCallback(() => {
+      if (!activeSessionId) {
+        router.replace("/(tabs)/Workouts");
+      }
+    }, [activeSessionId]),
+  );
+
   if (exercises.length === 0) {
     return <Redirect href="/(tabs)" />;
   }
