@@ -16,6 +16,20 @@ export type SessionExerciseView = {
   isUnilateral: boolean;
 };
 
+// One exercise snapshotted into a session — the shape the session UI consumes.
+// The data layer maps its SQLite row to this; components depend on this, not the row.
+export type SessionExercise = {
+  id: string;
+  sessionId: string;
+  sourceExerciseId: string | null;
+  catalogExerciseId: string | null;
+  name: string;
+  targetSets: number;
+  targetReps: number;
+  position: number;
+  isUnilateral: boolean;
+};
+
 export type ExerciseBestRecord = {
   weight: number;
   reps: number;

@@ -1,8 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import type { SessionExerciseRow } from "@/src/lib/dao/sessionExercises";
 import { useGetCompletedSetCount } from "../hooks/useGetCompletedSetCount";
 import { useWorkoutSession } from "../hooks/useWorkoutSession";
+import type { SessionExercise } from "../sessionView";
 
 type Props = {
   visible: boolean;
@@ -49,7 +49,7 @@ function ExerciseRow({
   isActive,
   onPress,
 }: {
-  exercise: SessionExerciseRow;
+  exercise: SessionExercise;
   isActive: boolean;
   onPress: () => void;
 }) {

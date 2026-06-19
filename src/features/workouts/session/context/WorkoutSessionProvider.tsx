@@ -1,12 +1,12 @@
 import { useAuth } from "@/src/features/auth";
-import type { SessionExerciseRow } from "@/src/lib/dao/sessionExercises";
 import { getActiveSessionForUser } from "@/src/lib/dao/sessions";
 import type { ReactNode } from "react";
 import { createContext, useCallback, useEffect, useMemo, useState } from "react";
 import { useGetSessionExercises } from "../hooks/useGetSessionExercises";
+import type { SessionExercise } from "../sessionView";
 
 type SessionContextValue = {
-  exercises: SessionExerciseRow[];
+  exercises: SessionExercise[];
   activeIndex: number;
   activeExerciseId: string | null;
   setActiveIndex: (index: number) => void;
