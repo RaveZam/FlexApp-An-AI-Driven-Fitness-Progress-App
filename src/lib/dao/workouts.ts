@@ -16,7 +16,7 @@ type Raw = {
   name: string;
   created_at: string;
   updated_at: string;
-}; 
+};
 
 const fromRaw = (r: Raw): WorkoutRow => ({
   id: r.id,
@@ -31,7 +31,7 @@ export function listWorkoutsByUser(userId: string): WorkoutRow[] {
   return getDb()
     .getAllSync<Raw>(
       "SELECT * FROM user_workouts WHERE user_id = ? ORDER BY created_at DESC",
-      [userId]
+      [userId],
     )
     .map(fromRaw);
 }
@@ -40,29 +40,37 @@ export function listWorkoutsByPlan(planId: string): WorkoutRow[] {
   return getDb()
     .getAllSync<Raw>(
       "SELECT * FROM user_workouts WHERE plan_id = ? ORDER BY created_at ASC",
-      [planId]
+      [planId],
     )
     .map(fromRaw);
 }
 
-export function getWorkoutIDForDay(planId: string, day: number): string | null {
+export function getWorkoutById(workoutId: string | null): WorkoutRow | null {
+  if (!workoutId) return null;
+  const row = getDb().getFirstSync<Raw>(
+    "SELECT * FROM user_workouts WHERE id = ?",
+    [workoutId],
+  );
+  return row ? fromRaw(row) : null;
+}
 
-  return getDb()
-    .getFirstSync<{ id: string }>(
+export function getWorkoutIDForDay(planId: string, day: number): string | null {
+  return (
+    getDb().getFirstSync<{ id: string }>(
       `SELECT w.id FROM user_workouts w
        JOIN user_workout_days d ON d.workout_id = w.id
        WHERE w.plan_id = ? AND d.day_of_week = ?
        ORDER BY w.created_at ASC`,
-      [planId, day]
+      [planId, day],
     )?.id ?? null
-
+  );
 }
 
 export function getWorkoutUpdatedAt(workoutId: string): string | null {
   return (
     getDb().getFirstSync<{ updated_at: string }>(
       "SELECT updated_at FROM user_workouts WHERE id = ?",
-      [workoutId]
+      [workoutId],
     )?.updated_at ?? null
   );
 }
@@ -71,7 +79,14 @@ export function insertWorkout(workout: WorkoutRow): void {
   getDb().runSync(
     `INSERT INTO user_workouts (id, user_id, plan_id, name, created_at, updated_at)
      VALUES (?, ?, ?, ?, ?, ?)`,
-    [workout.id, workout.userId, workout.planId, workout.name, workout.createdAt, workout.updatedAt]
+    [
+      workout.id,
+      workout.userId,
+      workout.planId,
+      workout.name,
+      workout.createdAt,
+      workout.updatedAt,
+    ],
   );
 }
 
@@ -84,11 +99,21 @@ export function upsertWorkout(workout: WorkoutRow): void {
        name = excluded.name,
        updated_at = excluded.updated_at
      WHERE excluded.updated_at >= user_workouts.updated_at`,
-    [workout.id, workout.userId, workout.planId, workout.name, workout.createdAt, workout.updatedAt]
+    [
+      workout.id,
+      workout.userId,
+      workout.planId,
+      workout.name,
+      workout.createdAt,
+      workout.updatedAt,
+    ],
   );
 }
 
-export function touchWorkoutUpdatedAt(workoutId: string, updatedAt: string): void {
+export function touchWorkoutUpdatedAt(
+  workoutId: string,
+  updatedAt: string,
+): void {
   getDb().runSync("UPDATE user_workouts SET updated_at = ? WHERE id = ?", [
     updatedAt,
     workoutId,
