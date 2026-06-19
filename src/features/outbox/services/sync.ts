@@ -100,80 +100,113 @@ async function dispatchRow(row: OutboxRow): Promise<void> {
       updated_at: string;
     }>(
       "SELECT active_plan_id, rest_timer_seconds, updated_at FROM user_preferences WHERE user_id = ?",
-      [row.entity_id]
+      [row.entity_id],
     );
     if (!local) return;
-    const { error } = await supabase
-      .from("user_preferences")
-      .upsert(
-        {
-          user_id: row.entity_id,
-          active_plan_id: local.active_plan_id,
-          rest_timer_seconds: local.rest_timer_seconds,
-          updated_at: local.updated_at,
-        },
-        { onConflict: "user_id" }
-      );
+    const { error } = await supabase.from("user_preferences").upsert(
+      {
+        user_id: row.entity_id,
+        active_plan_id: local.active_plan_id,
+        rest_timer_seconds: local.rest_timer_seconds,
+        updated_at: local.updated_at,
+      },
+      { onConflict: "user_id" },
+    );
     if (error) throw error;
   }
 
   if (row.entity_type === "workout_session") {
     if (row.operation === "create") {
-      const { sessionId, userId, workoutId, planId, name, startedAt } = payload as {
-        sessionId: string; userId: string; workoutId: string; planId: string | null;
-        name: string; startedAt: string;
+      const {
+        sessionId,
+        userId,
+        workoutId,
+        planId,
+        name,
+        startedAt,
+        exercises,
+      } = payload as {
+        sessionId: string;
+        userId: string;
+        workoutId: string;
+        planId: string | null;
+        name: string;
+        startedAt: string;
+        exercises: {
+          id: string;
+          sourceExerciseId: string | null;
+          catalogExerciseId: string | null;
+          name: string;
+          targetSets: number;
+          targetReps: number;
+          position: number;
+          isUnilateral: boolean;
+          sets: { id: string; setIndex: number; targetReps: number }[];
+        }[];
       };
-      const { error } = await supabase
-        .from("workout_sessions")
-        .upsert(
-          { id: sessionId, user_id: userId, workout_id: workoutId, plan_id: planId, name, status: "in_progress", started_at: startedAt, created_at: startedAt, updated_at: startedAt },
-          { onConflict: "id" }
-        );
+      const { error } = await supabase.from("workout_sessions").upsert(
+        {
+          id: sessionId,
+          user_id: userId,
+          workout_id: workoutId,
+          plan_id: planId,
+          name,
+          status: "in_progress",
+          started_at: startedAt,
+          created_at: startedAt,
+          updated_at: startedAt,
+        },
+        { onConflict: "id" },
+      );
       if (error) throw error;
 
-      const db = getDb();
-      const exerciseRows = db.getAllSync<{
-        id: string; session_id: string; source_exercise_id: string | null;
-        catalog_exercise_id: string | null; name: string; target_sets: number;
-        target_reps: number; position: number; is_unilateral: number;
-      }>("SELECT * FROM session_exercises WHERE session_id = ? ORDER BY position ASC", [sessionId]);
-
-      if (exerciseRows.length > 0) {
-        const { error: exErr } = await supabase.from("session_exercises").upsert(
-          exerciseRows.map((ex) => ({
-            id: ex.id, session_id: ex.session_id, source_exercise_id: ex.source_exercise_id,
-            catalog_exercise_id: ex.catalog_exercise_id, name: ex.name,
-            target_sets: ex.target_sets, target_reps: ex.target_reps, position: ex.position,
-            is_unilateral: ex.is_unilateral === 1,
-          })),
-          { onConflict: "id" }
-        );
+      if (exercises.length > 0) {
+        const { error: exErr } = await supabase
+          .from("session_exercises")
+          .upsert(
+            exercises.map((ex) => ({
+              id: ex.id,
+              session_id: sessionId,
+              source_exercise_id: ex.sourceExerciseId,
+              catalog_exercise_id: ex.catalogExerciseId,
+              name: ex.name,
+              target_sets: ex.targetSets,
+              target_reps: ex.targetReps,
+              position: ex.position,
+              is_unilateral: ex.isUnilateral,
+            })),
+            { onConflict: "id" },
+          );
         if (exErr) throw exErr;
 
-        for (const ex of exerciseRows) {
-          const setRows = db.getAllSync<{
-            id: string; session_exercise_id: string; set_index: number; target_reps: number;
-            actual_reps: number | null; actual_reps_left: number | null; actual_reps_right: number | null;
-            weight: number | null; completed: number; completed_at: string | null;
-          }>("SELECT * FROM session_sets WHERE session_exercise_id = ? ORDER BY set_index ASC", [ex.id]);
+        const setRows = exercises.flatMap((ex) =>
+          ex.sets.map((s) => ({
+            id: s.id,
+            session_exercise_id: ex.id,
+            set_index: s.setIndex,
+            target_reps: s.targetReps,
+            actual_reps: null,
+            actual_reps_left: null,
+            actual_reps_right: null,
+            weight: null,
+            completed: false,
+            completed_at: null,
+          })),
+        );
 
-          if (setRows.length > 0) {
-            const { error: setsErr } = await supabase.from("session_sets").upsert(
-              setRows.map((s) => ({
-                id: s.id, session_exercise_id: s.session_exercise_id, set_index: s.set_index,
-                target_reps: s.target_reps, actual_reps: s.actual_reps,
-                actual_reps_left: s.actual_reps_left, actual_reps_right: s.actual_reps_right,
-                weight: s.weight, completed: s.completed === 1, completed_at: s.completed_at,
-              })),
-              { onConflict: "id" }
-            );
-            if (setsErr) throw setsErr;
-          }
+        if (setRows.length > 0) {
+          const { error: setsErr } = await supabase
+            .from("session_sets")
+            .upsert(setRows, { onConflict: "id" });
+          if (setsErr) throw setsErr;
         }
       }
     }
     if (row.operation === "update") {
-      const { status, completedAt } = payload as { status: string; completedAt: string };
+      const { status, completedAt } = payload as {
+        status: string;
+        completedAt: string;
+      };
       const { error } = await supabase
         .from("workout_sessions")
         .update({ status, completed_at: completedAt, updated_at: completedAt })
@@ -190,9 +223,20 @@ async function dispatchRow(row: OutboxRow): Promise<void> {
   }
 
   if (row.entity_type === "session_set" && row.operation === "update") {
-    const { actualReps, actualRepsLeft, actualRepsRight, weight, completed, completedAt } = payload as {
-      actualReps: number | null; actualRepsLeft: number | null; actualRepsRight: number | null;
-      weight: number | null; completed: boolean; completedAt: string | null;
+    const {
+      actualReps,
+      actualRepsLeft,
+      actualRepsRight,
+      weight,
+      completed,
+      completedAt,
+    } = payload as {
+      actualReps: number | null;
+      actualRepsLeft: number | null;
+      actualRepsRight: number | null;
+      weight: number | null;
+      completed: boolean;
+      completedAt: string | null;
     };
     const { error } = await supabase
       .from("session_sets")
@@ -242,7 +286,7 @@ async function dispatchRow(row: OutboxRow): Promise<void> {
 function getPendingRows(): OutboxRow[] {
   const db = getDb();
   return db.getAllSync<OutboxRow>(
-    "SELECT id, entity_type, entity_id, operation, payload FROM outbox WHERE synced_at IS NULL ORDER BY created_at ASC"
+    "SELECT id, entity_type, entity_id, operation, payload FROM outbox WHERE synced_at IS NULL ORDER BY created_at ASC",
   );
 }
 

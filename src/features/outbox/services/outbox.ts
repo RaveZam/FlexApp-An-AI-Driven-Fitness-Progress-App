@@ -20,6 +20,6 @@ export function enqueueOutbox(params: {
       params.operation,
       JSON.stringify(params.payload),
       new Date().toISOString(),
-    ]
+    ],
   );
 }
