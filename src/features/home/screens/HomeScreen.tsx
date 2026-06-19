@@ -1,49 +1,38 @@
 import "@/global.css";
 import "react-native-reanimated";
 
+import ActionButton from "@/components/ui/ActionButton";
 import BlurOverlay from "@/components/ui/BlurOverlay";
 import LoadingOverlay from "@/components/ui/LoadingOverlay";
-import Popup from "@/components/ui/Popup";
-import UserInfoCard from "@/src/features/home/components/UserInfoCard";
-import { FontFamilies, Palette } from "@/constants/theme";
+import { Palette } from "@/constants/theme";
 import {
   ProgressiveOverload,
   ScheduleBar,
-  TodaysWorkoutSection
+  TodaysWorkoutSection,
 } from "@/src/features/home/components";
-import { useHideNavigationBar } from "@/src/features/home/hooks/useHideNavigationBar";
-import { useHomeScreen } from "@/src/features/home/hooks/useHomeScreen";
+import UserInfoCard from "@/src/features/home/components/UserInfoCard";
 
-import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useState } from "react";
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import Animated, {
   configureReanimatedLogger,
   FadeInDown,
   ReanimatedLogLevel,
 } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
+import useGetActiveSession from "../hooks/useGetActiveSession";
+import { useHandleStartWorkout } from "../hooks/useHandleStartWorkout";
 
 configureReanimatedLogger({ level: ReanimatedLogLevel.warn, strict: false });
 
 export default function Index() {
+  const isRestDay = false;
+  const handleStartWorkout = useHandleStartWorkout();
+  const activeSession = useGetActiveSession();
+
   const [collapsed] = useState(false);
   const [isLoading] = useState(false);
-
-  useHideNavigationBar();
-
-  const {
-    activePlanId,
-    todaysWorkouts,
-    hasActiveSession,
-    multiPickerVisible,
-    closeMultiPicker,
-    handleStartWorkout,
-    handlePickWorkout,
-    buttonLabel,
-    buttonDisabled,
-  } = useHomeScreen();
 
   return (
     <SafeAreaView style={styles.safe} edges={["top"]}>
@@ -58,20 +47,16 @@ export default function Index() {
       <View style={styles.container}>
         <LoadingOverlay isVisible={isLoading} />
 
-        <Popup
-          isVisible={multiPickerVisible}
-          onClose={closeMultiPicker}
-          message="Choose a workout to start"
-          buttons={todaysWorkouts.map((w) => ({
-            text: w.name,
-            onPress: () => handlePickWorkout(w),
-            style: "default" as const,
-          }))}
-        />
-
         <BlurOverlay
           collapsed={collapsed}
-          style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, zIndex: 1 }}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 1,
+          }}
         />
 
         <UserInfoCard />
@@ -82,10 +67,8 @@ export default function Index() {
           contentContainerStyle={{ paddingBottom: 20 }}
         >
           <ScheduleBar />
- 
-          <TodaysWorkoutSection workouts={todaysWorkouts} activePlanId={activePlanId} />
 
-         
+          <TodaysWorkoutSection />
 
           <View style={{ gap: 14 }}>
             {/* <HomePageChartGraph />x */}
@@ -99,24 +82,16 @@ export default function Index() {
           {/* <Insights /> */}
         </ScrollView>
 
-        <Animated.View entering={FadeInDown.delay(600).duration(400)} style={styles.bottomArea}>
-          <TouchableOpacity
-            activeOpacity={buttonDisabled ? 1 : 0.85}
-            onPress={buttonDisabled ? undefined : handleStartWorkout}
-            style={[
-              styles.bottomButton,
-              buttonDisabled && { borderColor: Palette.hairlineStrong, opacity: 0.6 },
-            ]}
-          >
-            <Text style={styles.bottomButtonText}>{buttonLabel}</Text>
-            <View style={styles.bottomButtonGlyph}>
-              <Ionicons
-                name={hasActiveSession ? "play-skip-forward" : "play"}
-                size={12}
-                color={buttonDisabled ? Palette.mutedSoft : Palette.accent}
-              />
-            </View>
-          </TouchableOpacity>
+        <Animated.View
+          entering={FadeInDown.delay(600).duration(400)}
+          style={styles.bottomArea}
+        >
+          <ActionButton
+            onPress={handleStartWorkout}
+            title={activeSession ? "Resume Workout" : "Start Workout"}
+            icon={activeSession ? "play-skip-forward" : "play"}
+            disabled={isRestDay ? true : false}
+          />
         </Animated.View>
       </View>
     </SafeAreaView>
@@ -133,31 +108,4 @@ const styles = StyleSheet.create({
     backgroundColor: Palette.hairlineStrong,
   },
   bottomArea: { paddingHorizontal: 20, paddingTop: 12, paddingBottom: 14 },
-  bottomButton: {
-    height: 56,
-    borderRadius: 14,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 14,
-    backgroundColor: Palette.inkRaised,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: Palette.accentBorder,
-  },
-  bottomButtonText: {
-    color: Palette.bone,
-    fontSize: 12,
-    fontFamily: FontFamilies.displayMedium,
-    letterSpacing: 2.4,
-    textTransform: "uppercase",
-  },
-  bottomButtonGlyph: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: Palette.accentBorder,
-    alignItems: "center",
-    justifyContent: "center",
-  },
 });

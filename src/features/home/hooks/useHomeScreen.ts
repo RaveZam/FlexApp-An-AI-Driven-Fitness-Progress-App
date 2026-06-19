@@ -28,7 +28,7 @@ export function useHomeScreen() {
   useFocusEffect(
     useCallback(() => {
       refreshActiveSession();
-    }, [refreshActiveSession])
+    }, [refreshActiveSession]),
   );
 
   const hasActiveSession = !!activeSession;
@@ -40,21 +40,6 @@ export function useHomeScreen() {
     isRestDay,
     hasNoActivePlan,
   });
-
-   function handleStartWorkout() {
-    if (hasActiveSession) {
-      router.push(`/(tabs)/Workouts/session?id=${activeSession.id}` as any);
-      return;
-    }
-    if (todaysWorkouts.length === 1) {
-      const sessionId =  startSession(todaysWorkouts[0]);
-      router.push(`/(tabs)/Workouts/session?id=${sessionId}` as any);
-      return;
-    }
-    if (todaysWorkouts.length > 1) {
-      setMultiPickerVisible(true);
-    }
-  }
 
   function handlePickWorkout(workout: Workout) {
     setMultiPickerVisible(false);
@@ -72,7 +57,7 @@ export function useHomeScreen() {
     hasActiveSession,
     multiPickerVisible,
     closeMultiPicker,
-    handleStartWorkout,
+
     handlePickWorkout,
     buttonLabel,
     buttonDisabled,
