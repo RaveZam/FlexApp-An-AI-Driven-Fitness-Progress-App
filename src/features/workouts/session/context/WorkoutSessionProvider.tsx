@@ -1,12 +1,12 @@
 import { useAuth } from "@/src/features/auth";
+import type { SessionExerciseRow } from "@/src/lib/dao/sessionExercises";
 import { getActiveSessionForUser } from "@/src/lib/dao/sessions";
-import type { WorkoutExerciseRow } from "@/src/lib/dao/workoutExercises";
 import type { ReactNode } from "react";
 import { createContext, useEffect, useMemo, useState } from "react";
-import { useGetCurrentWorkoutExercises } from "../hooks/useGetCurrentWorkoutExercises";
+import { useGetSessionExercises } from "../hooks/useGetSessionExercises";
 
 type SessionContextValue = {
-  exercises: WorkoutExerciseRow[];
+  exercises: SessionExerciseRow[];
   activeIndex: number;
   activeExerciseId: string | null;
   setActiveIndex: (index: number) => void;
@@ -19,7 +19,6 @@ export const SessionContext = createContext<SessionContextValue | null>(null);
 
 export function WorkoutSessionProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
-  const exercises: WorkoutExerciseRow[] = useGetCurrentWorkoutExercises();
   const [activeIndex, setActiveIndex] = useState(0);
   const [activeExerciseId, setActiveExerciseId] = useState<string | null>(null);
 
@@ -27,6 +26,8 @@ export function WorkoutSessionProvider({ children }: { children: ReactNode }) {
 
   const createdAt = session?.createdAt ?? null;
   const activeSessionId = session?.id ?? null;
+
+  const exercises = useGetSessionExercises(activeSessionId);
 
   useEffect(() => {
     if (exercises.length > 0) {
