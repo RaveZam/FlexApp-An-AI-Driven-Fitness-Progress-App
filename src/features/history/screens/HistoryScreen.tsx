@@ -17,6 +17,12 @@ import { useSessionHistory } from "../hooks/useSessionHistory";
 import { formatDuration, formatVolume, type OverviewStats } from "../sessionStats";
 import type { WorkoutSessionSummary } from "../types";
 
+const STATUS_COLOR: Record<WorkoutSessionSummary["status"], string> = {
+  completed: "#22c55e",
+  in_progress: "#eab308",
+  cancelled: "#ef4444",
+};
+
 const DAY_ABBR = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 const MONTH_ABBR = [
   "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
@@ -80,6 +86,7 @@ function SessionCard({
         <View style={styles.cardBody}>
           <View style={styles.titleRow}>
             <Text style={styles.cardTitle} numberOfLines={1}>{item.name}</Text>
+            <View style={[styles.statusDot, { backgroundColor: STATUS_COLOR[item.status] }]} />
             <Pressable onPress={() => onMenu(item)} style={styles.menuBtn} hitSlop={10}>
               <Ionicons name="ellipsis-horizontal" size={18} color={Palette.muted} />
             </Pressable>
@@ -369,6 +376,12 @@ const styles = StyleSheet.create({
     fontFamily: FontFamilies.semibold,
     fontSize: 15,
     color: "#ffffff",
+  },
+  statusDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginLeft: 8,
   },
   metaRow: {
     flexDirection: "row",

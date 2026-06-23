@@ -7,6 +7,7 @@ export function listCompletedSessions(userId: string): WorkoutSessionSummary[] {
   return sessionSummaryDao.listCompletedSessionSummariesByUser(userId).map((r) => ({
     id: r.id,
     name: r.name,
+    status: r.status,
     startedAt: r.startedAt,
     completedAt: r.completedAt ?? r.startedAt,
     exerciseCount: r.exerciseCount,

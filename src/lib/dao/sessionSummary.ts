@@ -1,8 +1,10 @@
 import { getDb } from "@/src/lib/db";
+import type { SessionStatus } from "@/src/lib/dao/sessions";
 
 export type CompletedSessionSummaryRow = {
   id: string;
   name: string;
+  status: SessionStatus;
   startedAt: string;
   completedAt: string | null;
   exerciseCount: number;
@@ -16,6 +18,7 @@ export function listCompletedSessionSummariesByUser(userId: string): CompletedSe
     .getAllSync<{
       id: string;
       name: string;
+      status: SessionStatus;
       started_at: string;
       completed_at: string | null;
       exercise_count: number;
@@ -26,6 +29,7 @@ export function listCompletedSessionSummariesByUser(userId: string): CompletedSe
       `SELECT
          ws.id,
          ws.name,
+         ws.status,
          ws.started_at,
          ws.completed_at,
          (SELECT COUNT(*) FROM session_exercises se WHERE se.session_id = ws.id) AS exercise_count,
@@ -42,13 +46,14 @@ export function listCompletedSessionSummariesByUser(userId: string): CompletedSe
             JOIN session_exercises se ON ss.session_exercise_id = se.id
             WHERE se.session_id = ws.id AND ss.completed = 1 AND ss.weight IS NOT NULL) AS volume
        FROM workout_sessions ws
-       WHERE ws.user_id = ? AND ws.status != 'in_progress'
+       WHERE ws.user_id = ?
        ORDER BY COALESCE(ws.completed_at, ws.started_at) DESC`,
       [userId]
     )
     .map((r) => ({
       id: r.id,
       name: r.name,
+      status: r.status,
       startedAt: r.started_at,
       completedAt: r.completed_at,
       exerciseCount: r.exercise_count,
