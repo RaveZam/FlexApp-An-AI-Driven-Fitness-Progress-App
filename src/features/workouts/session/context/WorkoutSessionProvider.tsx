@@ -22,6 +22,7 @@ type SessionContextValue = {
   refreshActiveSession: () => void;
   loggedSetCount: number;
   advanceSet: () => void;
+  goToNextExercise: () => void;
 };
 
 export const SessionContext = createContext<SessionContextValue | null>(null);
@@ -44,6 +45,13 @@ export function WorkoutSessionProvider({ children }: { children: ReactNode }) {
   const [loggedSetCount, setLoggedSetCount] = useState(0);
 
   const advanceSet = useCallback(() => setLoggedSetCount((c) => c + 1), []);
+
+  // Move to the next exercise: bump the active index and reset the logged-set
+  // cursor so the next exercise starts counting from its first set.
+  const goToNextExercise = useCallback(() => {
+    setActiveIndex((i) => i + 1);
+    setLoggedSetCount(0);
+  }, []);
 
   const createdAt = session?.createdAt ?? null;
   const activeSessionId = session?.id ?? null;
@@ -70,6 +78,7 @@ export function WorkoutSessionProvider({ children }: { children: ReactNode }) {
       refreshActiveSession,
       loggedSetCount,
       advanceSet,
+      goToNextExercise,
     }),
     [
       exercises,
@@ -80,6 +89,7 @@ export function WorkoutSessionProvider({ children }: { children: ReactNode }) {
       refreshActiveSession,
       loggedSetCount,
       advanceSet,
+      goToNextExercise,
     ],
   );
 

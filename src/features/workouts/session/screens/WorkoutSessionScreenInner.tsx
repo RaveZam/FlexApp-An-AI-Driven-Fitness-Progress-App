@@ -15,6 +15,7 @@ import { ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import SessionStatsPanel from "../components/SessionStatsPanel";
 import { cancelOngoingSession } from "../core/cancelOngoingSession";
+import { useSessionBottomBar } from "../hooks/useSessionBottomBar";
 import { useWorkoutSession } from "../hooks/useWorkoutSession";
 
 const ACCENT = "#34d399";
@@ -24,6 +25,7 @@ const INK = "#060606";
 export default function WorkoutSessionScreenInner() {
   const { exercises, activeSessionId, refreshActiveSession } =
     useWorkoutSession();
+  const { mode: bottomBarMode, advance } = useSessionBottomBar();
 
   const [showRestTimer, setShowRestTimer] = useState(false);
   const [showExercisesList, setShowExercisesList] = useState(false);
@@ -113,7 +115,12 @@ export default function WorkoutSessionScreenInner() {
           )}
         </ScrollView>
 
-        <SessionBottomBar mode="log" onPress={() => setShowLogModal(true)} />
+        <SessionBottomBar
+          mode={bottomBarMode}
+          onPress={
+            bottomBarMode === "log" ? () => setShowLogModal(true) : advance
+          }
+        />
 
         <WorkoutLogModal
           visible={showLogModal}
