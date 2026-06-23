@@ -22,6 +22,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import useGetActiveSession from "../hooks/useGetActiveSession";
+import useHasFinishedWorkoutToday from "../hooks/useHasFinishedWorkoutToday";
 import { useHandleStartWorkout } from "../hooks/useHandleStartWorkout";
 
 configureReanimatedLogger({ level: ReanimatedLogLevel.warn, strict: false });
@@ -30,6 +31,8 @@ export default function Index() {
   const isRestDay = false;
   const handleStartWorkout = useHandleStartWorkout();
   const activeSession = useGetActiveSession();
+  const finishedToday = useHasFinishedWorkoutToday();
+  const showFinished = !activeSession && finishedToday;
 
   const [collapsed] = useState(false);
   const [isLoading] = useState(false);
@@ -88,9 +91,21 @@ export default function Index() {
         >
           <ActionButton
             onPress={handleStartWorkout}
-            title={activeSession ? "Resume Workout" : "Start Workout"}
-            icon={activeSession ? "play-skip-forward" : "play"}
-            disabled={isRestDay ? true : false}
+            title={
+              activeSession
+                ? "Resume Workout"
+                : showFinished
+                ? "Workout Finished"
+                : "Start Workout"
+            }
+            icon={
+              activeSession
+                ? "play-skip-forward"
+                : showFinished
+                ? "checkmark-done"
+                : "play"
+            }
+            disabled={isRestDay || showFinished}
           />
         </Animated.View>
       </View>
