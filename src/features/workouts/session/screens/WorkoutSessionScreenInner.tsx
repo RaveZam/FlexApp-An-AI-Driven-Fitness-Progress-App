@@ -7,6 +7,7 @@ import SessionExerciseCard from "@/src/features/workouts/session/components/Sess
 import SessionHeader from "@/src/features/workouts/session/components/SessionHeader";
 import SessionSetList from "@/src/features/workouts/session/components/SessionSetList";
 import SessionTimerHero from "@/src/features/workouts/session/components/SessionTimerHero";
+import WorkoutLogModal from "@/src/features/workouts/session/components/WorkoutLogModal";
 import { LinearGradient } from "expo-linear-gradient";
 import { Redirect, router, useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
@@ -27,6 +28,7 @@ export default function WorkoutSessionScreenInner() {
   const [showRestTimer, setShowRestTimer] = useState(false);
   const [showExercisesList, setShowExercisesList] = useState(false);
   const [showExitConfirm, setShowExitConfirm] = useState(false);
+  const [showLogModal, setShowLogModal] = useState(false);
 
   const allSetsComplete = false;
   const allExercisesComplete = false;
@@ -111,7 +113,12 @@ export default function WorkoutSessionScreenInner() {
           )}
         </ScrollView>
 
-        <SessionBottomBar mode="log" onPress={() => setShowRestTimer(true)} />
+        <SessionBottomBar mode="log" onPress={() => setShowLogModal(true)} />
+
+        <WorkoutLogModal
+          visible={showLogModal}
+          onClose={() => setShowLogModal(false)}
+        />
 
         <RestTimerModal
           visible={showRestTimer}

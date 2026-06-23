@@ -1,5 +1,6 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { currentSetIndex } from "../core/sessionSetProgress";
 import { useGetSessionSets } from "../hooks/useGetSessionSets";
 import { useWorkoutSession } from "../hooks/useWorkoutSession";
 import SetRow from "./SetRow";
@@ -14,7 +15,7 @@ export default function SessionSetList() {
   const sets = useGetSessionSets(active.id);
 
   const completed = sets.filter((s) => s.completed).length;
-  const currentIndex = sets.findIndex((s) => !s.completed);
+  const currentIndex = currentSetIndex(sets);
 
   return (
     <View>

@@ -1,7 +1,13 @@
 import { useAuth } from "@/src/features/auth";
 import { getActiveSessionForUser } from "@/src/lib/dao/sessions";
 import type { ReactNode } from "react";
-import { createContext, useCallback, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useGetSessionExercises } from "../hooks/useGetSessionExercises";
 import type { SessionExercise } from "../sessionView";
 
@@ -14,6 +20,8 @@ type SessionContextValue = {
   createdAt: string | null;
   activeSessionId: string | null;
   refreshActiveSession: () => void;
+  loggedSetCount: number;
+  advanceSet: () => void;
 };
 
 export const SessionContext = createContext<SessionContextValue | null>(null);
@@ -30,6 +38,12 @@ export function WorkoutSessionProvider({ children }: { children: ReactNode }) {
   const refreshActiveSession = useCallback(() => {
     setSession(getActiveSessionForUser(user?.id ?? ""));
   }, [user?.id]);
+
+  // Bumped each time a set is logged so set reads (useGetSessionSets) refetch
+  // without re-reading the unchanged session row.
+  const [loggedSetCount, setLoggedSetCount] = useState(0);
+
+  const advanceSet = useCallback(() => setLoggedSetCount((c) => c + 1), []);
 
   const createdAt = session?.createdAt ?? null;
   const activeSessionId = session?.id ?? null;
@@ -54,6 +68,8 @@ export function WorkoutSessionProvider({ children }: { children: ReactNode }) {
       createdAt,
       activeSessionId,
       refreshActiveSession,
+      loggedSetCount,
+      advanceSet,
     }),
     [
       exercises,
@@ -62,6 +78,8 @@ export function WorkoutSessionProvider({ children }: { children: ReactNode }) {
       createdAt,
       activeSessionId,
       refreshActiveSession,
+      loggedSetCount,
+      advanceSet,
     ],
   );
 

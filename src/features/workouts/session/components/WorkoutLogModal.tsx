@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   KeyboardAvoidingView,
   Modal,
@@ -10,90 +10,21 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useWorkoutLogForm } from "../hooks/useWorkoutLogForm";
 
 const ACCENT = "#10b981";
 
 type WorkoutLogModalProps = {
   visible: boolean;
-  exerciseName: string;
-  setNumber: number;
-  totalSets: number;
-  targetReps: number;
-  isUnilateral?: boolean;
-  mode?: "log" | "edit";
-  initialWeight?: number | null;
-  initialReps?: number | null;
-  initialLeftReps?: number | null;
-  initialRightReps?: number | null;
-  onLog: (
-    weight: number,
-    actualReps: number | null,
-    leftReps: number | null,
-    rightReps: number | null
-  ) => void;
   onClose: () => void;
 };
 
 export default function WorkoutLogModal({
   visible,
-  exerciseName,
-  setNumber,
-  totalSets,
-  targetReps,
-  isUnilateral = false,
-  mode = "log",
-  initialWeight,
-  initialReps,
-  initialLeftReps,
-  initialRightReps,
-  onLog,
   onClose,
 }: WorkoutLogModalProps) {
-  const [weight, setWeight] = useState("");
-  const [reps, setReps] = useState("");
-  const [leftReps, setLeftReps] = useState("");
-  const [rightReps, setRightReps] = useState("");
-
-  useEffect(() => {
-    if (visible) {
-      setWeight(initialWeight != null ? String(initialWeight) : "");
-      setReps(initialReps != null ? String(initialReps) : "");
-      setLeftReps(initialLeftReps != null ? String(initialLeftReps) : "");
-      setRightReps(initialRightReps != null ? String(initialRightReps) : "");
-    }
-  }, [visible, initialWeight, initialReps, initialLeftReps, initialRightReps]);
-
-  const canLog = isUnilateral
-    ? weight.trim() !== "" && leftReps.trim() !== "" && rightReps.trim() !== ""
-    : weight.trim() !== "" && reps.trim() !== "";
-
-  const reset = () => {
-    setWeight("");
-    setReps("");
-    setLeftReps("");
-    setRightReps("");
-  };
-
-  const handleLog = () => {
-    const w = parseFloat(weight);
-    if (isNaN(w)) return;
-    if (isUnilateral) {
-      const l = parseInt(leftReps, 10);
-      const r = parseInt(rightReps, 10);
-      if (isNaN(l) || isNaN(r)) return;
-      onLog(w, null, l, r);
-    } else {
-      const r = parseInt(reps, 10);
-      if (isNaN(r)) return;
-      onLog(w, r, null, null);
-    }
-    reset();
-  };
-
-  const handleClose = () => {
-    reset();
-    onClose();
-  };
+  const { exercise, inputs, onChange, canLog, handleLog, handleClose } =
+    useWorkoutLogForm(visible, onClose);
 
   return (
     <Modal
@@ -118,11 +49,9 @@ export default function WorkoutLogModal({
           {/* Header */}
           <View style={styles.header}>
             <View>
-              <Text style={styles.exerciseName}>{exerciseName}</Text>
+              <Text style={styles.exerciseName}>{exercise.name}</Text>
               <Text style={styles.setInfo}>
-                {mode === "edit"
-                  ? `Edit set ${setNumber} of ${totalSets}`
-                  : `Set ${setNumber} of ${totalSets} · Target: ${targetReps} reps`}
+                {`Set ${exercise.setNumber} of ${exercise.totalSets} · Target: ${exercise.targetReps} reps`}
               </Text>
             </View>
             <TouchableOpacity onPress={handleClose}>
@@ -136,8 +65,8 @@ export default function WorkoutLogModal({
               <Text style={styles.inputLabel}>WEIGHT (LB)</Text>
               <TextInput
                 style={styles.input}
-                value={weight}
-                onChangeText={(t) => setWeight(t.replace(/[^0-9.]/g, ""))}
+                value={inputs.weight}
+                onChangeText={onChange.weight}
                 keyboardType="numeric"
                 placeholder="0"
                 placeholderTextColor="#444"
@@ -145,14 +74,14 @@ export default function WorkoutLogModal({
                 autoFocus
               />
             </View>
-            {isUnilateral ? (
+            {exercise.isUnilateral ? (
               <>
                 <View style={styles.inputGroup}>
                   <Text style={styles.inputLabel}>LEFT REPS</Text>
                   <TextInput
                     style={styles.input}
-                    value={leftReps}
-                    onChangeText={(t) => setLeftReps(t.replace(/[^0-9]/g, ""))}
+                    value={inputs.leftReps}
+                    onChangeText={onChange.leftReps}
                     keyboardType="number-pad"
                     placeholder="0"
                     placeholderTextColor="#444"
@@ -163,8 +92,8 @@ export default function WorkoutLogModal({
                   <Text style={styles.inputLabel}>RIGHT REPS</Text>
                   <TextInput
                     style={styles.input}
-                    value={rightReps}
-                    onChangeText={(t) => setRightReps(t.replace(/[^0-9]/g, ""))}
+                    value={inputs.rightReps}
+                    onChangeText={onChange.rightReps}
                     keyboardType="number-pad"
                     placeholder="0"
                     placeholderTextColor="#444"
@@ -177,8 +106,8 @@ export default function WorkoutLogModal({
                 <Text style={styles.inputLabel}>REPS</Text>
                 <TextInput
                   style={styles.input}
-                  value={reps}
-                  onChangeText={(t) => setReps(t.replace(/[^0-9]/g, ""))}
+                  value={inputs.reps}
+                  onChangeText={onChange.reps}
                   keyboardType="number-pad"
                   placeholder="0"
                   placeholderTextColor="#444"
@@ -206,7 +135,7 @@ export default function WorkoutLogModal({
                 !canLog && styles.logButtonTextDisabled,
               ]}
             >
-              {mode === "edit" ? `Update Set ${setNumber}` : `Log Set ${setNumber}`}
+              {`Log Set ${exercise.setNumber}`}
             </Text>
           </TouchableOpacity>
         </View>
