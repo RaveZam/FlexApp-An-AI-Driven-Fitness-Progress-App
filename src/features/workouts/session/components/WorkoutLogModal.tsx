@@ -17,14 +17,16 @@ const ACCENT = "#10b981";
 type WorkoutLogModalProps = {
   visible: boolean;
   onClose: () => void;
+  onLogged: () => void;
 };
 
 export default function WorkoutLogModal({
   visible,
   onClose,
+  onLogged,
 }: WorkoutLogModalProps) {
   const { exercise, inputs, onChange, canLog, handleLog, handleClose } =
-    useWorkoutLogForm(visible, onClose);
+    useWorkoutLogForm(visible, { onClose, onLogged });
 
   return (
     <Modal

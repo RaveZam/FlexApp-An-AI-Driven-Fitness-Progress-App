@@ -9,7 +9,11 @@ import { useWorkoutSession } from "./useWorkoutSession";
 // input fields (sanitized on change), and the log/close handlers. The screen
 // keeps the open/close toggle and passes it in as visible/onClose; everything
 // else lives here so the modal is pure presentation.
-export function useWorkoutLogForm(visible: boolean, onClose: () => void) {
+export function useWorkoutLogForm(
+  visible: boolean,
+  handlers: { onClose: () => void; onLogged: () => void },
+) {
+  const { onClose, onLogged } = handlers;
   const { exercises, activeIndex } = useWorkoutSession();
   const active = exercises[activeIndex];
   const sets = useGetSessionSets(active.id);
@@ -47,6 +51,9 @@ export function useWorkoutLogForm(visible: boolean, onClose: () => void) {
     if (!id) return;
     reset();
     onClose();
+    // Only after a set actually lands do we kick off rest — the screen owns the
+    // overlay toggle, we just signal that a log happened.
+    onLogged();
   };
 
   const handleClose = () => {

@@ -15,6 +15,7 @@ import { ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import SessionStatsPanel from "../components/SessionStatsPanel";
 import { cancelOngoingSession } from "../core/cancelOngoingSession";
+import useRestTimer from "../hooks/useRestTimer";
 import { useSessionBottomBar } from "../hooks/useSessionBottomBar";
 import { useWorkoutSession } from "../hooks/useWorkoutSession";
 
@@ -26,6 +27,7 @@ export default function WorkoutSessionScreenInner() {
   const { exercises, activeSessionId, refreshActiveSession } =
     useWorkoutSession();
   const { mode: bottomBarMode, advance } = useSessionBottomBar();
+  const restSeconds = useRestTimer();
 
   const [showRestTimer, setShowRestTimer] = useState(false);
   const [showExercisesList, setShowExercisesList] = useState(false);
@@ -125,11 +127,13 @@ export default function WorkoutSessionScreenInner() {
         <WorkoutLogModal
           visible={showLogModal}
           onClose={() => setShowLogModal(false)}
+          onLogged={() => setShowRestTimer(true)}
         />
 
         <RestTimerModal
           visible={showRestTimer}
           onClose={() => setShowRestTimer(false)}
+          restSeconds={restSeconds}
         />
 
         <ExercisesListSheet

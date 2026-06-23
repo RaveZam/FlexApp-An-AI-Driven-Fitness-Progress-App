@@ -10,6 +10,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import Svg, { Circle } from "react-native-svg";
+import { endRestActivity, startRestActivity } from "../services/liveActivity";
 
 const ACCENT = "#10b981";
 const RADIUS = 110;
@@ -43,6 +44,11 @@ export default function RestTimerModal({ visible, onClose, restSeconds = 90 }: P
   useEffect(() => {
     if (!visible) return;
     endsAtRef.current = Date.now() + restTime * 1000;
+
+    // Hand the same absolute end time to the iOS Live Activity so the Dynamic
+    // Island / Lock Screen counts down in lockstep with the on-screen ring,
+    // including while the app is backgrounded and JS timers are suspended.
+    startRestActivity(endsAtRef.current);
 
     const appStateSub = AppState.addEventListener("change", (state) => {
       if (state === "active") sync();
@@ -78,6 +84,9 @@ export default function RestTimerModal({ visible, onClose, restSeconds = 90 }: P
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
       appStateSub.remove();
+      // Tear down the Live Activity on skip, natural finish, or unmount — all of
+      // which flip `visible` off (or drop the component) and run this cleanup.
+      endRestActivity();
     };
   }, [visible, restTime]);
 
