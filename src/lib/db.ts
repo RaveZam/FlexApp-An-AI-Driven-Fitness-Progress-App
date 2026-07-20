@@ -56,6 +56,8 @@ export async function initDb(): Promise<void> {
     CREATE TABLE IF NOT EXISTS user_preferences (
       user_id TEXT PRIMARY KEY,
       active_plan_id TEXT,
+      active_workout_id TEXT,
+      active_workout_date TEXT,
       rest_timer_seconds INTEGER NOT NULL DEFAULT 120,
       updated_at TEXT NOT NULL
     );
@@ -125,4 +127,22 @@ export async function initDb(): Promise<void> {
     CREATE INDEX IF NOT EXISTS session_sets_exercise_idx ON session_sets(session_exercise_id);
     CREATE INDEX IF NOT EXISTS outbox_pending_idx ON outbox(synced_at) WHERE synced_at IS NULL;
   `);
+
+  // user_preferences may already exist from before these columns were added
+  // (CREATE TABLE IF NOT EXISTS is a no-op there), so add them if missing.
+  await ensureColumn(database, "user_preferences", "active_workout_id", "TEXT");
+  await ensureColumn(database, "user_preferences", "active_workout_date", "TEXT");
+}
+
+async function ensureColumn(
+  database: SQLite.SQLiteDatabase,
+  table: string,
+  column: string,
+  type: string,
+): Promise<void> {
+  const columns = await database.getAllAsync<{ name: string }>(
+    `PRAGMA table_info(${table})`,
+  );
+  if (columns.some((c) => c.name === column)) return;
+  await database.execAsync(`ALTER TABLE ${table} ADD COLUMN ${column} ${type}`);
 }
