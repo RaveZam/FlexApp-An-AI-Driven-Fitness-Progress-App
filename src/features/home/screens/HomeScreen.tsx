@@ -6,6 +6,7 @@ import BlurOverlay from "@/components/ui/BlurOverlay";
 import LoadingOverlay from "@/components/ui/LoadingOverlay";
 import { Palette } from "@/constants/theme";
 import {
+  PlateauCard,
   ProgressiveOverload,
   ScheduleBar,
   TodaysWorkoutSection,
@@ -96,6 +97,7 @@ export default function Index() {
           <View style={{ gap: 14 }}>
             {/* <HomePageChartGraph />x */}
             <ProgressiveOverload />
+            <PlateauCard />
             {/* <WeeklyVolume /> */}
           </View>
 
