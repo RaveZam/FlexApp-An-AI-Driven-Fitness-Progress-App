@@ -118,6 +118,16 @@ export async function initDb(): Promise<void> {
       synced_at TEXT
     );
 
+    CREATE TABLE IF NOT EXISTS plateau_tips (
+      user_id TEXT NOT NULL,
+      exercise_name TEXT NOT NULL,
+      weight REAL NOT NULL,
+      reps INTEGER NOT NULL,
+      tip TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      PRIMARY KEY (user_id, exercise_name, weight, reps)
+    );
+
     -- Indexes
     CREATE INDEX IF NOT EXISTS user_workouts_plan_id_idx ON user_workouts(plan_id);
     CREATE INDEX IF NOT EXISTS user_workout_exercises_workout_id_idx ON user_workout_exercises(workout_id);
