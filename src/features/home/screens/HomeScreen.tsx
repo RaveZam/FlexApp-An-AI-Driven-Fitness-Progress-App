@@ -21,18 +21,35 @@ import Animated, {
   ReanimatedLogLevel,
 } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
+import WorkoutPickerModal from "../components/WorkoutPickerModal";
 import useGetActiveSession from "../hooks/useGetActiveSession";
+import useGetActiveWorkout from "../hooks/useGetActiveWorkout";
 import useHasFinishedWorkoutToday from "../hooks/useHasFinishedWorkoutToday";
-import { useHandleStartWorkout } from "../hooks/useHandleStartWorkout";
+import { useStartWorkout } from "../hooks/useStartWorkout";
+import { useWorkoutPicker } from "../hooks/useWorkoutPicker";
 
 configureReanimatedLogger({ level: ReanimatedLogLevel.warn, strict: false });
 
 export default function Index() {
   const isRestDay = false;
-  const handleStartWorkout = useHandleStartWorkout();
+  const startWorkout = useStartWorkout();
   const activeSession = useGetActiveSession();
   const finishedToday = useHasFinishedWorkoutToday();
   const showFinished = !activeSession && finishedToday;
+
+  const { workout: activeWorkout, refresh: refreshActiveWorkout } =
+    useGetActiveWorkout();
+
+  const {
+    visible: pickerVisible,
+    open: openPicker,
+    close: closePicker,
+    workouts: pickableWorkouts,
+    pickWorkout,
+  } = useWorkoutPicker(refreshActiveWorkout);
+
+  const canChangeDay =
+    !isRestDay && !activeSession && !showFinished && pickableWorkouts.length > 0;
 
   const [collapsed] = useState(false);
   const [isLoading] = useState(false);
@@ -71,7 +88,10 @@ export default function Index() {
         >
           <ScheduleBar />
 
-          <TodaysWorkoutSection />
+          <TodaysWorkoutSection
+            workout={activeWorkout}
+            onPress={canChangeDay ? openPicker : undefined}
+          />
 
           <View style={{ gap: 14 }}>
             {/* <HomePageChartGraph />x */}
@@ -90,7 +110,7 @@ export default function Index() {
           style={styles.bottomArea}
         >
           <ActionButton
-            onPress={handleStartWorkout}
+            onPress={() => startWorkout()}
             title={
               activeSession
                 ? "Resume Workout"
@@ -108,6 +128,13 @@ export default function Index() {
             disabled={isRestDay || showFinished}
           />
         </Animated.View>
+
+        <WorkoutPickerModal
+          visible={pickerVisible}
+          workouts={pickableWorkouts}
+          onPick={pickWorkout}
+          onClose={closePicker}
+        />
       </View>
     </SafeAreaView>
   );
