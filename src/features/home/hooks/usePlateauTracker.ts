@@ -7,7 +7,8 @@ import {
   saveCachedTip,
 } from "@/src/features/home/services/plateauTipsLocalService";
 import { supabase } from "@/src/lib/supabase";
-import { useEffect, useMemo, useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
+import { useCallback, useEffect, useState } from "react";
 
 const DETECTION_LIMIT = 12;
 
@@ -20,13 +21,24 @@ function tipKey(p: PlateauResult): string {
 export function usePlateauTracker(): { plateaus: PlateauWithTip[] } {
   const { userId } = useAuth();
 
-  const plateaus = useMemo<PlateauResult[]>(() => {
-    if (!userId) return [];
+  const [plateaus, setPlateaus] = useState<PlateauResult[]>([]);
+
+  const load = useCallback(() => {
+    if (!userId) {
+      setPlateaus([]);
+      return;
+    }
     const exercises = toExerciseProgress(listLoggedWorkouts(userId, DETECTION_LIMIT));
-    return detectPlateaus(exercises);
+    setPlateaus(detectPlateaus(exercises));
   }, [userId]);
 
+  useFocusEffect(load);
+
   const [tips, setTips] = useState<Record<string, string | null>>({});
+
+  useEffect(() => {
+    setTips({});
+  }, [userId]);
 
   useEffect(() => {
     if (!userId) return;
@@ -59,8 +71,8 @@ export function usePlateauTracker(): { plateaus: PlateauWithTip[] } {
         })
         .catch(() => {});
     }
-    // Runs whenever the detected plateau set changes (i.e. userId changes,
-    // since `plateaus` is memoized on userId) — not on every render.
+    // Runs whenever the detected plateau set changes (userId change or a
+    // focus-triggered refresh) — not on every render.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId, plateaus]);
 
