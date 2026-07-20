@@ -1,17 +1,21 @@
 import { FontFamilies, Palette } from "@/constants/theme";
 import { getTodayLabel } from "@/src/features/home/helpers/dayLabels";
 import useGetActivePlan from "@/src/features/home/hooks/useGetActivePlan";
-import useGetActiveWorkout from "@/src/features/home/hooks/useGetActiveWorkout";
+import type { Workout } from "@/src/features/workouts";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Animated, { FadeIn, FadeInDown } from "react-native-reanimated";
 
-export function TodaysWorkoutSection() {
+type Props = {
+  workout: Workout | null;
+  onPress?: () => void;
+};
+
+export function TodaysWorkoutSection({ workout, onPress }: Props) {
   const activePlanId = useGetActivePlan();
-  const workout = useGetActiveWorkout();
-  //return pag walang active plan id
+
   if (!activePlanId) {
     return (
       <Animated.View
@@ -63,32 +67,38 @@ export function TodaysWorkoutSection() {
       entering={FadeInDown.delay(120).duration(400)}
       style={[styles.todayWrap, { gap: 10 }]}
     >
-      <Animated.View
-        entering={FadeIn.delay(160).duration(400)}
-        style={styles.workoutCard}
+      <TouchableOpacity
+        activeOpacity={onPress ? 0.85 : 1}
+        onPress={onPress}
+        disabled={!onPress}
       >
-        <LinearGradient
-          colors={["rgba(52,211,153,0.08)", "rgba(52,211,153,0)"]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={StyleSheet.absoluteFillObject}
-        />
-        <View style={styles.workoutRail} />
-        <View style={styles.workoutBody}>
-          <Text style={styles.workoutEyebrow}>Today's Lift</Text>
-          <Text style={styles.workoutName}>{workout.name}</Text>
-          <Text style={styles.workoutMeta}>
-            {workout.exercises.length} exercise
-            {workout.exercises.length !== 1 ? "s" : ""}
-          </Text>
-        </View>
-        <Ionicons
-          name="chevron-forward"
-          size={16}
-          color={Palette.muted}
-          style={{ marginRight: 18 }}
-        />
-      </Animated.View>
+        <Animated.View
+          entering={FadeIn.delay(160).duration(400)}
+          style={styles.workoutCard}
+        >
+          <LinearGradient
+            colors={["rgba(52,211,153,0.08)", "rgba(52,211,153,0)"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={StyleSheet.absoluteFillObject}
+          />
+          <View style={styles.workoutRail} />
+          <View style={styles.workoutBody}>
+            <Text style={styles.workoutEyebrow}>Today's Lift</Text>
+            <Text style={styles.workoutName}>{workout.name}</Text>
+            <Text style={styles.workoutMeta}>
+              {workout.exercises.length} exercise
+              {workout.exercises.length !== 1 ? "s" : ""}
+            </Text>
+          </View>
+          <Ionicons
+            name="chevron-forward"
+            size={16}
+            color={Palette.muted}
+            style={{ marginRight: 18 }}
+          />
+        </Animated.View>
+      </TouchableOpacity>
     </Animated.View>
   );
 }
