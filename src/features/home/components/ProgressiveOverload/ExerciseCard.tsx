@@ -4,7 +4,12 @@ import { StyleSheet, Text, View } from "react-native";
 import ReAnimated, { FadeIn, FadeInDown } from "react-native-reanimated";
 import Svg, { Circle, Line, Polyline } from "react-native-svg";
 import type { ExerciseProgress } from "../../types/progressiveOverload";
-import { BAR_GAP, BAR_WIDTH, CHART_HEIGHT, ProgressionBar } from "./ProgressionBar";
+import {
+  BAR_GAP,
+  BAR_WIDTH,
+  CHART_HEIGHT,
+  ProgressionBar,
+} from "./ProgressionBar";
 
 // Leave headroom inside the chart for the latest-session cap dot.
 const BAR_MAX = CHART_HEIGHT - 8;
@@ -12,7 +17,10 @@ const BAR_MAX = CHART_HEIGHT - 8;
 const MAX_BARS = 7;
 const CHART_WIDTH = MAX_BARS * BAR_WIDTH + (MAX_BARS - 1) * BAR_GAP;
 const GRID_ROWS = [0, 0.25, 0.5, 0.75];
-const GRID_COLS = Array.from({ length: MAX_BARS }, (_, i) => i * (BAR_WIDTH + BAR_GAP));
+const GRID_COLS = Array.from(
+  { length: MAX_BARS },
+  (_, i) => i * (BAR_WIDTH + BAR_GAP),
+);
 
 type Props = {
   exercise: ExerciseProgress;
@@ -29,18 +37,32 @@ export function ExerciseCard({ exercise, delay }: Props) {
   const first = volumes[0] ?? 0;
   const last = volumes[volumes.length - 1] ?? 0;
   const deltaPct =
-    points.length > 1 && first > 0 ? Math.round(((last - first) / first) * 100) : null;
+    points.length > 1 && first > 0
+      ? Math.round(((last - first) / first) * 100)
+      : null;
 
-  const heights = volumes.map((v) => (maxVolume > 0 ? Math.max(3, (v / maxVolume) * BAR_MAX) : 3));
+  const heights = volumes.map((v) =>
+    maxVolume > 0 ? Math.max(3, (v / maxVolume) * BAR_MAX) : 3,
+  );
   // Bar-top coordinates, used to thread the trend line through the chart.
   const coords = heights.map((h, i) => ({
     x: i * (BAR_WIDTH + BAR_GAP) + BAR_WIDTH / 2,
     y: CHART_HEIGHT - h,
   }));
-  const chartWidth = points.length * BAR_WIDTH + Math.max(0, points.length - 1) * BAR_GAP;
+  const chartWidth =
+    points.length * BAR_WIDTH + Math.max(0, points.length - 1) * BAR_GAP;
+
+  console.log(exercise);
+
+  if (points.some((p) => p.reps === 0)) {
+    return null;
+  }
 
   return (
-    <ReAnimated.View entering={FadeInDown.delay(delay).duration(420)} style={styles.card}>
+    <ReAnimated.View
+      entering={FadeInDown.delay(delay).duration(420)}
+      style={styles.card}
+    >
       <View style={styles.info}>
         <View style={styles.infoHead}>
           <Text style={styles.exerciseName} numberOfLines={1}>
@@ -92,7 +114,9 @@ export function ExerciseCard({ exercise, delay }: Props) {
               key={point.sessionId}
               index={i}
               heightPx={heights[i]}
-              restingOpacity={0.42 + (i / Math.max(1, points.length - 1)) * 0.45}
+              restingOpacity={
+                0.42 + (i / Math.max(1, points.length - 1)) * 0.45
+              }
               isBest={i === bestIndex}
               isLatest={i === points.length - 1}
             />
@@ -145,8 +169,17 @@ function DeltaChip({ deltaPct }: { deltaPct: number | null }) {
   const up = deltaPct >= 0;
   const color = up ? Palette.accent : Palette.danger;
   return (
-    <View style={[styles.chip, { backgroundColor: up ? Palette.accentSoft : "rgba(248,113,113,0.1)" }]}>
-      <Feather name={up ? "trending-up" : "trending-down"} size={10} color={color} />
+    <View
+      style={[
+        styles.chip,
+        { backgroundColor: up ? Palette.accentSoft : "rgba(248,113,113,0.1)" },
+      ]}
+    >
+      <Feather
+        name={up ? "trending-up" : "trending-down"}
+        size={10}
+        color={color}
+      />
       <Text style={[styles.chipText, { color }]}>
         {up ? "+" : "−"}
         {Math.abs(deltaPct)}%
