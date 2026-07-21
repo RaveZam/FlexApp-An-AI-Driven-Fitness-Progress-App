@@ -1,7 +1,7 @@
 import type { PlateauResult } from "@/src/features/home/core/detectPlateaus";
 import {
-  getCachedTip,
-  saveCachedTip,
+  getTipDB,
+  saveTipDB,
 } from "@/src/features/home/services/plateauTipsLocalService";
 import { supabase } from "@/src/lib/supabase";
 
@@ -9,7 +9,7 @@ export async function getTip(
   userId: string,
   p: PlateauResult,
 ): Promise<string | null> {
-  const cached = getCachedTip(userId, p.name, p.weight, p.reps);
+  const cached = getTipDB(userId, p.name, p.weight, p.reps);
   if (cached) return cached;
 
   const { data, error } = await supabase.functions.invoke<{ tip: string }>(
@@ -30,6 +30,6 @@ export async function getTip(
     return null;
   }
 
-  saveCachedTip(userId, p.name, p.weight, p.reps, data.tip);
+  saveTipDB(userId, p.name, p.weight, p.reps, data.tip);
   return data.tip;
 }

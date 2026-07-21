@@ -1,6 +1,6 @@
 import { getDb } from "@/src/lib/db";
 
-export function getCachedTip(
+export function getTipDB(
   userId: string,
   exerciseName: string,
   weight: number,
@@ -14,7 +14,7 @@ export function getCachedTip(
   return row?.tip ?? null;
 }
 
-export function saveCachedTip(
+export function saveTipDB(
   userId: string,
   exerciseName: string,
   weight: number,

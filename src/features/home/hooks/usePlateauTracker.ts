@@ -1,8 +1,11 @@
 import { useAuth } from "@/src/features/auth";
-import { detectPlateaus, type PlateauResult } from "@/src/features/home/core/detectPlateaus";
+import {
+  detectPlateaus,
+  type PlateauResult,
+} from "@/src/features/home/core/detectPlateaus";
 import { toExerciseProgress } from "@/src/features/home/core/toExerciseProgress";
 import { listLoggedWorkouts } from "@/src/features/home/services/ProgressiveOverloadDao/progressiveOverloadDao";
-import { getOrFetchTip } from "@/src/features/home/services/plateauSuggestionService";
+import { getTip } from "@/src/features/home/services/plateauSuggestionService";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useEffect, useState } from "react";
 
@@ -24,7 +27,9 @@ export function usePlateauTracker(): { plateaus: PlateauWithTip[] } {
       setPlateaus([]);
       return;
     }
-    const exercises = toExerciseProgress(listLoggedWorkouts(userId, DETECTION_LIMIT));
+    const exercises = toExerciseProgress(
+      listLoggedWorkouts(userId, DETECTION_LIMIT),
+    );
     setPlateaus(detectPlateaus(exercises));
   }, [userId]);
 
@@ -43,7 +48,7 @@ export function usePlateauTracker(): { plateaus: PlateauWithTip[] } {
       const key = tipKey(p);
       setTips((prev) => (key in prev ? prev : { ...prev, [key]: null }));
 
-      getOrFetchTip(userId, p).then((tip) => {
+      getTip(userId, p).then((tip) => {
         if (tip) setTips((prev) => ({ ...prev, [key]: tip }));
       });
     }
