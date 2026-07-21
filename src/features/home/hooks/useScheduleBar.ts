@@ -28,8 +28,7 @@ export function useScheduleBar() {
     const sessions = listCompletedSessionsInRange(user.id, start.toISOString(), end.toISOString());
     const set = new Set<number>();
     for (const s of sessions) {
-      if (!s.completedAt) continue;
-      set.add(new Date(s.completedAt).getDay());
+      set.add(new Date(s.startedAt).getDay());
     }
     return set;
   }, [user]);

@@ -60,6 +60,10 @@ export function getSessionById(sessionId: string): SessionRow | null {
   return row ? fromRaw(row) : null;
 }
 
+// Sessions are attributed to the day they were started (i.e. which
+// workout they belong to), not the day they happened to be marked
+// completed — otherwise finishing yesterday's forgotten session today
+// would make today look like it's already been worked out.
 export function listCompletedSessionsInRange(
   userId: string,
   startISO: string,
@@ -69,7 +73,7 @@ export function listCompletedSessionsInRange(
     .getAllSync<Raw>(
       `SELECT * FROM workout_sessions
        WHERE user_id = ? AND status = 'completed'
-       AND completed_at >= ? AND completed_at < ?`,
+       AND started_at >= ? AND started_at < ?`,
       [userId, startISO, endISO],
     )
     .map(fromRaw);
