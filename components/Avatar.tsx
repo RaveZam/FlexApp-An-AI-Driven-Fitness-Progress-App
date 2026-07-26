@@ -1,5 +1,6 @@
-import { FontFamilies, Palette } from "@/constants/theme";
-import { useEffect, useState } from "react";
+import { FontFamilies } from "@/constants/theme";
+import { usePalette, type Palette } from "@/src/theme";
+import { useEffect, useMemo, useState } from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
 
 type AvatarProps = {
@@ -15,6 +16,8 @@ function initialFrom(name?: string | null, email?: string | null) {
 }
 
 export default function Avatar({ uri, name, email, size = 36 }: AvatarProps) {
+  const p = usePalette();
+  const styles = useMemo(() => makeStyles(p), [p]);
   const [failed, setFailed] = useState(false);
 
   // Reset when the source changes so a new avatar gets a fresh load attempt.
@@ -47,18 +50,19 @@ export default function Avatar({ uri, name, email, size = 36 }: AvatarProps) {
   );
 }
 
-const styles = StyleSheet.create({
-  avatar: {
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: Palette.accentBorder,
-  },
-  initials: {
-    backgroundColor: Palette.accentSoft,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  initialsText: {
-    color: Palette.accent,
-    fontFamily: FontFamilies.displayMedium,
-  },
-});
+const makeStyles = (p: Palette) =>
+  StyleSheet.create({
+    avatar: {
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: p.accentBorder,
+    },
+    initials: {
+      backgroundColor: p.accentSoft,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    initialsText: {
+      color: p.accent,
+      fontFamily: FontFamilies.displayMedium,
+    },
+  });
