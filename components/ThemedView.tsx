@@ -22,7 +22,8 @@ export function ThemedView({
   ...otherProps
 }: ThemedViewProps) {
   const backgroundColor = useThemeColor({}, colorToken);
-  const borderColor = borderToken ? useThemeColor({}, borderToken) : undefined;
+  const borderColorFromToken = useThemeColor({}, borderToken ?? colorToken);
+  const borderColor = borderToken ? borderColorFromToken : undefined;
 
   return (
     <View

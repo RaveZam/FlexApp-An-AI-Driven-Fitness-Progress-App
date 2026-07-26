@@ -1,5 +1,4 @@
 import { FontFamilies, FontSizes } from "@/constants";
-import { Colors } from "@/constants/Colors";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { StyleSheet, Text, type TextProps } from "react-native";
 
@@ -75,7 +74,6 @@ const styles = StyleSheet.create({
     fontSize: FontSizes.body,
     lineHeight: 24,
     fontFamily: FontFamilies.regular,
-    color: Colors.light.mutedText,
   },
   cardTitle: {
     fontSize: FontSizes.small,
