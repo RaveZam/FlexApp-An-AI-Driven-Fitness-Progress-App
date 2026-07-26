@@ -1,6 +1,6 @@
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import React from "react";
+import React, { useMemo } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
@@ -9,7 +9,8 @@ import Animated, {
 } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { FontFamilies, Palette } from "@/constants/theme";
+import { FontFamilies } from "@/constants/theme";
+import { usePalette, type Palette } from "@/src/theme";
 import { IconSymbol } from "./ui/IconSymbol";
 
 const TAB_TITLES: Record<string, string> = {
@@ -29,12 +30,14 @@ type TabItemProps = {
 };
 
 function TabItem({ routeName, isFocused, options, onPress, onLongPress }: TabItemProps) {
+  const p = usePalette();
+  const styles = useMemo(() => makeStyles(p), [p]);
   const scale = useSharedValue(1);
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
   }));
 
-  const color = isFocused ? Palette.accent : Palette.muted;
+  const color = isFocused ? p.accent : p.muted;
 
   const iconMap: Record<string, React.ReactElement> = {
     index: <IconSymbol size={22} name="house.fill" color={color} />,
@@ -65,7 +68,7 @@ function TabItem({ routeName, isFocused, options, onPress, onLongPress }: TabIte
           style={[
             styles.label,
             {
-              color: isFocused ? Palette.bone : Palette.muted,
+              color: isFocused ? p.bone : p.muted,
               fontFamily: isFocused ? FontFamilies.medium : FontFamilies.regular,
             },
           ]}
@@ -75,7 +78,7 @@ function TabItem({ routeName, isFocused, options, onPress, onLongPress }: TabIte
         <View
           style={[
             styles.indicator,
-            { backgroundColor: isFocused ? Palette.accent : "transparent" },
+            { backgroundColor: isFocused ? p.accent : "transparent" },
           ]}
         />
       </Animated.View>
@@ -84,6 +87,8 @@ function TabItem({ routeName, isFocused, options, onPress, onLongPress }: TabIte
 }
 
 export function CustomTab({ state, descriptors, navigation }: BottomTabBarProps) {
+  const p = usePalette();
+  const styles = useMemo(() => makeStyles(p), [p]);
   return (
     <SafeAreaView edges={["bottom"]} style={styles.safe}>
       <View style={styles.hairline} />
@@ -123,13 +128,13 @@ export function CustomTab({ state, descriptors, navigation }: BottomTabBarProps)
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (p: Palette) => StyleSheet.create({
   safe: {
-    backgroundColor: Palette.ink,
+    backgroundColor: p.ink,
   },
   hairline: {
     height: StyleSheet.hairlineWidth,
-    backgroundColor: Palette.hairlineStrong,
+    backgroundColor: p.hairlineStrong,
   },
   bar: {
     flexDirection: "row",
@@ -138,7 +143,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingBottom: 6,
     paddingHorizontal: 8,
-    backgroundColor: Palette.ink,
+    backgroundColor: p.ink,
   },
   tabPressable: {
     flex: 1,

@@ -1,7 +1,9 @@
 import { Dimensions, View } from "react-native";
 import { VictoryArea, VictoryAxis, VictoryChart } from "victory-native";
+import { usePalette } from "@/src/theme";
 
 export default function MyChart() {
+  const p = usePalette();
   const DATA = [
     { x: 1, y: 10 },
     { x: 2, y: 15 },
@@ -29,12 +31,12 @@ export default function MyChart() {
         <VictoryAxis
           style={{
             tickLabels: {
-              fill: "white",
+              fill: p.bone,
               fontSize: 16,
               opacity: 0.5,
             },
             grid: {
-              stroke: "#ffffff",
+              stroke: p.bone,
               opacity: 0.07,
               strokeDasharray: "4, 4",
             },
@@ -44,7 +46,7 @@ export default function MyChart() {
           dependentAxis
           style={{
             tickLabels: {
-              fill: "white",
+              fill: p.bone,
               fontSize: 12,
               opacity: 0.3,
             },
@@ -59,7 +61,7 @@ export default function MyChart() {
           interpolation="natural"
           style={{
             data: {
-              fill: "#065f46", // Emerald green fill
+              fill: p.accentDeep, // Emerald green fill
 
               strokeWidth: 2,
             },

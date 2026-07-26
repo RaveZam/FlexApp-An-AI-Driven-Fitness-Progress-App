@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { TouchableOpacity, View, StyleSheet, ViewStyle } from "react-native";
 import { BlurView } from "expo-blur";
+import { usePalette, type Palette } from "@/src/theme";
 
 interface GlassButtonProps {
   onPress: () => void;
@@ -17,26 +18,23 @@ const GlassButton: React.FC<GlassButtonProps> = ({
   style = {},
   accessibilityLabel,
 }) => {
+  const p = usePalette();
+  const styles = useMemo(() => makeStyles(p), [p]);
   return (
     <TouchableOpacity
       onPress={onPress}
-      className={`w-16 h-16 rounded-full items-center justify-center shadow-lg border border-[#1a472a]/30 bg-[#191919]/60 overflow-hidden ${className}`}
-      style={style}
+      className={`w-16 h-16 rounded-full items-center justify-center shadow-lg overflow-hidden ${className}`}
+      style={[styles.button, style]}
       accessibilityLabel={accessibilityLabel}
       activeOpacity={0.8}
     >
+      <View style={[StyleSheet.absoluteFillObject, styles.baseFill]} />
       <BlurView
         intensity={40}
         tint="dark"
         style={{ ...StyleSheet.absoluteFillObject, borderRadius: 999 }}
       />
-      <View
-        style={{
-          ...StyleSheet.absoluteFillObject,
-          borderRadius: 999,
-          backgroundColor: "rgba(16, 185, 129, 0.35)",
-        }}
-      />
+      <View style={[StyleSheet.absoluteFillObject, styles.accentTint]} />
       <View
         style={{
           zIndex: 1,
@@ -50,5 +48,22 @@ const GlassButton: React.FC<GlassButtonProps> = ({
     </TouchableOpacity>
   );
 };
+
+const makeStyles = (p: Palette) => StyleSheet.create({
+  button: {
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: p.hairlineStrong,
+  },
+  baseFill: {
+    borderRadius: 999,
+    backgroundColor: p.inkRaised,
+    opacity: 0.6,
+  },
+  accentTint: {
+    borderRadius: 999,
+    backgroundColor: p.accent,
+    opacity: 0.35,
+  },
+});
 
 export default GlassButton;

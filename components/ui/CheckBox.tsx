@@ -1,6 +1,7 @@
 import { View, Text, Pressable } from "react-native";
 import React from "react";
 import { Ionicons } from "@expo/vector-icons";
+import { usePalette } from "@/src/theme";
 
 export default function CheckBox({
   label,
@@ -11,6 +12,7 @@ export default function CheckBox({
   checked: boolean;
   onToggle: () => void;
 }) {
+  const p = usePalette();
   return (
     <Pressable
       onPress={onToggle}
@@ -24,7 +26,7 @@ export default function CheckBox({
         style={{
           width: 24,
           height: 24,
-          borderColor: checked ? "#10b981" : "#6B7280",
+          borderColor: checked ? p.accent : p.muted,
           borderWidth: 2,
           borderRadius: 4,
           backgroundColor: "transparent",
@@ -36,14 +38,14 @@ export default function CheckBox({
           <Ionicons
             name="checkmark"
             size={18}
-            color="#10b981"
+            color={p.accent}
             style={{ fontWeight: "normal" }}
           />
         )}
       </View>
       <Text
         style={{
-          color: "#fff",
+          color: p.bone,
           marginLeft: 8,
           fontSize: 18,
         }}

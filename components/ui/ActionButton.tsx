@@ -1,5 +1,7 @@
-import { FontFamilies, Palette } from "@/constants/theme";
+import { FontFamilies } from "@/constants/theme";
+import { usePalette, type Palette } from "@/src/theme";
 import { Ionicons } from "@expo/vector-icons";
+import { useMemo } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 interface ActionButtonProps {
@@ -15,6 +17,8 @@ export default function ActionButton({
   icon,
   disabled = false,
 }: ActionButtonProps) {
+  const p = usePalette();
+  const styles = useMemo(() => makeStyles(p), [p]);
   return (
     <TouchableOpacity
       activeOpacity={disabled ? 1 : 0.85}
@@ -22,7 +26,7 @@ export default function ActionButton({
       disabled={disabled}
       style={[
         styles.button,
-        disabled && { borderColor: Palette.hairlineStrong, opacity: 0.6 },
+        disabled && { borderColor: p.hairlineStrong, opacity: 0.6 },
       ]}
     >
       <Text style={styles.text}>{title}</Text>
@@ -30,14 +34,14 @@ export default function ActionButton({
         <Ionicons
           name={icon}
           size={12}
-          color={disabled ? Palette.mutedSoft : Palette.accent}
+          color={disabled ? p.mutedSoft : p.accent}
         />
       </View>
     </TouchableOpacity>
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (p: Palette) => StyleSheet.create({
   button: {
     height: 56,
     borderRadius: 14,
@@ -45,12 +49,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: 14,
-    backgroundColor: Palette.inkRaised,
+    backgroundColor: p.inkRaised,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: Palette.accentBorder,
+    borderColor: p.accentBorder,
   },
   text: {
-    color: Palette.bone,
+    color: p.bone,
     fontSize: 12,
     fontFamily: FontFamilies.displayMedium,
     letterSpacing: 2.4,
@@ -61,7 +65,7 @@ const styles = StyleSheet.create({
     height: 22,
     borderRadius: 11,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: Palette.accentBorder,
+    borderColor: p.accentBorder,
     alignItems: "center",
     justifyContent: "center",
   },

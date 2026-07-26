@@ -1,10 +1,9 @@
-import { FontFamilies, Palette } from "@/constants/theme";
+import { FontFamilies } from "@/constants/theme";
+import { usePalette, type Palette } from "@/src/theme";
 import { Ionicons } from "@expo/vector-icons";
-import React from "react";
+import React, { useMemo } from "react";
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
-
-const DANGER_BORDER = "rgba(248,113,113,0.45)";
 
 type ButtonStyle = "default" | "cancel" | "destructive";
 
@@ -26,10 +25,13 @@ const Popup: React.FC<PopupProps> = ({
   isVisible,
   onClose,
   iconName,
-  iconColor = Palette.accent,
+  iconColor,
   message,
   buttons,
 }) => {
+  const p = usePalette();
+  const styles = useMemo(() => makeStyles(p), [p]);
+  const resolvedIconColor = iconColor ?? p.accent;
   return (
     <Modal
       transparent
@@ -44,8 +46,8 @@ const Popup: React.FC<PopupProps> = ({
           style={styles.card}
         >
           {iconName && (
-            <View style={[styles.iconRing, { borderColor: iconColor }]}>
-              <Ionicons name={iconName} size={22} color={iconColor} />
+            <View style={[styles.iconRing, { borderColor: resolvedIconColor }]}>
+              <Ionicons name={iconName} size={22} color={resolvedIconColor} />
             </View>
           )}
 
@@ -56,15 +58,15 @@ const Popup: React.FC<PopupProps> = ({
               const isDestructive = button.style === "destructive";
               const isCancel = button.style === "cancel";
               const borderColor = isDestructive
-                ? DANGER_BORDER
+                ? p.danger
                 : isCancel
-                ? Palette.hairlineStrong
-                : Palette.accentBorder;
+                ? p.hairlineStrong
+                : p.accentBorder;
               const labelColor = isDestructive
-                ? Palette.danger
+                ? p.danger
                 : isCancel
-                ? Palette.muted
-                : Palette.bone;
+                ? p.muted
+                : p.bone;
               return (
                 <TouchableOpacity
                   key={index}
@@ -88,7 +90,7 @@ const Popup: React.FC<PopupProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const makeStyles = (p: Palette) => StyleSheet.create({
   scrim: {
     flex: 1,
     justifyContent: "center",
@@ -105,8 +107,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 22,
     borderRadius: 18,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: Palette.accentBorderSoft,
-    backgroundColor: Palette.inkRaised,
+    borderColor: p.accentBorderSoft,
+    backgroundColor: p.inkRaised,
     overflow: "hidden",
   },
   iconRing: {
@@ -119,7 +121,7 @@ const styles = StyleSheet.create({
     marginBottom: 18,
   },
   message: {
-    color: Palette.bone,
+    color: p.bone,
     fontSize: 18,
     lineHeight: 25,
     fontFamily: FontFamilies.displayMedium,
@@ -136,7 +138,7 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: Palette.inkRaised,
+    backgroundColor: p.inkRaised,
     borderWidth: StyleSheet.hairlineWidth,
   },
   buttonText: {
