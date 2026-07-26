@@ -1,8 +1,10 @@
-import { FontFamilies, Palette } from "@/constants/theme";
+import { FontFamilies } from "@/constants/theme";
 import "@/global.css";
+import { usePalette, type Palette } from "@/src/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
+import { useMemo } from "react";
 import {
   ActivityIndicator,
   Pressable,
@@ -23,6 +25,8 @@ import { PlanCard } from "../PlanCard";
 import { usePlans } from "../hooks/usePlans";
 
 export default function WorkoutsScreen() {
+  const p = usePalette();
+  const styles = useMemo(() => makeStyles(p), [p]);
   const router = useRouter();
   const { plans, loading } = usePlans();
 
@@ -37,7 +41,7 @@ export default function WorkoutsScreen() {
     <SafeAreaView style={styles.safe} edges={["top"]}>
       {/* Atmospheric top glow — cohesive with Home */}
       <LinearGradient
-        colors={["rgba(52,211,153,0.08)", "transparent"]}
+        colors={[p.accentSoft, "transparent"]}
         start={{ x: 0.5, y: 0 }}
         end={{ x: 0.5, y: 0.32 }}
         style={StyleSheet.absoluteFillObject}
@@ -72,7 +76,7 @@ export default function WorkoutsScreen() {
         >
           {loading && plans.length === 0 ? (
             <View style={styles.center}>
-              <ActivityIndicator color={Palette.accent} />
+              <ActivityIndicator color={p.accent} />
             </View>
           ) : plans.length === 0 ? (
             <Animated.View
@@ -80,7 +84,7 @@ export default function WorkoutsScreen() {
               style={styles.empty}
             >
               <View style={styles.emptyGlyph}>
-                <Ionicons name="barbell-outline" size={26} color={Palette.muted} />
+                <Ionicons name="barbell-outline" size={26} color={p.muted} />
               </View>
               <Text style={styles.emptyTitle}>No plans yet</Text>
               <Text style={styles.emptyBody}>
@@ -119,7 +123,7 @@ export default function WorkoutsScreen() {
           >
             <Text style={styles.ctaText}>Create Plan</Text>
             <View style={styles.ctaGlyph}>
-              <Ionicons name="add" size={15} color={Palette.accent} />
+              <Ionicons name="add" size={15} color={p.accent} />
             </View>
           </Pressable>
         </Animated.View>
@@ -128,8 +132,9 @@ export default function WorkoutsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: Palette.ink },
+const makeStyles = (p: Palette) =>
+  StyleSheet.create({
+  safe: { flex: 1, backgroundColor: p.ink },
   container: { flex: 1, backgroundColor: "transparent" },
 
   masthead: {
@@ -138,7 +143,7 @@ const styles = StyleSheet.create({
     paddingBottom: 18,
   },
   eyebrow: {
-    color: Palette.accent,
+    color: p.accent,
     fontSize: 10,
     fontFamily: FontFamilies.medium,
     letterSpacing: 3,
@@ -146,7 +151,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   title: {
-    color: Palette.bone,
+    color: p.bone,
     fontSize: 40,
     fontFamily: FontFamilies.displayLight,
     letterSpacing: -1,
@@ -159,14 +164,14 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   statNumber: {
-    color: Palette.bone,
+    color: p.bone,
     fontSize: 30,
     fontFamily: FontFamilies.displayMedium,
     letterSpacing: -1,
     lineHeight: 30,
   },
   statLabel: {
-    color: Palette.muted,
+    color: p.muted,
     fontSize: 11,
     fontFamily: FontFamilies.regular,
     letterSpacing: 1.4,
@@ -178,7 +183,7 @@ const styles = StyleSheet.create({
   hairline: {
     marginHorizontal: 20,
     height: StyleSheet.hairlineWidth,
-    backgroundColor: Palette.hairlineStrong,
+    backgroundColor: p.hairlineStrong,
   },
 
   scrollContent: { paddingHorizontal: 20, paddingTop: 18, paddingBottom: 24 },
@@ -194,19 +199,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: Palette.hairlineStrong,
-    backgroundColor: Palette.inkRaised,
+    borderColor: p.hairlineStrong,
+    backgroundColor: p.inkRaised,
     marginBottom: 18,
   },
   emptyTitle: {
-    color: Palette.bone,
+    color: p.bone,
     fontSize: 18,
     fontFamily: FontFamilies.displayMedium,
     letterSpacing: -0.3,
     marginBottom: 7,
   },
   emptyBody: {
-    color: Palette.muted,
+    color: p.muted,
     fontSize: 13,
     fontFamily: FontFamilies.regular,
     textAlign: "center",
@@ -221,12 +226,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: 14,
-    backgroundColor: Palette.inkRaised,
+    backgroundColor: p.inkRaised,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: Palette.accentBorder,
+    borderColor: p.accentBorder,
   },
   ctaText: {
-    color: Palette.bone,
+    color: p.bone,
     fontSize: 12,
     fontFamily: FontFamilies.displayMedium,
     letterSpacing: 2.4,
@@ -237,7 +242,7 @@ const styles = StyleSheet.create({
     height: 22,
     borderRadius: 11,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: Palette.accentBorder,
+    borderColor: p.accentBorder,
     alignItems: "center",
     justifyContent: "center",
   },

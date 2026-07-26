@@ -1,7 +1,8 @@
-import { FontFamilies, Palette } from "@/constants/theme";
+import { FontFamilies } from "@/constants/theme";
+import { usePalette, type Palette } from "@/src/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import type { Exercise } from "../../types";
@@ -29,6 +30,8 @@ export function ExerciseRow({
   onToggle: () => void;
   onUpdateTargets: (targetSets: number, targetReps: number) => void;
 }) {
+  const p = usePalette();
+  const styles = useMemo(() => makeStyles(p), [p]);
   const image = imageForExercise(exercise.name);
   const [setsText, setSetsText] = useState(String(exercise.targetSets));
   const [repsText, setRepsText] = useState(String(exercise.targetReps));
@@ -63,7 +66,7 @@ export function ExerciseRow({
             {editing && (
               <View style={styles.checkWrap}>
                 <View style={[styles.checkbox, selected && styles.checkboxOn]}>
-                  {selected && <Ionicons name="checkmark" size={13} color={Palette.bone} />}
+                  {selected && <Ionicons name="checkmark" size={13} color={p.onAccent} />}
                 </View>
               </View>
             )}
@@ -71,7 +74,7 @@ export function ExerciseRow({
             <View
               style={[
                 styles.rail,
-                { backgroundColor: selected ? Palette.danger : Palette.accent },
+                { backgroundColor: selected ? p.danger : p.accent },
                 editing && { marginLeft: 10 },
               ]}
             />
@@ -88,14 +91,14 @@ export function ExerciseRow({
                 <Ionicons
                   name="barbell-outline"
                   size={editing ? 18 : 22}
-                  color={Palette.mutedSoft}
+                  color={p.mutedSoft}
                 />
               )}
             </View>
 
             <View style={[styles.info, editing && styles.infoCompact]}>
               <Text
-                style={[styles.name, selected && { color: Palette.danger }]}
+                style={[styles.name, selected && { color: p.danger }]}
                 numberOfLines={1}
               >
                 {exercise.name}
@@ -120,7 +123,7 @@ export function ExerciseRow({
                 </View>
               ) : (
                 <Text
-                  style={[styles.target, selected && { color: Palette.danger }]}
+                  style={[styles.target, selected && { color: p.danger }]}
                 >
                   {exercise.targetSets} × {exercise.targetReps}
                 </Text>
@@ -146,6 +149,8 @@ function NumberCell({
   onBlur: () => void;
   placeholder: string;
 }) {
+  const p = usePalette();
+  const styles = useMemo(() => makeStyles(p), [p]);
   return (
     <View style={styles.cell}>
       <TextInput
@@ -154,7 +159,7 @@ function NumberCell({
         onBlur={onBlur}
         keyboardType="number-pad"
         placeholder={placeholder}
-        placeholderTextColor={Palette.mutedSoft}
+        placeholderTextColor={p.mutedSoft}
         style={styles.cellInput}
       />
       <Text style={styles.cellLabel}>{label}</Text>
@@ -162,17 +167,18 @@ function NumberCell({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (p: Palette) =>
+  StyleSheet.create({
   card: {
-    backgroundColor: Palette.inkRaised,
+    backgroundColor: p.inkRaised,
     borderRadius: 14,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: Palette.hairline,
+    borderColor: p.hairline,
     overflow: "hidden",
   },
   cardSelected: {
-    backgroundColor: "rgba(248,113,113,0.07)",
-    borderColor: "rgba(248,113,113,0.35)",
+    backgroundColor: p.dangerSoft,
+    borderColor: p.dangerBorder,
   },
   topRow: { flexDirection: "row", alignItems: "center" },
   checkWrap: { paddingLeft: 12 },
@@ -181,13 +187,13 @@ const styles = StyleSheet.create({
     height: 22,
     borderRadius: 11,
     borderWidth: 2,
-    borderColor: Palette.mutedSoft,
+    borderColor: p.mutedSoft,
     alignItems: "center",
     justifyContent: "center",
   },
   checkboxOn: {
-    borderColor: Palette.danger,
-    backgroundColor: Palette.danger,
+    borderColor: p.danger,
+    backgroundColor: p.danger,
   },
   rail: { width: 3, alignSelf: "stretch", opacity: 0.7 },
   thumb: {
@@ -195,7 +201,7 @@ const styles = StyleSheet.create({
     height: 54,
     margin: 10,
     borderRadius: 10,
-    backgroundColor: Palette.inkSunken,
+    backgroundColor: p.inkSunken,
     alignItems: "center",
     justifyContent: "center",
     overflow: "hidden",
@@ -221,14 +227,14 @@ const styles = StyleSheet.create({
     paddingRight: 10,
   },
   name: {
-    color: Palette.bone,
+    color: p.bone,
     fontSize: 14.5,
     fontFamily: FontFamilies.medium,
     letterSpacing: -0.2,
     flex: 1,
   },
   target: {
-    color: Palette.accent,
+    color: p.accent,
     fontSize: 13,
     fontFamily: FontFamilies.displayMedium,
     letterSpacing: 0.3,
@@ -239,7 +245,7 @@ const styles = StyleSheet.create({
   },
   cell: { alignItems: "center", width: 46 },
   cellLabel: {
-    color: Palette.muted,
+    color: p.muted,
     fontSize: 8,
     fontFamily: FontFamilies.medium,
     letterSpacing: 1.2,
@@ -247,11 +253,11 @@ const styles = StyleSheet.create({
     marginTop: 3,
   },
   cellInput: {
-    backgroundColor: Palette.inkSunken,
+    backgroundColor: p.inkSunken,
     borderRadius: 9,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: Palette.hairlineStrong,
-    color: Palette.bone,
+    borderColor: p.hairlineStrong,
+    color: p.bone,
     fontFamily: FontFamilies.displayMedium,
     fontSize: 15,
     paddingVertical: 6,

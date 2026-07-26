@@ -1,3 +1,4 @@
+import { usePalette } from "@/src/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -21,6 +22,7 @@ type Props = {
 };
 
 export function ExercisePickerModal({ visible, onSelect, onClose }: Props) {
+  const p = usePalette();
   const [catalog, setCatalog] = useState<CatalogExercise[]>([]);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
@@ -64,7 +66,7 @@ export function ExercisePickerModal({ visible, onSelect, onClose }: Props) {
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
-      <SafeAreaView style={{ flex: 1, backgroundColor: "#0f0f0f" }} edges={["top"]}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: p.ink }} edges={["top"]}>
         {/* Header */}
         <View
           style={{
@@ -78,7 +80,7 @@ export function ExercisePickerModal({ visible, onSelect, onClose }: Props) {
           <Text
             style={{
               flex: 1,
-              color: "#fff",
+              color: p.bone,
               fontSize: 18,
               fontFamily: "Inter_600SemiBold",
               letterSpacing: -0.3,
@@ -87,7 +89,7 @@ export function ExercisePickerModal({ visible, onSelect, onClose }: Props) {
             Select Exercise
           </Text>
           <TouchableOpacity onPress={onClose} hitSlop={8}>
-            <Ionicons name="close" size={22} color="#666" />
+            <Ionicons name="close" size={22} color={p.muted} />
           </TouchableOpacity>
         </View>
 
@@ -97,23 +99,23 @@ export function ExercisePickerModal({ visible, onSelect, onClose }: Props) {
             style={{
               flexDirection: "row",
               alignItems: "center",
-              backgroundColor: "#191919",
+              backgroundColor: p.inkRaised,
               borderRadius: 12,
               borderWidth: 1,
-              borderColor: "rgba(255,255,255,0.06)",
+              borderColor: p.hairline,
               paddingHorizontal: 12,
               gap: 8,
             }}
           >
-            <Ionicons name="search" size={16} color="#444" />
+            <Ionicons name="search" size={16} color={p.mutedSoft} />
             <TextInput
               value={search}
               onChangeText={setSearch}
               placeholder="Search exercises..."
-              placeholderTextColor="#444"
+              placeholderTextColor={p.mutedSoft}
               style={{
                 flex: 1,
-                color: "#fff",
+                color: p.bone,
                 fontFamily: "Inter_400Regular",
                 fontSize: 14,
                 paddingVertical: 12,
@@ -121,7 +123,7 @@ export function ExercisePickerModal({ visible, onSelect, onClose }: Props) {
             />
             {search.length > 0 && (
               <TouchableOpacity onPress={() => setSearch("")} hitSlop={8}>
-                <Ionicons name="close-circle" size={16} color="#444" />
+                <Ionicons name="close-circle" size={16} color={p.mutedSoft} />
               </TouchableOpacity>
             )}
           </View>
@@ -142,14 +144,14 @@ export function ExercisePickerModal({ visible, onSelect, onClose }: Props) {
                 paddingHorizontal: 14,
                 paddingVertical: 7,
                 borderRadius: 20,
-                backgroundColor: activeFilter === null ? "#10b981" : "#191919",
+                backgroundColor: activeFilter === null ? p.accent : p.inkRaised,
                 borderWidth: 1,
-                borderColor: activeFilter === null ? "#10b981" : "rgba(255,255,255,0.08)",
+                borderColor: activeFilter === null ? p.accent : p.hairlineStrong,
               }}
             >
               <Text
                 style={{
-                  color: activeFilter === null ? "#000" : "#888",
+                  color: activeFilter === null ? p.onAccent : p.muted,
                   fontSize: 12,
                   fontFamily: "Inter_500Medium",
                   letterSpacing: 0.3,
@@ -170,14 +172,14 @@ export function ExercisePickerModal({ visible, onSelect, onClose }: Props) {
                     paddingHorizontal: 14,
                     paddingVertical: 7,
                     borderRadius: 20,
-                    backgroundColor: active ? "#10b981" : "#191919",
+                    backgroundColor: active ? p.accent : p.inkRaised,
                     borderWidth: 1,
-                    borderColor: active ? "#10b981" : "rgba(255,255,255,0.08)",
+                    borderColor: active ? p.accent : p.hairlineStrong,
                   }}
                 >
                   <Text
                     style={{
-                      color: active ? "#000" : "#888",
+                      color: active ? p.onAccent : p.muted,
                       fontSize: 12,
                       fontFamily: "Inter_500Medium",
                       letterSpacing: 0.3,
@@ -195,7 +197,7 @@ export function ExercisePickerModal({ visible, onSelect, onClose }: Props) {
 
         {loading ? (
           <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-            <ActivityIndicator color="#10b981" />
+            <ActivityIndicator color={p.accent} />
           </View>
         ) : (
           <FlatList
@@ -203,7 +205,7 @@ export function ExercisePickerModal({ visible, onSelect, onClose }: Props) {
             keyExtractor={(item) => item.id}
             contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 32 }}
             ItemSeparatorComponent={() => (
-              <View style={{ height: 1, backgroundColor: "rgba(255,255,255,0.04)" }} />
+              <View style={{ height: 1, backgroundColor: p.hairline }} />
             )}
             renderItem={({ item }) => (
               <TouchableOpacity
@@ -222,7 +224,7 @@ export function ExercisePickerModal({ visible, onSelect, onClose }: Props) {
                 <View style={{ flex: 1 }}>
                   <Text
                     style={{
-                      color: "#fff",
+                      color: p.bone,
                       fontSize: 14,
                       fontFamily: "Inter_500Medium",
                       marginBottom: item.muscleGroup ? 3 : 0,
@@ -233,7 +235,7 @@ export function ExercisePickerModal({ visible, onSelect, onClose }: Props) {
                   {item.muscleGroup && (
                     <Text
                       style={{
-                        color: "#555",
+                        color: p.mutedSoft,
                         fontSize: 11,
                         fontFamily: "Inter_400Regular",
                         letterSpacing: 0.3,
@@ -244,12 +246,12 @@ export function ExercisePickerModal({ visible, onSelect, onClose }: Props) {
                     </Text>
                   )}
                 </View>
-                <Ionicons name="add-circle-outline" size={20} color="#10b981" />
+                <Ionicons name="add-circle-outline" size={20} color={p.accent} />
               </TouchableOpacity>
             )}
             ListEmptyComponent={
               <View style={{ paddingTop: 40, alignItems: "center" }}>
-                <Text style={{ color: "#444", fontSize: 13, fontFamily: "Inter_400Regular" }}>
+                <Text style={{ color: p.mutedSoft, fontSize: 13, fontFamily: "Inter_400Regular" }}>
                   No exercises found
                 </Text>
               </View>

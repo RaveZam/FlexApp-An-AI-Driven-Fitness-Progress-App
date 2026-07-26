@@ -3,9 +3,10 @@ import DayPicker from "@/src/features/workouts/workout/components/DayPicker";
 import ExerciseEditorRow from "@/src/features/workouts/workout/components/ExerciseEditorRow";
 import { ExercisePickerModal } from "@/src/features/workouts/workout/components/ExercisePickerModal";
 import { useCreateWorkoutForm } from "@/src/features/workouts/workout/hooks/useCreateWorkoutForm";
+import { usePalette, type Palette } from "@/src/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -19,18 +20,20 @@ import Animated, { FadeInDown, FadeInRight } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function CreateWorkoutScreen() {
+  const p = usePalette();
+  const styles = useMemo(() => makeStyles(p), [p]);
   const router = useRouter();
   const { planId } = useLocalSearchParams<{ planId: string }>();
   const form = useCreateWorkoutForm(planId, () => router.back());
   const [pickerVisible, setPickerVisible] = useState(false);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#0f0f0f" }} edges={["top"]}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: p.ink }} edges={["top"]}>
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
         <Animated.View entering={FadeInDown.delay(50).duration(350)} style={styles.header}>
           <View style={{ flex: 1 }}>
             <TouchableOpacity onPress={() => router.back()} activeOpacity={0.7} hitSlop={8}>
-              <Ionicons name="chevron-back" size={24} color="#888" />
+              <Ionicons name="chevron-back" size={24} color={p.muted} />
             </TouchableOpacity>
           </View>
           <View style={{ flex: 1, alignItems: "center" }}>
@@ -41,9 +44,9 @@ export default function CreateWorkoutScreen() {
               onPress={form.save}
               disabled={form.saving}
               activeOpacity={0.7}
-              style={[styles.saveBtn, { backgroundColor: form.saving ? "#1a3326" : "#1a472a" }]}
+              style={[styles.saveBtn, { backgroundColor: p.accentSoft }]}
             >
-              <Text style={[styles.saveText, { color: form.saving ? "#555" : "#10b981" }]}>
+              <Text style={[styles.saveText, { color: form.saving ? p.mutedSoft : p.accent }]}>
                 {form.saving ? "Saving…" : "Save"}
               </Text>
             </TouchableOpacity>
@@ -61,7 +64,7 @@ export default function CreateWorkoutScreen() {
               value={form.workoutName}
               onChangeText={form.setWorkoutName}
               placeholder="e.g. Push Day, Legs"
-              placeholderTextColor="#333"
+              placeholderTextColor={p.mutedSoft}
               style={styles.nameInput}
             />
           </Animated.View>
@@ -74,11 +77,11 @@ export default function CreateWorkoutScreen() {
           <Animated.View entering={FadeInDown.delay(180).duration(350)}>
             <View style={styles.exercisesHeader}>
               <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-                <View style={{ width: 4, height: 18, borderRadius: 2, backgroundColor: "#10b981" }} />
+                <View style={{ width: 4, height: 18, borderRadius: 2, backgroundColor: p.accent }} />
                 <Text style={styles.sectionTitle}>Exercises</Text>
               </View>
               {form.exercises.length > 0 && (
-                <Text style={{ color: "#444", fontSize: 12, fontFamily: "Inter_400Regular" }}>
+                <Text style={{ color: p.mutedSoft, fontSize: 12, fontFamily: "Inter_400Regular" }}>
                   {form.exercises.length} added
                 </Text>
               )}
@@ -104,7 +107,7 @@ export default function CreateWorkoutScreen() {
               activeOpacity={0.7}
               style={[styles.addBtn, { marginTop: form.exercises.length > 0 ? 12 : 0 }]}
             >
-              <Ionicons name="add" size={16} color="#10b981" />
+              <Ionicons name="add" size={16} color={p.accent} />
               <Text style={styles.addText}>Add Exercise</Text>
             </TouchableOpacity>
           </Animated.View>
@@ -120,7 +123,7 @@ export default function CreateWorkoutScreen() {
   );
 }
 
-const styles = {
+const makeStyles = (p: Palette) => ({
   header: {
     flexDirection: "row" as const,
     alignItems: "center" as const,
@@ -128,17 +131,17 @@ const styles = {
     paddingTop: 8,
     paddingBottom: 16,
   },
-  title: { color: "#fff", fontSize: 18, fontFamily: "Inter_600SemiBold", letterSpacing: -0.3 },
+  title: { color: p.bone, fontSize: 18, fontFamily: "Inter_600SemiBold", letterSpacing: -0.3 },
   saveBtn: {
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: "rgba(16,185,129,0.2)",
+    borderColor: p.accentBorderSoft,
   },
   saveText: { fontSize: 13, fontFamily: "Inter_600SemiBold" },
   label: {
-    color: "#666",
+    color: p.muted,
     fontSize: 11,
     fontFamily: "Inter_500Medium",
     letterSpacing: 0.8,
@@ -146,11 +149,11 @@ const styles = {
     marginBottom: 8,
   },
   nameInput: {
-    backgroundColor: "#191919",
+    backgroundColor: p.inkRaised,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.06)",
-    color: "#fff",
+    borderColor: p.hairline,
+    color: p.bone,
     fontFamily: "Inter_500Medium",
     fontSize: 16,
     padding: 14,
@@ -162,7 +165,7 @@ const styles = {
     marginBottom: 12,
   },
   sectionTitle: {
-    color: "#fff",
+    color: p.bone,
     fontSize: 13,
     fontFamily: "Inter_500Medium",
     letterSpacing: 0.8,
@@ -176,8 +179,8 @@ const styles = {
     paddingVertical: 14,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "rgba(16,185,129,0.2)",
+    borderColor: p.accentBorderSoft,
     borderStyle: "dashed" as const,
   },
-  addText: { color: "#10b981", fontSize: 13, fontFamily: "Inter_500Medium", letterSpacing: 0.3 },
-};
+  addText: { color: p.accent, fontSize: 13, fontFamily: "Inter_500Medium", letterSpacing: 0.3 },
+});

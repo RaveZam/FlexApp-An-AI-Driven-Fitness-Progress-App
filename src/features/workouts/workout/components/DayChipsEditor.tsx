@@ -1,5 +1,6 @@
-import { FontFamilies, Palette } from "@/constants/theme";
-import { useEffect, useState } from "react";
+import { FontFamilies } from "@/constants/theme";
+import { usePalette, type Palette } from "@/src/theme";
+import { useEffect, useMemo, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { DAY_LABELS } from "../../dayLabels";
 import { useUpdateWorkoutDays } from "../hooks/useUpdateWorkoutDays";
@@ -13,6 +14,8 @@ export function DayChipsEditor({
   initialDays: number[];
   onSaved: () => void;
 }) {
+  const p = usePalette();
+  const styles = useMemo(() => makeStyles(p), [p]);
   const [days, setDays] = useState<number[]>(initialDays);
   const { saveDays } = useUpdateWorkoutDays();
 
@@ -50,9 +53,10 @@ export function DayChipsEditor({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (p: Palette) =>
+  StyleSheet.create({
   label: {
-    color: Palette.muted,
+    color: p.muted,
     fontSize: 10,
     fontFamily: FontFamilies.medium,
     letterSpacing: 2.4,
@@ -64,23 +68,23 @@ const styles = StyleSheet.create({
     flex: 1,
     aspectRatio: 1,
     borderRadius: 12,
-    backgroundColor: Palette.inkRaised,
+    backgroundColor: p.inkRaised,
     alignItems: "center",
     justifyContent: "center",
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: Palette.hairline,
+    borderColor: p.hairline,
   },
   chipOn: {
-    backgroundColor: Palette.accentSoft,
-    borderColor: Palette.accentBorder,
+    backgroundColor: p.accentSoft,
+    borderColor: p.accentBorder,
   },
   chipText: {
-    color: Palette.mutedSoft,
+    color: p.mutedSoft,
     fontSize: 12,
     fontFamily: FontFamilies.medium,
   },
   chipTextOn: {
-    color: Palette.accent,
+    color: p.accent,
     fontFamily: FontFamilies.semibold,
   },
 });

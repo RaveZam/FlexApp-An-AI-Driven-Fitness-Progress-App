@@ -11,6 +11,7 @@ export type Palette = {
   accentBorder: string;
   accentBorderSoft: string;
   danger: string;
+  dangerSoft: string;
   dangerBorder: string;
   hairline: string;
   hairlineStrong: string;
@@ -31,6 +32,7 @@ export const Palettes: { light: Palette; dark: Palette } = {
     accentBorder: "rgba(52,211,153,0.45)",
     accentBorderSoft: "rgba(52,211,153,0.25)",
     danger: "#f87171",
+    dangerSoft: "rgba(248,113,113,0.08)",
     dangerBorder: "rgba(248,113,113,0.45)",
     hairline: "rgba(245,243,239,0.07)",
     hairlineStrong: "rgba(245,243,239,0.14)",
@@ -49,6 +51,7 @@ export const Palettes: { light: Palette; dark: Palette } = {
     accentBorder: "rgba(5,150,105,0.35)",
     accentBorderSoft: "rgba(5,150,105,0.20)",
     danger: "#DC2626",
+    dangerSoft: "rgba(220,38,38,0.10)",
     dangerBorder: "rgba(220,38,38,0.35)",
     hairline: "rgba(26,25,23,0.08)",
     hairlineStrong: "rgba(26,25,23,0.14)",

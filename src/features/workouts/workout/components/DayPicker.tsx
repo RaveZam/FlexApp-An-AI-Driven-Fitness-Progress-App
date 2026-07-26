@@ -1,3 +1,4 @@
+import { usePalette } from "@/src/theme";
 import { Text, TouchableOpacity, View } from "react-native";
 import { DAY_LABELS } from "../../dayLabels";
 
@@ -5,9 +6,9 @@ type Props = {
   selected: number[];
   onToggle: (day: number) => void;
 };
-//
 
 export default function DayPicker({ selected, onToggle }: Props) {
+  const p = usePalette();
   return (
     <View style={{ flexDirection: "row", gap: 8 }}>
       {DAY_LABELS.map((label, i) => {
@@ -21,16 +22,16 @@ export default function DayPicker({ selected, onToggle }: Props) {
               flex: 1,
               aspectRatio: 1,
               borderRadius: 10,
-              backgroundColor: isSelected ? "rgba(16,185,129,0.15)" : "#191919",
+              backgroundColor: isSelected ? p.accentSoft : p.inkRaised,
               alignItems: "center",
               justifyContent: "center",
               borderWidth: 1,
-              borderColor: isSelected ? "rgba(16,185,129,0.5)" : "rgba(255,255,255,0.06)",
+              borderColor: isSelected ? p.accentBorder : p.hairline,
             }}
           >
             <Text
               style={{
-                color: isSelected ? "#10b981" : "#555",
+                color: isSelected ? p.accent : p.mutedSoft,
                 fontSize: 12,
                 fontFamily: isSelected ? "Inter_600SemiBold" : "Inter_400Regular",
               }}

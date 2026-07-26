@@ -1,9 +1,10 @@
 import "@/global.css";
-import { FontFamilies, Palette } from "@/constants/theme";
+import { FontFamilies } from "@/constants/theme";
+import { usePalette, type Palette } from "@/src/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -35,6 +36,8 @@ function titleCase(value: string) {
 }
 
 export default function WorkoutDetailScreen() {
+  const p = usePalette();
+  const styles = useMemo(() => makeStyles(p), [p]);
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { workouts, refresh, refreshLocal } = useWorkouts();
@@ -55,7 +58,7 @@ export default function WorkoutDetailScreen() {
   return (
     <SafeAreaView style={styles.safe} edges={["top"]}>
       <LinearGradient
-        colors={["rgba(52,211,153,0.08)", "transparent"]}
+        colors={[p.accentSoft, "transparent"]}
         start={{ x: 0.5, y: 0 }}
         end={{ x: 0.5, y: 0.32 }}
         style={StyleSheet.absoluteFillObject}
@@ -72,7 +75,7 @@ export default function WorkoutDetailScreen() {
         {!workout ? (
           <View style={styles.notFound}>
             <View style={styles.emptyGlyph}>
-              <Ionicons name="barbell-outline" size={26} color={Palette.muted} />
+              <Ionicons name="barbell-outline" size={26} color={p.muted} />
             </View>
             <Text style={styles.emptyTitle}>Workout not found</Text>
           </View>
@@ -89,7 +92,7 @@ export default function WorkoutDetailScreen() {
                 {workout.name}
               </Text>
               <View style={styles.statRow}>
-                <Ionicons name="barbell-outline" size={13} color={Palette.muted} />
+                <Ionicons name="barbell-outline" size={13} color={p.muted} />
                 <Text style={styles.statText}>
                   {workout.exercises.length} exercise
                   {workout.exercises.length !== 1 ? "s" : ""}
@@ -122,7 +125,7 @@ export default function WorkoutDetailScreen() {
                     style={styles.empty}
                   >
                     <View style={styles.emptyGlyph}>
-                      <Ionicons name="barbell-outline" size={26} color={Palette.muted} />
+                      <Ionicons name="barbell-outline" size={26} color={p.muted} />
                     </View>
                     <Text style={styles.emptyTitle}>No exercises yet</Text>
                     {editing && (
@@ -184,7 +187,7 @@ export default function WorkoutDetailScreen() {
                       onPress={() => setPickerVisible(true)}
                       style={styles.addButton}
                     >
-                      <Ionicons name="add" size={18} color={Palette.accent} />
+                      <Ionicons name="add" size={18} color={p.accent} />
                       <Text style={styles.addText}>Add Exercise</Text>
                     </Pressable>
 
@@ -193,7 +196,7 @@ export default function WorkoutDetailScreen() {
                         onPress={removeSelected}
                         style={styles.removeButton}
                       >
-                        <Ionicons name="trash-outline" size={16} color={Palette.danger} />
+                        <Ionicons name="trash-outline" size={16} color={p.danger} />
                         <Text style={styles.removeText}>
                           Remove {selectedIds.size} Exercise
                           {selectedIds.size > 1 ? "s" : ""}
@@ -220,13 +223,14 @@ export default function WorkoutDetailScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: Palette.ink },
+const makeStyles = (p: Palette) =>
+  StyleSheet.create({
+  safe: { flex: 1, backgroundColor: p.ink },
   container: { flex: 1, backgroundColor: "transparent" },
 
   masthead: { paddingHorizontal: 20, paddingTop: 10, paddingBottom: 18 },
   eyebrow: {
-    color: Palette.accent,
+    color: p.accent,
     fontSize: 10,
     fontFamily: FontFamilies.medium,
     letterSpacing: 3,
@@ -234,7 +238,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   title: {
-    color: Palette.bone,
+    color: p.bone,
     fontSize: 34,
     fontFamily: FontFamilies.displayLight,
     letterSpacing: -0.8,
@@ -247,7 +251,7 @@ const styles = StyleSheet.create({
     marginTop: 14,
   },
   statText: {
-    color: Palette.muted,
+    color: p.muted,
     fontSize: 12.5,
     fontFamily: FontFamilies.regular,
     letterSpacing: 0.2,
@@ -256,7 +260,7 @@ const styles = StyleSheet.create({
   hairline: {
     marginHorizontal: 20,
     height: StyleSheet.hairlineWidth,
-    backgroundColor: Palette.hairlineStrong,
+    backgroundColor: p.hairlineStrong,
   },
 
   scrollContent: {
@@ -267,7 +271,7 @@ const styles = StyleSheet.create({
   },
 
   sectionLabel: {
-    color: Palette.muted,
+    color: p.muted,
     fontSize: 10,
     fontFamily: FontFamilies.medium,
     letterSpacing: 2.4,
@@ -284,7 +288,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   groupTitle: {
-    color: Palette.muted,
+    color: p.muted,
     fontSize: 10,
     fontFamily: FontFamilies.medium,
     letterSpacing: 2.4,
@@ -293,10 +297,10 @@ const styles = StyleSheet.create({
   groupLine: {
     flex: 1,
     height: StyleSheet.hairlineWidth,
-    backgroundColor: Palette.hairline,
+    backgroundColor: p.hairline,
   },
   groupCount: {
-    color: Palette.mutedSoft,
+    color: p.mutedSoft,
     fontSize: 11,
     fontFamily: FontFamilies.regular,
   },
@@ -309,12 +313,12 @@ const styles = StyleSheet.create({
     gap: 8,
     paddingVertical: 14,
     borderRadius: 14,
-    backgroundColor: Palette.accentSoft,
+    backgroundColor: p.accentSoft,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: Palette.accentBorder,
+    borderColor: p.accentBorder,
   },
   addText: {
-    color: Palette.accent,
+    color: p.accent,
     fontSize: 12,
     fontFamily: FontFamilies.displayMedium,
     letterSpacing: 1.6,
@@ -327,12 +331,12 @@ const styles = StyleSheet.create({
     gap: 8,
     paddingVertical: 14,
     borderRadius: 14,
-    backgroundColor: "rgba(248,113,113,0.08)",
+    backgroundColor: p.dangerSoft,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: "rgba(248,113,113,0.35)",
+    borderColor: p.dangerBorder,
   },
   removeText: {
-    color: Palette.danger,
+    color: p.danger,
     fontSize: 12,
     fontFamily: FontFamilies.displayMedium,
     letterSpacing: 1.6,
@@ -348,19 +352,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: Palette.hairlineStrong,
-    backgroundColor: Palette.inkRaised,
+    borderColor: p.hairlineStrong,
+    backgroundColor: p.inkRaised,
     marginBottom: 18,
   },
   emptyTitle: {
-    color: Palette.bone,
+    color: p.bone,
     fontSize: 18,
     fontFamily: FontFamilies.displayMedium,
     letterSpacing: -0.3,
     marginBottom: 7,
   },
   emptyBody: {
-    color: Palette.muted,
+    color: p.muted,
     fontSize: 13,
     fontFamily: FontFamilies.regular,
     textAlign: "center",

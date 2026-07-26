@@ -1,4 +1,5 @@
 import "@/global.css";
+import { usePalette } from "@/src/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import {
@@ -14,11 +15,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useCreatePlan } from "../hooks/useCreatePlan";
 
 export default function CreatePlanScreen() {
+  const p = usePalette();
   const router = useRouter();
   const { planName, setPlanName, handleSave, saving } = useCreatePlan();
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#0f0f0f" }} edges={["top"]}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: p.ink }} edges={["top"]}>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -36,14 +38,14 @@ export default function CreatePlanScreen() {
         >
           <View style={{ flex: 1 }}>
             <TouchableOpacity onPress={() => router.back()} activeOpacity={0.7} hitSlop={8}>
-              <Ionicons name="chevron-back" size={24} color="#888" />
+              <Ionicons name="chevron-back" size={24} color={p.muted} />
             </TouchableOpacity>
           </View>
 
           <View style={{ flex: 1, alignItems: "center" }}>
             <Text
               style={{
-                color: "#fff",
+                color: p.bone,
                 fontSize: 18,
                 fontFamily: "Inter_600SemiBold",
                 letterSpacing: -0.3,
@@ -62,14 +64,14 @@ export default function CreatePlanScreen() {
                 paddingHorizontal: 14,
                 paddingVertical: 8,
                 borderRadius: 10,
-                backgroundColor: saving ? "#1a3326" : "#1a472a",
+                backgroundColor: p.accentSoft,
                 borderWidth: 1,
-                borderColor: "rgba(16,185,129,0.2)",
+                borderColor: p.accentBorderSoft,
               }}
             >
               <Text
                 style={{
-                  color: saving ? "#555" : "#10b981",
+                  color: saving ? p.mutedSoft : p.accent,
                   fontSize: 13,
                   fontFamily: "Inter_600SemiBold",
                 }}
@@ -84,7 +86,7 @@ export default function CreatePlanScreen() {
           <Animated.View entering={FadeInDown.delay(100).duration(350)}>
             <Text
               style={{
-                color: "#666",
+                color: p.muted,
                 fontSize: 11,
                 fontFamily: "Inter_500Medium",
                 letterSpacing: 0.8,
@@ -98,16 +100,16 @@ export default function CreatePlanScreen() {
               value={planName}
               onChangeText={setPlanName}
               placeholder="e.g. PPL, Upper / Lower, 5-Day Split"
-              placeholderTextColor="#333"
+              placeholderTextColor={p.mutedSoft}
               autoFocus
               returnKeyType="done"
               onSubmitEditing={handleSave}
               style={{
-                backgroundColor: "#191919",
+                backgroundColor: p.inkRaised,
                 borderRadius: 12,
                 borderWidth: 1,
-                borderColor: "rgba(255,255,255,0.06)",
-                color: "#fff",
+                borderColor: p.hairline,
+                color: p.bone,
                 fontFamily: "Inter_500Medium",
                 fontSize: 16,
                 padding: 14,
@@ -118,7 +120,7 @@ export default function CreatePlanScreen() {
           <Animated.View entering={FadeInDown.delay(180).duration(350)} style={{ marginTop: 20 }}>
             <Text
               style={{
-                color: "#444",
+                color: p.mutedSoft,
                 fontSize: 12,
                 fontFamily: "Inter_400Regular",
                 lineHeight: 18,

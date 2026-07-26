@@ -1,4 +1,5 @@
 import "@/global.css";
+import { usePalette } from "@/src/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useEffect } from "react";
@@ -27,18 +28,20 @@ type TemplateSplit = {
   name: string;
   days: number;
   accent: string;
-  accentBg: string;
+  accentBgRgb: string;
   icon: keyof typeof Ionicons.glyphMap;
   muscles: string;
 };
 
+// Per-category brand hue stays constant across themes; the badge/icon
+// background is derived from it at an alpha matching accentSoft's convention.
 const TEMPLATE_SPLITS: TemplateSplit[] = [
   {
     id: "ppl",
     name: "Push Pull Legs",
     days: 6,
     accent: "#10b981",
-    accentBg: "#1a472a",
+    accentBgRgb: "16,185,129",
     icon: "fitness",
     muscles: "Chest, Back, Legs",
   },
@@ -47,7 +50,7 @@ const TEMPLATE_SPLITS: TemplateSplit[] = [
     name: "Upper / Lower",
     days: 4,
     accent: "#3b82f6",
-    accentBg: "#1e3a5f",
+    accentBgRgb: "59,130,246",
     icon: "body",
     muscles: "Upper & Lower Body",
   },
@@ -56,7 +59,7 @@ const TEMPLATE_SPLITS: TemplateSplit[] = [
     name: "Bro Split",
     days: 5,
     accent: "#f59e0b",
-    accentBg: "#5c3d0e",
+    accentBgRgb: "245,158,11",
     icon: "barbell",
     muscles: "One muscle per day",
   },
@@ -65,7 +68,7 @@ const TEMPLATE_SPLITS: TemplateSplit[] = [
     name: "Full Body",
     days: 3,
     accent: "#ef4444",
-    accentBg: "#5c1a1a",
+    accentBgRgb: "239,68,68",
     icon: "flame",
     muscles: "All major groups",
   },
@@ -74,7 +77,7 @@ const TEMPLATE_SPLITS: TemplateSplit[] = [
     name: "Arnold Split",
     days: 6,
     accent: "#a855f7",
-    accentBg: "#3b1f5c",
+    accentBgRgb: "168,85,247",
     icon: "trophy",
     muscles: "Chest/Back, Shoulders/Arms, Legs",
   },
@@ -83,7 +86,7 @@ const TEMPLATE_SPLITS: TemplateSplit[] = [
     name: "PHUL",
     days: 4,
     accent: "#06b6d4",
-    accentBg: "#0e3d4a",
+    accentBgRgb: "6,182,212",
     icon: "flash",
     muscles: "Power + Hypertrophy",
   },
@@ -96,6 +99,8 @@ function TemplateCard({
   template: TemplateSplit;
   index: number;
 }) {
+  const p = usePalette();
+  const accentBg = `rgba(${template.accentBgRgb},0.14)`;
   return (
     <Animated.View
       entering={FadeInDown.delay(100 + index * 80).duration(400)}
@@ -104,11 +109,11 @@ function TemplateCard({
       <TouchableOpacity activeOpacity={0.7}>
         <View
           style={{
-            backgroundColor: "#191919",
+            backgroundColor: p.inkRaised,
             borderRadius: 16,
             overflow: "hidden",
             borderWidth: 1,
-            borderColor: "rgba(255,255,255,0.04)",
+            borderColor: p.hairline,
           }}
         >
           {/* Accent strip */}
@@ -135,7 +140,7 @@ function TemplateCard({
                   width: 38,
                   height: 38,
                   borderRadius: 10,
-                  backgroundColor: template.accentBg,
+                  backgroundColor: accentBg,
                   alignItems: "center",
                   justifyContent: "center",
                 }}
@@ -148,7 +153,7 @@ function TemplateCard({
               </View>
               <View
                 style={{
-                  backgroundColor: template.accentBg,
+                  backgroundColor: accentBg,
                   paddingHorizontal: 8,
                   paddingVertical: 3,
                   borderRadius: 6,
@@ -170,7 +175,7 @@ function TemplateCard({
             {/* Name */}
             <Text
               style={{
-                color: "#ffffff",
+                color: p.bone,
                 fontSize: 13,
                 fontFamily: "Inter_500Medium",
                 marginBottom: 3,
@@ -184,7 +189,7 @@ function TemplateCard({
             {/* Muscle targets */}
             <Text
               style={{
-                color: "#555",
+                color: p.mutedSoft,
                 fontSize: 10,
                 fontFamily: "Inter_400Regular",
                 letterSpacing: 0.2,
@@ -201,6 +206,7 @@ function TemplateCard({
 }
 
 export default function WorkoutTemplatesScreen() {
+  const p = usePalette();
   const router = useRouter();
   const headerOpacity = useSharedValue(0);
   const headerTranslateY = useSharedValue(-10);
@@ -219,8 +225,8 @@ export default function WorkoutTemplatesScreen() {
   }));
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#0f0f0f" }} edges={["top"]}>
-      <View style={{ flex: 1, backgroundColor: "#0f0f0f" }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: p.ink }} edges={["top"]}>
+      <View style={{ flex: 1, backgroundColor: p.ink }}>
         {/* Header */}
         <Animated.View
           style={[
@@ -242,20 +248,20 @@ export default function WorkoutTemplatesScreen() {
               width: 38,
               height: 38,
               borderRadius: 10,
-              backgroundColor: "#191919",
+              backgroundColor: p.inkRaised,
               alignItems: "center",
               justifyContent: "center",
               borderWidth: 1,
-              borderColor: "rgba(255,255,255,0.06)",
+              borderColor: p.hairline,
             }}
           >
-            <Ionicons name="chevron-back" size={20} color="#ffffff" />
+            <Ionicons name="chevron-back" size={20} color={p.bone} />
           </TouchableOpacity>
 
           <View>
             <Text
               style={{
-                color: "#ffffff",
+                color: p.bone,
                 fontSize: 20,
                 fontFamily: "Inter_600SemiBold",
                 letterSpacing: -0.2,
@@ -265,7 +271,7 @@ export default function WorkoutTemplatesScreen() {
             </Text>
             <Text
               style={{
-                color: "#4d4d4d",
+                color: p.mutedSoft,
                 fontSize: 12,
                 fontFamily: "Inter_400Regular",
                 marginTop: 2,
@@ -307,7 +313,7 @@ export default function WorkoutTemplatesScreen() {
               marginHorizontal: 20,
               marginVertical: 24,
               height: 1,
-              backgroundColor: "rgba(255,255,255,0.04)",
+              backgroundColor: p.hairline,
             }}
           />
 
@@ -322,7 +328,7 @@ export default function WorkoutTemplatesScreen() {
                     borderRadius: 14,
                     overflow: "hidden",
                     borderWidth: 1,
-                    borderColor: "rgba(16, 185, 129, 0.15)",
+                    borderColor: p.accentBorderSoft,
                     borderStyle: "dashed",
                   }}
                 >
@@ -340,16 +346,16 @@ export default function WorkoutTemplatesScreen() {
                         width: 32,
                         height: 32,
                         borderRadius: 8,
-                        backgroundColor: "#1a472a",
+                        backgroundColor: p.accentSoft,
                         alignItems: "center",
                         justifyContent: "center",
                       }}
                     >
-                      <Ionicons name="add" size={18} color="#10b981" />
+                      <Ionicons name="add" size={18} color={p.accent} />
                     </View>
                     <Text
                       style={{
-                        color: "#10b981",
+                        color: p.accent,
                         fontSize: 13,
                         fontFamily: "Inter_500Medium",
                         letterSpacing: 0.3,
