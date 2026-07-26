@@ -58,7 +58,7 @@ const Popup: React.FC<PopupProps> = ({
               const isDestructive = button.style === "destructive";
               const isCancel = button.style === "cancel";
               const borderColor = isDestructive
-                ? p.danger
+                ? p.dangerBorder
                 : isCancel
                 ? p.hairlineStrong
                 : p.accentBorder;
