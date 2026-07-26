@@ -1,9 +1,13 @@
-import { useColorScheme } from "@/hooks/useColorScheme";
 import { useStorageCleaner } from "@/hooks/useStorageCleaner";
 import { AuthProvider } from "@/src/features/auth/hooks/useAuth";
 import { ActivePlanProvider } from "@/src/features/workouts/context/ActivePlanContext";
 import { initDb } from "@/src/lib/db";
 import { runOutboxSync } from "@/src/features/outbox";
+import {
+  Palettes,
+  ThemeProvider as AppThemeProvider,
+  useTheme,
+} from "@/src/theme";
 import {
   Inter_400Regular,
   Inter_500Medium,
@@ -20,10 +24,12 @@ import {
 } from "@expo-google-fonts/outfit";
 import {
   DarkTheme,
-  ThemeProvider
+  DefaultTheme,
+  ThemeProvider,
 } from "@react-navigation/native";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import * as SystemUI from "expo-system-ui";
 import { useEffect, useRef, useState } from "react";
 import { AppState, type AppStateStatus } from "react-native";
 import "react-native-reanimated";
@@ -31,7 +37,6 @@ import "react-native-reanimated";
 const SYNC_INTERVAL_MS = 30_000;
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
   useStorageCleaner();
 
   const [loaded] = useFonts({
@@ -86,17 +91,29 @@ export default function RootLayout() {
   return (
     <AuthProvider>
       <ActivePlanProvider>
-        <ThemeProvider
-          value={colorScheme === "dark" ? DarkTheme : DarkTheme}
-        >
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="+not-found" />
-            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-          </Stack>
-          <StatusBar style="auto" />
-        </ThemeProvider>
+        <AppThemeProvider>
+          <RootLayoutNav />
+        </AppThemeProvider>
       </ActivePlanProvider>
     </AuthProvider>
+  );
+}
+
+function RootLayoutNav() {
+  const { scheme } = useTheme();
+
+  useEffect(() => {
+    SystemUI.setBackgroundColorAsync(Palettes[scheme].ink);
+  }, [scheme]);
+
+  return (
+    <ThemeProvider value={scheme === "dark" ? DarkTheme : DefaultTheme}>
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="+not-found" />
+        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+      </Stack>
+      <StatusBar style={scheme === "dark" ? "light" : "dark"} />
+    </ThemeProvider>
   );
 }
