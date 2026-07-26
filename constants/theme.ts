@@ -23,23 +23,6 @@ export const FontSizes = {
   hero: 38,
 };
 
-export const Palette = {
-  ink: "#060606",
-  inkRaised: "#0c0c0c",
-  inkSunken: "#0a0a0a",
-  bone: "#f5f3ef",
-  accent: "#34d399",
-  accentDeep: "#059669",
-  accentSoft: "rgba(52,211,153,0.08)",
-  accentBorder: "rgba(52,211,153,0.45)",
-  accentBorderSoft: "rgba(52,211,153,0.25)",
-  muted: "#6b6b6b",
-  mutedSoft: "#3a3a3a",
-  danger: "#f87171",
-  hairline: "rgba(245,243,239,0.07)",
-  hairlineStrong: "rgba(245,243,239,0.14)",
-};
-
 export const Type = {
   eyebrow: {
     fontFamily: FontFamilies.medium,
