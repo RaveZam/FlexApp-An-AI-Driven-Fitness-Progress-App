@@ -1,4 +1,6 @@
+import { usePalette, type Palette } from "@/src/theme";
 import { Ionicons } from "@expo/vector-icons";
+import { useMemo } from "react";
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useGetCompletedSetCount } from "../hooks/useGetCompletedSetCount";
 import { useWorkoutSession } from "../hooks/useWorkoutSession";
@@ -10,6 +12,8 @@ type Props = {
 };
 
 export default function ExercisesListSheet({ visible, onClose }: Props) {
+  const p = usePalette();
+  const styles = useMemo(() => makeStyles(p), [p]);
   const { exercises, activeIndex, setActiveIndex } = useWorkoutSession();
 
   return (
@@ -24,7 +28,7 @@ export default function ExercisesListSheet({ visible, onClose }: Props) {
           <View style={styles.header}>
             <Text style={styles.title}>Exercises</Text>
             <TouchableOpacity onPress={onClose}>
-              <Ionicons name="close" size={24} color="#fff" />
+              <Ionicons name="close" size={24} color={p.bone} />
             </TouchableOpacity>
           </View>
           {exercises.map((ex, i) => (
@@ -53,6 +57,8 @@ function ExerciseRow({
   isActive: boolean;
   onPress: () => void;
 }) {
+  const p = usePalette();
+  const styles = useMemo(() => makeStyles(p), [p]);
   const completed = useGetCompletedSetCount(exercise.id);
 
   return (
@@ -71,55 +77,56 @@ function ExerciseRow({
   );
 }
 
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.7)",
-    justifyContent: "flex-end",
-  },
-  sheet: {
-    backgroundColor: "#1a1a1a",
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 40,
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  title: {
-    color: "#fff",
-    fontSize: 16,
-    fontFamily: "Inter_500Medium",
-    letterSpacing: 0.3,
-  },
-  item: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingVertical: 14,
-    paddingHorizontal: 12,
-    borderRadius: 12,
-    marginBottom: 4,
-  },
-  itemActive: { backgroundColor: "rgba(16,185,129,0.1)" },
-  itemText: {
-    color: "#666",
-    fontSize: 14,
-    fontFamily: "Inter_400Regular",
-    letterSpacing: 0.2,
-  },
-  itemTextActive: { color: "#fff", fontFamily: "Inter_500Medium" },
-  setCount: {
-    color: "#666",
-    fontSize: 12,
-    fontFamily: "Outfit_400Regular",
-    fontVariant: ["tabular-nums"],
-    letterSpacing: 0.3,
-  },
-  setCountActive: { color: "#34d399" },
-});
+const makeStyles = (p: Palette) =>
+  StyleSheet.create({
+    overlay: {
+      flex: 1,
+      backgroundColor: "rgba(0,0,0,0.7)",
+      justifyContent: "flex-end",
+    },
+    sheet: {
+      backgroundColor: p.inkRaised,
+      borderTopLeftRadius: 20,
+      borderTopRightRadius: 20,
+      paddingHorizontal: 20,
+      paddingTop: 20,
+      paddingBottom: 40,
+    },
+    header: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: 16,
+    },
+    title: {
+      color: p.bone,
+      fontSize: 16,
+      fontFamily: "Inter_500Medium",
+      letterSpacing: 0.3,
+    },
+    item: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingVertical: 14,
+      paddingHorizontal: 12,
+      borderRadius: 12,
+      marginBottom: 4,
+    },
+    itemActive: { backgroundColor: p.accentSoft },
+    itemText: {
+      color: p.muted,
+      fontSize: 14,
+      fontFamily: "Inter_400Regular",
+      letterSpacing: 0.2,
+    },
+    itemTextActive: { color: p.bone, fontFamily: "Inter_500Medium" },
+    setCount: {
+      color: p.muted,
+      fontSize: 12,
+      fontFamily: "Outfit_400Regular",
+      fontVariant: ["tabular-nums"],
+      letterSpacing: 0.3,
+    },
+    setCountActive: { color: p.accent },
+  });

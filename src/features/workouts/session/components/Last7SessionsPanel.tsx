@@ -1,5 +1,5 @@
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import Animated, {
   Easing,
@@ -11,20 +11,15 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
-import {
-  ACCENT,
-  BONE,
-  HAIRLINE,
-  HIGHLIGHT,
-  HIGHLIGHT_DEEP,
-  LABEL,
-  MUTED,
-} from "../constants/color";
+import type { SessionColors } from "../constants/color";
 import { buildSessionBars } from "../core/sessionBars";
 import { useGetLast7TopSetsExercise } from "../hooks/useGetLast7TopSets";
+import { useSessionColors } from "../hooks/useSessionColors";
 import { useWorkoutSession } from "../hooks/useWorkoutSession";
 
 export default function Last7SessionsPanel() {
+  const c = useSessionColors();
+  const styles = useMemo(() => makeStyles(c), [c]);
   const { activeExerciseId } = useWorkoutSession();
   const recentSessions = useGetLast7TopSetsExercise(activeExerciseId);
 
@@ -122,6 +117,8 @@ function HistoryBar({
   isSelected,
   onPress,
 }: HistoryBarProps) {
+  const c = useSessionColors();
+  const styles = useMemo(() => makeStyles(c), [c]);
   // Grows from the baseline, staggered by index so bars appear one by one.
   const grow = useSharedValue(0);
   React.useEffect(() => {
@@ -152,7 +149,7 @@ function HistoryBar({
         >
           <Animated.View style={[StyleSheet.absoluteFill, baseStyle]}>
             <LinearGradient
-              colors={[ACCENT, "rgba(52,211,153,0.35)"]}
+              colors={[c.ACCENT, c.ACCENT_DEEP]}
               start={{ x: 0, y: 0 }}
               end={{ x: 0, y: 1 }}
               style={{ flex: 1 }}
@@ -160,7 +157,7 @@ function HistoryBar({
           </Animated.View>
           <Animated.View style={[StyleSheet.absoluteFill, highlightStyle]}>
             <LinearGradient
-              colors={[HIGHLIGHT, HIGHLIGHT_DEEP]}
+              colors={[c.HIGHLIGHT, c.HIGHLIGHT_DEEP]}
               start={{ x: 0, y: 0 }}
               end={{ x: 0, y: 1 }}
               style={{ flex: 1 }}
@@ -172,79 +169,80 @@ function HistoryBar({
   );
 }
 
-const styles = StyleSheet.create({
-  sectionLabel: {
-    color: LABEL,
-    fontSize: 11,
-    fontFamily: "Inter_600SemiBold",
-    letterSpacing: 1.6,
-    textTransform: "uppercase",
-    marginBottom: 12,
-  },
-  historySection: { flex: 1.1 },
-  historyHeader: { marginBottom: 12 },
-  tooltipWheel: {
-    position: "relative",
-    height: 18,
-    marginTop: -6,
-    overflow: "hidden",
-    justifyContent: "center",
-  },
-  wheelItem: { position: "absolute", left: 0, right: 0 },
-  chartTooltip: {
-    color: BONE,
-    fontSize: 13,
-    fontFamily: "Outfit_500Medium",
-    letterSpacing: 0.2,
-  },
-  chartTooltipValue: {
-    color: ACCENT,
-    fontFamily: "Outfit_600SemiBold",
-    fontVariant: ["tabular-nums"],
-  },
-  chartTooltipDate: {
-    color: LABEL,
-    fontFamily: "Inter_500Medium",
-    fontSize: 11,
-    letterSpacing: 0.5,
-    textTransform: "uppercase",
-  },
-  chartTooltipHint: {
-    color: MUTED,
-    fontSize: 11,
-    fontFamily: "Inter_500Medium",
-    letterSpacing: 1,
-    textTransform: "uppercase",
-  },
-  chartWrap: { position: "relative" },
-  chartBaseline: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    bottom: 8,
-    height: StyleSheet.hairlineWidth,
-    backgroundColor: HAIRLINE,
-  },
-  historyChart: {
-    flexDirection: "row",
-    alignItems: "flex-end",
-    justifyContent: "flex-start",
-    gap: 12,
-    height: 64,
-    paddingBottom: 8,
-  },
-  barTouch: {
-    paddingHorizontal: 2,
-    justifyContent: "flex-end",
-    alignItems: "center",
-  },
-  barColumn: { alignItems: "center" },
-  emptyChart: {
-    color: MUTED,
-    fontSize: 12,
-    fontFamily: "Inter_500Medium",
-    letterSpacing: 0.5,
-    alignSelf: "center",
-    marginTop: 24,
-  },
-});
+const makeStyles = (c: SessionColors) =>
+  StyleSheet.create({
+    sectionLabel: {
+      color: c.LABEL,
+      fontSize: 11,
+      fontFamily: "Inter_600SemiBold",
+      letterSpacing: 1.6,
+      textTransform: "uppercase",
+      marginBottom: 12,
+    },
+    historySection: { flex: 1.1 },
+    historyHeader: { marginBottom: 12 },
+    tooltipWheel: {
+      position: "relative",
+      height: 18,
+      marginTop: -6,
+      overflow: "hidden",
+      justifyContent: "center",
+    },
+    wheelItem: { position: "absolute", left: 0, right: 0 },
+    chartTooltip: {
+      color: c.BONE,
+      fontSize: 13,
+      fontFamily: "Outfit_500Medium",
+      letterSpacing: 0.2,
+    },
+    chartTooltipValue: {
+      color: c.ACCENT,
+      fontFamily: "Outfit_600SemiBold",
+      fontVariant: ["tabular-nums"],
+    },
+    chartTooltipDate: {
+      color: c.LABEL,
+      fontFamily: "Inter_500Medium",
+      fontSize: 11,
+      letterSpacing: 0.5,
+      textTransform: "uppercase",
+    },
+    chartTooltipHint: {
+      color: c.MUTED,
+      fontSize: 11,
+      fontFamily: "Inter_500Medium",
+      letterSpacing: 1,
+      textTransform: "uppercase",
+    },
+    chartWrap: { position: "relative" },
+    chartBaseline: {
+      position: "absolute",
+      left: 0,
+      right: 0,
+      bottom: 8,
+      height: StyleSheet.hairlineWidth,
+      backgroundColor: c.HAIRLINE,
+    },
+    historyChart: {
+      flexDirection: "row",
+      alignItems: "flex-end",
+      justifyContent: "flex-start",
+      gap: 12,
+      height: 64,
+      paddingBottom: 8,
+    },
+    barTouch: {
+      paddingHorizontal: 2,
+      justifyContent: "flex-end",
+      alignItems: "center",
+    },
+    barColumn: { alignItems: "center" },
+    emptyChart: {
+      color: c.MUTED,
+      fontSize: 12,
+      fontFamily: "Inter_500Medium",
+      letterSpacing: 0.5,
+      alignSelf: "center",
+      marginTop: 24,
+    },
+  });

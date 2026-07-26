@@ -1,5 +1,6 @@
+import { usePalette, type Palette } from "@/src/theme";
 import { Ionicons } from "@expo/vector-icons";
-import React from "react";
+import React, { useMemo } from "react";
 import {
   KeyboardAvoidingView,
   Modal,
@@ -12,8 +13,6 @@ import {
 } from "react-native";
 import { useWorkoutLogForm } from "../hooks/useWorkoutLogForm";
 
-const ACCENT = "#10b981";
-
 type WorkoutLogModalProps = {
   visible: boolean;
   onClose: () => void;
@@ -25,6 +24,8 @@ export default function WorkoutLogModal({
   onClose,
   onLogged,
 }: WorkoutLogModalProps) {
+  const p = usePalette();
+  const styles = useMemo(() => makeStyles(p), [p]);
   const { exercise, inputs, onChange, canLog, handleLog, handleClose } =
     useWorkoutLogForm(visible, { onClose, onLogged });
 
@@ -57,7 +58,7 @@ export default function WorkoutLogModal({
               </Text>
             </View>
             <TouchableOpacity onPress={handleClose}>
-              <Ionicons name="close-circle" size={28} color="#444" />
+              <Ionicons name="close-circle" size={28} color={p.mutedSoft} />
             </TouchableOpacity>
           </View>
 
@@ -71,8 +72,8 @@ export default function WorkoutLogModal({
                 onChangeText={onChange.weight}
                 keyboardType="numeric"
                 placeholder="0"
-                placeholderTextColor="#444"
-                selectionColor={ACCENT}
+                placeholderTextColor={p.mutedSoft}
+                selectionColor={p.accent}
                 autoFocus
               />
             </View>
@@ -86,8 +87,8 @@ export default function WorkoutLogModal({
                     onChangeText={onChange.leftReps}
                     keyboardType="number-pad"
                     placeholder="0"
-                    placeholderTextColor="#444"
-                    selectionColor={ACCENT}
+                    placeholderTextColor={p.mutedSoft}
+                    selectionColor={p.accent}
                   />
                 </View>
                 <View style={styles.inputGroup}>
@@ -98,8 +99,8 @@ export default function WorkoutLogModal({
                     onChangeText={onChange.rightReps}
                     keyboardType="number-pad"
                     placeholder="0"
-                    placeholderTextColor="#444"
-                    selectionColor={ACCENT}
+                    placeholderTextColor={p.mutedSoft}
+                    selectionColor={p.accent}
                   />
                 </View>
               </>
@@ -112,8 +113,8 @@ export default function WorkoutLogModal({
                   onChangeText={onChange.reps}
                   keyboardType="number-pad"
                   placeholder="0"
-                  placeholderTextColor="#444"
-                  selectionColor={ACCENT}
+                  placeholderTextColor={p.mutedSoft}
+                  selectionColor={p.accent}
                 />
               </View>
             )}
@@ -129,7 +130,7 @@ export default function WorkoutLogModal({
             <Ionicons
               name="checkmark-circle"
               size={22}
-              color={canLog ? "#0a0a0a" : "#666"}
+              color={canLog ? p.onAccent : p.muted}
             />
             <Text
               style={[
@@ -146,93 +147,94 @@ export default function WorkoutLogModal({
   );
 }
 
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    justifyContent: "flex-end",
-  },
-  backdrop: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.6)",
-  },
-  sheet: {
-    backgroundColor: "#1a1a1a",
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    paddingHorizontal: 24,
-    paddingTop: 12,
-    paddingBottom: 40,
-  },
-  handle: {
-    width: 40,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: "#444",
-    alignSelf: "center",
-    marginBottom: 20,
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    marginBottom: 24,
-  },
-  exerciseName: {
-    color: "#fff",
-    fontSize: 18,
-    fontFamily: "Inter_700Bold",
-  },
-  setInfo: {
-    color: "#888",
-    fontSize: 13,
-    fontFamily: "Inter_500Medium",
-    marginTop: 4,
-  },
-  inputRow: {
-    flexDirection: "row",
-    gap: 14,
-    marginBottom: 20,
-  },
-  inputGroup: {
-    flex: 1,
-  },
-  inputLabel: {
-    color: "#666",
-    fontSize: 10,
-    fontFamily: "Inter_700Bold",
-    letterSpacing: 1.5,
-    marginBottom: 8,
-  },
-  input: {
-    backgroundColor: "#0f0f0f",
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.08)",
-    paddingHorizontal: 16,
-    paddingVertical: 16,
-    color: "#fff",
-    fontSize: 24,
-    fontFamily: "Inter_700Bold",
-    textAlign: "center",
-  },
-  logButton: {
-    backgroundColor: ACCENT,
-    borderRadius: 16,
-    paddingVertical: 18,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-  },
-  logButtonDisabled: {
-    backgroundColor: "#2a2a2a",
-  },
-  logButtonText: {
-    color: "#0a0a0a",
-    fontSize: 17,
-    fontFamily: "Inter_700Bold",
-  },
-  logButtonTextDisabled: {
-    color: "#666",
-  },
-});
+const makeStyles = (p: Palette) =>
+  StyleSheet.create({
+    overlay: {
+      flex: 1,
+      justifyContent: "flex-end",
+    },
+    backdrop: {
+      flex: 1,
+      backgroundColor: "rgba(0,0,0,0.6)",
+    },
+    sheet: {
+      backgroundColor: p.inkRaised,
+      borderTopLeftRadius: 24,
+      borderTopRightRadius: 24,
+      paddingHorizontal: 24,
+      paddingTop: 12,
+      paddingBottom: 40,
+    },
+    handle: {
+      width: 40,
+      height: 4,
+      borderRadius: 2,
+      backgroundColor: p.mutedSoft,
+      alignSelf: "center",
+      marginBottom: 20,
+    },
+    header: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "flex-start",
+      marginBottom: 24,
+    },
+    exerciseName: {
+      color: p.bone,
+      fontSize: 18,
+      fontFamily: "Inter_700Bold",
+    },
+    setInfo: {
+      color: p.muted,
+      fontSize: 13,
+      fontFamily: "Inter_500Medium",
+      marginTop: 4,
+    },
+    inputRow: {
+      flexDirection: "row",
+      gap: 14,
+      marginBottom: 20,
+    },
+    inputGroup: {
+      flex: 1,
+    },
+    inputLabel: {
+      color: p.muted,
+      fontSize: 10,
+      fontFamily: "Inter_700Bold",
+      letterSpacing: 1.5,
+      marginBottom: 8,
+    },
+    input: {
+      backgroundColor: p.inkSunken,
+      borderRadius: 14,
+      borderWidth: 1,
+      borderColor: p.hairline,
+      paddingHorizontal: 16,
+      paddingVertical: 16,
+      color: p.bone,
+      fontSize: 24,
+      fontFamily: "Inter_700Bold",
+      textAlign: "center",
+    },
+    logButton: {
+      backgroundColor: p.accent,
+      borderRadius: 16,
+      paddingVertical: 18,
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 8,
+    },
+    logButtonDisabled: {
+      backgroundColor: p.mutedSoft,
+    },
+    logButtonText: {
+      color: p.onAccent,
+      fontSize: 17,
+      fontFamily: "Inter_700Bold",
+    },
+    logButtonTextDisabled: {
+      color: p.muted,
+    },
+  });

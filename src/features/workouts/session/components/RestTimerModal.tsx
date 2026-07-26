@@ -1,5 +1,6 @@
+import { usePalette, type Palette } from "@/src/theme";
 import { Ionicons } from "@expo/vector-icons";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { AppState, Modal, Platform, StyleSheet, Text, TouchableOpacity, Vibration, View } from "react-native";
 import Animated, {
   Easing,
@@ -12,7 +13,6 @@ import Animated, {
 import Svg, { Circle } from "react-native-svg";
 import { endRestActivity, startRestActivity } from "../services/liveActivity";
 
-const ACCENT = "#10b981";
 const RADIUS = 110;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
@@ -32,6 +32,8 @@ type Props = {
 };
 
 export default function RestTimerModal({ visible, onClose, restSeconds = 90 }: Props) {
+  const p = usePalette();
+  const styles = useMemo(() => makeStyles(p), [p]);
   const [remaining, setRemaining] = useState(0);
   const progress = useSharedValue(1);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -139,7 +141,7 @@ export default function RestTimerModal({ visible, onClose, restSeconds = 90 }: P
                 cx={130}
                 cy={130}
                 r={RADIUS}
-                stroke="rgba(255,255,255,0.06)"
+                stroke={p.hairlineStrong}
                 strokeWidth={10}
                 fill="none"
               />
@@ -148,7 +150,7 @@ export default function RestTimerModal({ visible, onClose, restSeconds = 90 }: P
                 cx={130}
                 cy={130}
                 r={RADIUS}
-                stroke={ACCENT}
+                stroke={p.accent}
                 strokeWidth={10}
                 fill="none"
                 strokeDasharray={CIRCUMFERENCE}
@@ -166,7 +168,7 @@ export default function RestTimerModal({ visible, onClose, restSeconds = 90 }: P
           </View>
 
           <View style={styles.hintRow}>
-            <Ionicons name="barbell-outline" size={15} color="#444" />
+            <Ionicons name="barbell-outline" size={15} color={p.mutedSoft} />
             <Text style={styles.hintText}>Prepare for next set</Text>
           </View>
 
@@ -176,7 +178,7 @@ export default function RestTimerModal({ visible, onClose, restSeconds = 90 }: P
             style={styles.skipButton}
           >
             <Text style={styles.skipText}>Skip Rest</Text>
-            <Ionicons name="play-skip-forward" size={15} color={ACCENT} />
+            <Ionicons name="play-skip-forward" size={15} color={p.accent} />
           </TouchableOpacity>
         </View>
       </Animated.View>
@@ -184,74 +186,75 @@ export default function RestTimerModal({ visible, onClose, restSeconds = 90 }: P
   );
 }
 
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.93)",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  content: {
-    alignItems: "center",
-    gap: 32,
-    paddingHorizontal: 32,
-  },
-  restLabel: {
-    color: "#2a2a2a",
-    fontSize: 11,
-    fontFamily: "Inter_700Bold",
-    letterSpacing: 7,
-    textTransform: "uppercase",
-  },
-  ringContainer: {
-    width: 260,
-    height: 260,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  timerCenter: {
-    alignItems: "center",
-  },
-  timerDigits: {
-    color: "#fff",
-    fontSize: 58,
-    fontFamily: "Inter_700Bold",
-    letterSpacing: -1,
-    lineHeight: 68,
-  },
-  timerSub: {
-    color: "#333",
-    fontSize: 12,
-    fontFamily: "Inter_400Regular",
-    letterSpacing: 0.5,
-    marginTop: 4,
-  },
-  hintRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-  },
-  hintText: {
-    color: "#3a3a3a",
-    fontSize: 13,
-    fontFamily: "Inter_400Regular",
-    letterSpacing: 0.3,
-  },
-  skipButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    paddingHorizontal: 28,
-    paddingVertical: 14,
-    borderRadius: 100,
-    borderWidth: 1,
-    borderColor: "rgba(16,185,129,0.2)",
-    backgroundColor: "rgba(16,185,129,0.05)",
-  },
-  skipText: {
-    color: ACCENT,
-    fontSize: 14,
-    fontFamily: "Inter_600SemiBold",
-    letterSpacing: 0.4,
-  },
-});
+const makeStyles = (p: Palette) =>
+  StyleSheet.create({
+    overlay: {
+      flex: 1,
+      backgroundColor: p.ink,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    content: {
+      alignItems: "center",
+      gap: 32,
+      paddingHorizontal: 32,
+    },
+    restLabel: {
+      color: p.mutedSoft,
+      fontSize: 11,
+      fontFamily: "Inter_700Bold",
+      letterSpacing: 7,
+      textTransform: "uppercase",
+    },
+    ringContainer: {
+      width: 260,
+      height: 260,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    timerCenter: {
+      alignItems: "center",
+    },
+    timerDigits: {
+      color: p.bone,
+      fontSize: 58,
+      fontFamily: "Inter_700Bold",
+      letterSpacing: -1,
+      lineHeight: 68,
+    },
+    timerSub: {
+      color: p.mutedSoft,
+      fontSize: 12,
+      fontFamily: "Inter_400Regular",
+      letterSpacing: 0.5,
+      marginTop: 4,
+    },
+    hintRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 6,
+    },
+    hintText: {
+      color: p.mutedSoft,
+      fontSize: 13,
+      fontFamily: "Inter_400Regular",
+      letterSpacing: 0.3,
+    },
+    skipButton: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 8,
+      paddingHorizontal: 28,
+      paddingVertical: 14,
+      borderRadius: 100,
+      borderWidth: 1,
+      borderColor: p.accentBorderSoft,
+      backgroundColor: p.accentSoft,
+    },
+    skipText: {
+      color: p.accent,
+      fontSize: 14,
+      fontFamily: "Inter_600SemiBold",
+      letterSpacing: 0.4,
+    },
+  });

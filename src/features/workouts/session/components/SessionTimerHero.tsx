@@ -1,13 +1,13 @@
-import React from "react";
+import { usePalette, type Palette } from "@/src/theme";
+import React, { useMemo } from "react";
 import { StyleSheet, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import HeroElapsedTime from "./HeroElapsedTime";
 import HeroRestTime from "./HeroRestTime";
 
-const HAIRLINE = "rgba(245,243,239,0.07)";
-const HAIRLINE_STRONG = "rgba(245,243,239,0.14)";
-
 export default function SessionTimerHero() {
+  const p = usePalette();
+  const styles = useMemo(() => makeStyles(p), [p]);
   return (
     <Animated.View
       entering={FadeInDown.delay(60).duration(400)}
@@ -20,18 +20,19 @@ export default function SessionTimerHero() {
   );
 }
 
-const styles = StyleSheet.create({
-  timerHero: {
-    flexDirection: "row",
-    alignItems: "stretch",
-    paddingHorizontal: 24,
-    paddingVertical: 22,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: HAIRLINE,
-  },
-  timerDivider: {
-    width: StyleSheet.hairlineWidth,
-    backgroundColor: HAIRLINE_STRONG,
-    marginHorizontal: 18,
-  },
-});
+const makeStyles = (p: Palette) =>
+  StyleSheet.create({
+    timerHero: {
+      flexDirection: "row",
+      alignItems: "stretch",
+      paddingHorizontal: 24,
+      paddingVertical: 22,
+      borderBottomWidth: StyleSheet.hairlineWidth,
+      borderBottomColor: p.hairline,
+    },
+    timerDivider: {
+      width: StyleSheet.hairlineWidth,
+      backgroundColor: p.hairlineStrong,
+      marginHorizontal: 18,
+    },
+  });

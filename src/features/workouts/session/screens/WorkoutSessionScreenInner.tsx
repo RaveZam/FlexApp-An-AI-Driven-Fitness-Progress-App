@@ -8,9 +8,10 @@ import SessionHeader from "@/src/features/workouts/session/components/SessionHea
 import SessionSetList from "@/src/features/workouts/session/components/SessionSetList";
 import SessionTimerHero from "@/src/features/workouts/session/components/SessionTimerHero";
 import WorkoutLogModal from "@/src/features/workouts/session/components/WorkoutLogModal";
+import { usePalette, type Palette } from "@/src/theme";
 import { LinearGradient } from "expo-linear-gradient";
 import { Redirect, router, useFocusEffect } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import SessionStatsPanel from "../components/SessionStatsPanel";
@@ -19,11 +20,9 @@ import useRestTimer from "../hooks/useRestTimer";
 import { useSessionBottomBar } from "../hooks/useSessionBottomBar";
 import { useWorkoutSession } from "../hooks/useWorkoutSession";
 
-const ACCENT = "#34d399";
-const HAIRLINE = "rgba(245,243,239,0.07)";
-const INK = "#060606";
-
 export default function WorkoutSessionScreenInner() {
+  const p = usePalette();
+  const styles = useMemo(() => makeStyles(p), [p]);
   const { exercises, activeSessionId, refreshActiveSession } =
     useWorkoutSession();
   const { mode: bottomBarMode, advance } = useSessionBottomBar();
@@ -68,7 +67,7 @@ export default function WorkoutSessionScreenInner() {
   return (
     <SafeAreaView style={styles.safe} edges={["top"]}>
       <LinearGradient
-        colors={["rgba(52,211,153,0.08)", "transparent"]}
+        colors={[p.accentSoft, "transparent"]}
         start={{ x: 0.5, y: 0 }}
         end={{ x: 0.5, y: 0.4 }}
         style={StyleSheet.absoluteFillObject}
@@ -163,18 +162,19 @@ export default function WorkoutSessionScreenInner() {
   );
 }
 
-const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: INK },
-  container: { flex: 1, backgroundColor: "transparent" },
+const makeStyles = (p: Palette) =>
+  StyleSheet.create({
+    safe: { flex: 1, backgroundColor: p.ink },
+    container: { flex: 1, backgroundColor: "transparent" },
 
-  progressTrack: {
-    height: 1,
-    marginHorizontal: 24,
-    backgroundColor: HAIRLINE,
-    overflow: "hidden",
-  },
-  progressFill: { height: "100%", backgroundColor: ACCENT },
+    progressTrack: {
+      height: 1,
+      marginHorizontal: 24,
+      backgroundColor: p.hairline,
+      overflow: "hidden",
+    },
+    progressFill: { height: "100%", backgroundColor: p.accent },
 
-  scroll: { flex: 1 },
-  scrollContent: { paddingBottom: 32 },
-});
+    scroll: { flex: 1 },
+    scrollContent: { paddingBottom: 32 },
+  });
