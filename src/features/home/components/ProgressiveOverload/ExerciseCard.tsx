@@ -1,5 +1,7 @@
-import { FontFamilies, Palette } from "@/constants/theme";
+import { FontFamilies } from "@/constants/theme";
+import { usePalette, type Palette } from "@/src/theme";
 import { Feather } from "@expo/vector-icons";
+import { useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import ReAnimated, { FadeIn, FadeInDown } from "react-native-reanimated";
 import Svg, { Circle, Line, Polyline } from "react-native-svg";
@@ -28,6 +30,8 @@ type Props = {
 };
 
 export function ExerciseCard({ exercise, delay }: Props) {
+  const p = usePalette();
+  const styles = useMemo(() => makeStyles(p), [p]);
   const { points } = exercise;
   const latest = points[points.length - 1];
   const volumes = points.map((p) => p.weight * p.reps);
@@ -91,7 +95,7 @@ export function ExerciseCard({ exercise, delay }: Props) {
               x2={CHART_WIDTH}
               y1={CHART_HEIGHT * f}
               y2={CHART_HEIGHT * f}
-              stroke="rgba(245,243,239,0.07)"
+              stroke={p.hairline}
               strokeWidth={1}
             />
           ))}
@@ -102,7 +106,7 @@ export function ExerciseCard({ exercise, delay }: Props) {
               x2={x}
               y1={0}
               y2={CHART_HEIGHT}
-              stroke="rgba(245,243,239,0.045)"
+              stroke={p.hairline}
               strokeWidth={1}
             />
           ))}
@@ -133,7 +137,7 @@ export function ExerciseCard({ exercise, delay }: Props) {
               <Polyline
                 points={coords.map((c) => `${c.x},${c.y}`).join(" ")}
                 fill="none"
-                stroke={Palette.accent}
+                stroke={p.accent}
                 strokeWidth={1.25}
                 strokeOpacity={0.7}
                 strokeLinejoin="round"
@@ -145,8 +149,8 @@ export function ExerciseCard({ exercise, delay }: Props) {
                   cx={c.x}
                   cy={c.y}
                   r={i === bestIndex ? 2.2 : 1.4}
-                  fill={i === bestIndex ? Palette.accent : Palette.ink}
-                  stroke={Palette.accent}
+                  fill={i === bestIndex ? p.accent : p.ink}
+                  stroke={p.accent}
                   strokeWidth={i === bestIndex ? 0 : 1}
                 />
               ))}
@@ -159,6 +163,8 @@ export function ExerciseCard({ exercise, delay }: Props) {
 }
 
 function DeltaChip({ deltaPct }: { deltaPct: number | null }) {
+  const p = usePalette();
+  const styles = useMemo(() => makeStyles(p), [p]);
   if (deltaPct === null) {
     return (
       <View style={[styles.chip, styles.chipNeutral]}>
@@ -167,12 +173,14 @@ function DeltaChip({ deltaPct }: { deltaPct: number | null }) {
     );
   }
   const up = deltaPct >= 0;
-  const color = up ? Palette.accent : Palette.danger;
+  const color = up ? p.accent : p.danger;
   return (
     <View
       style={[
         styles.chip,
-        { backgroundColor: up ? Palette.accentSoft : "rgba(248,113,113,0.1)" },
+        // No "dangerSoft" fill token exists — nearest fit is dangerBorder, reused
+        // here as the down-trend chip fill (mirrors the up-trend accentSoft usage).
+        { backgroundColor: up ? p.accentSoft : p.dangerBorder },
       ]}
     >
       <Feather
@@ -188,91 +196,92 @@ function DeltaChip({ deltaPct }: { deltaPct: number | null }) {
   );
 }
 
-const styles = StyleSheet.create({
-  card: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderRadius: 14,
-    backgroundColor: "rgba(245,243,239,0.035)",
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: Palette.hairline,
-    paddingVertical: 13,
-    paddingHorizontal: 15,
-    gap: 15,
-    overflow: "hidden",
-  },
-  info: { flex: 1, gap: 9 },
-  infoHead: { flexDirection: "row", alignItems: "center", gap: 8 },
-  exerciseName: {
-    flex: 1,
-    color: Palette.bone,
-    fontSize: 13,
-    fontFamily: FontFamilies.semibold,
-    letterSpacing: 0.1,
-  },
-  readout: { flexDirection: "row", alignItems: "baseline", gap: 5 },
-  divider: {
-    alignSelf: "stretch",
-    width: StyleSheet.hairlineWidth,
-    marginVertical: 2,
-    backgroundColor: Palette.hairline,
-  },
-  weight: {
-    color: Palette.bone,
-    fontSize: 20,
-    fontFamily: FontFamilies.semibold,
-    letterSpacing: -0.4,
-    fontVariant: ["tabular-nums"],
-  },
-  unit: {
-    color: Palette.muted,
-    fontSize: 10,
-    fontFamily: FontFamilies.displayRegular,
-    letterSpacing: 0.4,
-  },
-  reps: {
-    color: Palette.accent,
-    fontSize: 11,
-    fontFamily: FontFamilies.medium,
-    fontVariant: ["tabular-nums"],
-  },
-  chip: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 3,
-    paddingVertical: 2,
-    paddingHorizontal: 6,
-    borderRadius: 999,
-  },
-  chipNeutral: { backgroundColor: Palette.hairline },
-  chipText: {
-    fontSize: 10,
-    fontFamily: FontFamilies.semibold,
-    letterSpacing: 0.2,
-    fontVariant: ["tabular-nums"],
-  },
-  chipTextNeutral: {
-    color: Palette.muted,
-    fontSize: 9,
-    fontFamily: FontFamilies.semibold,
-    letterSpacing: 1.5,
-  },
-  chartWrap: { position: "relative", justifyContent: "flex-end" },
-  grid: { position: "absolute", left: 0, top: 0 },
-  trend: { position: "absolute", left: 0, top: 0, height: CHART_HEIGHT },
-  baseline: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    bottom: 0,
-    height: StyleSheet.hairlineWidth,
-    backgroundColor: Palette.hairlineStrong,
-  },
-  chart: {
-    flexDirection: "row",
-    alignItems: "flex-end",
-    width: CHART_WIDTH,
-    height: CHART_HEIGHT,
-    gap: BAR_GAP,
-  },
-});
+const makeStyles = (p: Palette) =>
+  StyleSheet.create({
+    card: {
+      flexDirection: "row",
+      alignItems: "center",
+      borderRadius: 14,
+      backgroundColor: "rgba(245,243,239,0.035)",
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: p.hairline,
+      paddingVertical: 13,
+      paddingHorizontal: 15,
+      gap: 15,
+      overflow: "hidden",
+    },
+    info: { flex: 1, gap: 9 },
+    infoHead: { flexDirection: "row", alignItems: "center", gap: 8 },
+    exerciseName: {
+      flex: 1,
+      color: p.bone,
+      fontSize: 13,
+      fontFamily: FontFamilies.semibold,
+      letterSpacing: 0.1,
+    },
+    readout: { flexDirection: "row", alignItems: "baseline", gap: 5 },
+    divider: {
+      alignSelf: "stretch",
+      width: StyleSheet.hairlineWidth,
+      marginVertical: 2,
+      backgroundColor: p.hairline,
+    },
+    weight: {
+      color: p.bone,
+      fontSize: 20,
+      fontFamily: FontFamilies.semibold,
+      letterSpacing: -0.4,
+      fontVariant: ["tabular-nums"],
+    },
+    unit: {
+      color: p.muted,
+      fontSize: 10,
+      fontFamily: FontFamilies.displayRegular,
+      letterSpacing: 0.4,
+    },
+    reps: {
+      color: p.accent,
+      fontSize: 11,
+      fontFamily: FontFamilies.medium,
+      fontVariant: ["tabular-nums"],
+    },
+    chip: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 3,
+      paddingVertical: 2,
+      paddingHorizontal: 6,
+      borderRadius: 999,
+    },
+    chipNeutral: { backgroundColor: p.hairline },
+    chipText: {
+      fontSize: 10,
+      fontFamily: FontFamilies.semibold,
+      letterSpacing: 0.2,
+      fontVariant: ["tabular-nums"],
+    },
+    chipTextNeutral: {
+      color: p.muted,
+      fontSize: 9,
+      fontFamily: FontFamilies.semibold,
+      letterSpacing: 1.5,
+    },
+    chartWrap: { position: "relative", justifyContent: "flex-end" },
+    grid: { position: "absolute", left: 0, top: 0 },
+    trend: { position: "absolute", left: 0, top: 0, height: CHART_HEIGHT },
+    baseline: {
+      position: "absolute",
+      left: 0,
+      right: 0,
+      bottom: 0,
+      height: StyleSheet.hairlineWidth,
+      backgroundColor: p.hairlineStrong,
+    },
+    chart: {
+      flexDirection: "row",
+      alignItems: "flex-end",
+      width: CHART_WIDTH,
+      height: CHART_HEIGHT,
+      gap: BAR_GAP,
+    },
+  });

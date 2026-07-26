@@ -1,6 +1,8 @@
-import { FontFamilies, Palette } from "@/constants/theme";
+import { FontFamilies } from "@/constants/theme";
 import type { Workout } from "@/src/features/workouts";
+import { usePalette, type Palette } from "@/src/theme";
 import { Ionicons } from "@expo/vector-icons";
+import { useMemo } from "react";
 import {
   Alert,
   Modal,
@@ -25,6 +27,8 @@ export default function WorkoutPickerModal({
   onPick,
   onClose,
 }: Props) {
+  const p = usePalette();
+  const styles = useMemo(() => makeStyles(p), [p]);
   //returns workout id picked upon confirming
   function confirmPick(workout: Workout) {
     Alert.alert(workout.name, "Set this as today's workout?", [
@@ -45,7 +49,7 @@ export default function WorkoutPickerModal({
           <View style={styles.header}>
             <Text style={styles.title}>Choose a Workout</Text>
             <TouchableOpacity onPress={onClose} hitSlop={8}>
-              <Ionicons name="close" size={22} color={Palette.bone} />
+              <Ionicons name="close" size={22} color={p.bone} />
             </TouchableOpacity>
           </View>
 
@@ -77,7 +81,7 @@ export default function WorkoutPickerModal({
               <Ionicons
                 name="chevron-forward"
                 size={16}
-                color={Palette.muted}
+                color={p.muted}
               />
             </TouchableOpacity>
           ))}
@@ -87,64 +91,65 @@ export default function WorkoutPickerModal({
   );
 }
 
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    justifyContent: "flex-end",
-    backgroundColor: "rgba(0,0,0,0.5)",
-  },
-  sheet: {
-    backgroundColor: Palette.inkRaised,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    paddingHorizontal: 20,
-    paddingTop: 18,
-    paddingBottom: 32,
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 16,
-  },
-  title: {
-    color: Palette.bone,
-    fontSize: 15,
-    fontFamily: FontFamilies.displayMedium,
-    letterSpacing: -0.2,
-  },
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 14,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: Palette.hairline,
-  },
-  rowTitle: {
-    color: Palette.bone,
-    fontSize: 14,
-    fontFamily: FontFamilies.displayMedium,
-    marginBottom: 6,
-  },
-  dayRow: { flexDirection: "row", gap: 4 },
-  dayChip: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: Palette.inkSunken,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: Palette.hairline,
-  },
-  dayChipOn: {
-    backgroundColor: Palette.accent,
-    borderColor: Palette.accent,
-  },
-  dayText: {
-    color: Palette.muted,
-    fontSize: 9,
-    fontFamily: FontFamilies.medium,
-  },
-  dayTextOn: { color: Palette.ink, fontFamily: FontFamilies.medium },
-});
+const makeStyles = (p: Palette) =>
+  StyleSheet.create({
+    overlay: {
+      flex: 1,
+      justifyContent: "flex-end",
+      backgroundColor: "rgba(0,0,0,0.5)",
+    },
+    sheet: {
+      backgroundColor: p.inkRaised,
+      borderTopLeftRadius: 20,
+      borderTopRightRadius: 20,
+      paddingHorizontal: 20,
+      paddingTop: 18,
+      paddingBottom: 32,
+    },
+    header: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      marginBottom: 16,
+    },
+    title: {
+      color: p.bone,
+      fontSize: 15,
+      fontFamily: FontFamilies.displayMedium,
+      letterSpacing: -0.2,
+    },
+    row: {
+      flexDirection: "row",
+      alignItems: "center",
+      paddingVertical: 14,
+      borderTopWidth: StyleSheet.hairlineWidth,
+      borderTopColor: p.hairline,
+    },
+    rowTitle: {
+      color: p.bone,
+      fontSize: 14,
+      fontFamily: FontFamilies.displayMedium,
+      marginBottom: 6,
+    },
+    dayRow: { flexDirection: "row", gap: 4 },
+    dayChip: {
+      width: 20,
+      height: 20,
+      borderRadius: 10,
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: p.inkSunken,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: p.hairline,
+    },
+    dayChipOn: {
+      backgroundColor: p.accent,
+      borderColor: p.accent,
+    },
+    dayText: {
+      color: p.muted,
+      fontSize: 9,
+      fontFamily: FontFamilies.medium,
+    },
+    dayTextOn: { color: p.onAccent, fontFamily: FontFamilies.medium },
+  });

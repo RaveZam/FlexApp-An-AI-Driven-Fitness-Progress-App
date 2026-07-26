@@ -1,11 +1,14 @@
-import { FontFamilies, Palette } from "@/constants/theme";
+import { FontFamilies } from "@/constants/theme";
+import { usePalette, type Palette } from "@/src/theme";
 import { Feather } from "@expo/vector-icons";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useProgressiveOverload } from "../../hooks/ProgressiveOverload/useProgressiveOverload";
 import { ExerciseCard } from "./ExerciseCard";
 
 export function ProgressiveOverload() {
+  const p = usePalette();
+  const styles = useMemo(() => makeStyles(p), [p]);
   const [bodyFilter, setBodyFilter] = useState("");
   const { exercises, muscleGroups, selectedGroup } = useProgressiveOverload(bodyFilter);
 
@@ -41,7 +44,7 @@ export function ProgressiveOverload() {
 
       {exercises.length === 0 ? (
         <View style={styles.empty}>
-          <Feather name="inbox" size={14} color={Palette.muted} />
+          <Feather name="inbox" size={14} color={p.muted} />
           <Text style={styles.emptyText}>No logged workouts yet</Text>
         </View>
       ) : (
@@ -53,66 +56,68 @@ export function ProgressiveOverload() {
   );
 }
 
-const styles = StyleSheet.create({
-  section: { marginHorizontal: 20, marginTop: 24, gap: 12 },
-  header: {
-    flexDirection: "row",
-    alignItems: "baseline",
-    justifyContent: "space-between",
-  },
-  title: {
-    color: Palette.bone,
-    fontSize: 22,
-    fontFamily: FontFamilies.displayMedium,
-    letterSpacing: -0.5,
-  },
-  window: {
-    color: Palette.muted,
-    fontSize: 9,
-    fontFamily: FontFamilies.medium,
-    letterSpacing: 1.6,
-    textTransform: "uppercase",
-  },
-  chipRow: { gap: 8, paddingVertical: 2, paddingRight: 4 },
-  chip: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    paddingVertical: 6,
-    paddingHorizontal: 13,
-    borderRadius: 999,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: Palette.hairline,
-    backgroundColor: "rgba(245,243,239,0.03)",
-  },
-  chipActive: {
-    borderColor: Palette.accentBorder,
-    backgroundColor: Palette.accentSoft,
-  },
-  chipDot: {
-    width: 5,
-    height: 5,
-    borderRadius: 2.5,
-    backgroundColor: Palette.accent,
-  },
-  chipText: {
-    color: Palette.muted,
-    fontSize: 11,
-    fontFamily: FontFamilies.medium,
-    letterSpacing: 0.4,
-    textTransform: "capitalize",
-  },
-  chipTextActive: { color: Palette.accent, fontFamily: FontFamilies.semibold },
-  empty: {
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 32,
-    gap: 8,
-  },
-  emptyText: {
-    color: Palette.muted,
-    fontSize: 11,
-    fontFamily: FontFamilies.regular,
-    letterSpacing: 0.4,
-  },
-});
+const makeStyles = (p: Palette) =>
+  StyleSheet.create({
+    section: { marginHorizontal: 20, marginTop: 24, gap: 12 },
+    header: {
+      flexDirection: "row",
+      alignItems: "baseline",
+      justifyContent: "space-between",
+    },
+    title: {
+      color: p.bone,
+      fontSize: 22,
+      fontFamily: FontFamilies.displayMedium,
+      letterSpacing: -0.5,
+    },
+    window: {
+      color: p.muted,
+      fontSize: 9,
+      fontFamily: FontFamilies.medium,
+      letterSpacing: 1.6,
+      textTransform: "uppercase",
+    },
+    chipRow: { gap: 8, paddingVertical: 2, paddingRight: 4 },
+    chip: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 6,
+      paddingVertical: 6,
+      paddingHorizontal: 13,
+      borderRadius: 999,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: p.hairline,
+      // Faint bone-tinted fill, nearest fit is the hairline token (same rgba family).
+      backgroundColor: p.hairline,
+    },
+    chipActive: {
+      borderColor: p.accentBorder,
+      backgroundColor: p.accentSoft,
+    },
+    chipDot: {
+      width: 5,
+      height: 5,
+      borderRadius: 2.5,
+      backgroundColor: p.accent,
+    },
+    chipText: {
+      color: p.muted,
+      fontSize: 11,
+      fontFamily: FontFamilies.medium,
+      letterSpacing: 0.4,
+      textTransform: "capitalize",
+    },
+    chipTextActive: { color: p.accent, fontFamily: FontFamilies.semibold },
+    empty: {
+      alignItems: "center",
+      justifyContent: "center",
+      paddingVertical: 32,
+      gap: 8,
+    },
+    emptyText: {
+      color: p.muted,
+      fontSize: 11,
+      fontFamily: FontFamilies.regular,
+      letterSpacing: 0.4,
+    },
+  });

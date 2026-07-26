@@ -1,9 +1,10 @@
 import Avatar from "@/components/Avatar";
-import { FontFamilies, Palette } from "@/constants/theme";
+import { FontFamilies } from "@/constants/theme";
 import { useAuth } from "@/src/features/auth";
+import { usePalette, type Palette } from "@/src/theme";
 import Fontisto from "@expo/vector-icons/Fontisto";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
@@ -14,6 +15,8 @@ import Animated, {
 } from "react-native-reanimated";
 
 export default function UserInfoCard() {
+  const p = usePalette();
+  const styles = useMemo(() => makeStyles(p), [p]);
   const { user } = useAuth();
   const avatarUri =
     user?.user_metadata?.avatar_url ?? user?.user_metadata?.picture;
@@ -38,7 +41,7 @@ export default function UserInfoCard() {
   return (
     <Animated.View style={[styles.row, animatedStyle]}>
       <View style={styles.brand}>
-        <Ionicons name="barbell" size={32} color="#FFFFFF" />
+        <Ionicons name="barbell" size={32} color={p.bone} />
         <View>
           <Text style={styles.wordmark}>
             Flex<Text style={styles.wordmarkAccent}>Life</Text>
@@ -48,7 +51,7 @@ export default function UserInfoCard() {
 
       <View style={styles.actions}>
         <TouchableOpacity activeOpacity={0.7} style={styles.iconBtn}>
-          <Fontisto name="bell" size={14} color={Palette.muted} />
+          <Fontisto name="bell" size={14} color={p.muted} />
         </TouchableOpacity>
 
         <Avatar
@@ -62,41 +65,42 @@ export default function UserInfoCard() {
   );
 }
 
-const styles = StyleSheet.create({
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    paddingVertical: 14,
-    backgroundColor: "transparent",
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: Palette.hairline,
-  },
-  brand: { flexDirection: "row", alignItems: "center", gap: 12 },
-  eyebrow: {
-    color: Palette.accent,
-    fontSize: 8,
-    fontFamily: FontFamilies.medium,
-    letterSpacing: 2.4,
-    textTransform: "uppercase",
-    marginBottom: 2,
-  },
-  wordmark: {
-    color: Palette.bone,
-    fontSize: 20,
-    fontFamily: FontFamilies.displayMedium,
-    letterSpacing: -0.4,
-  },
-  wordmarkAccent: { color: Palette.accent, fontFamily: FontFamilies.displayLight },
-  actions: { marginLeft: "auto", flexDirection: "row", gap: 10, alignItems: "center" },
-  iconBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: Palette.inkRaised,
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: Palette.hairlineStrong,
-  },
-});
+const makeStyles = (p: Palette) =>
+  StyleSheet.create({
+    row: {
+      flexDirection: "row",
+      alignItems: "center",
+      paddingHorizontal: 20,
+      paddingVertical: 14,
+      backgroundColor: "transparent",
+      borderBottomWidth: StyleSheet.hairlineWidth,
+      borderBottomColor: p.hairline,
+    },
+    brand: { flexDirection: "row", alignItems: "center", gap: 12 },
+    eyebrow: {
+      color: p.accent,
+      fontSize: 8,
+      fontFamily: FontFamilies.medium,
+      letterSpacing: 2.4,
+      textTransform: "uppercase",
+      marginBottom: 2,
+    },
+    wordmark: {
+      color: p.bone,
+      fontSize: 20,
+      fontFamily: FontFamilies.displayMedium,
+      letterSpacing: -0.4,
+    },
+    wordmarkAccent: { color: p.accent, fontFamily: FontFamilies.displayLight },
+    actions: { marginLeft: "auto", flexDirection: "row", gap: 10, alignItems: "center" },
+    iconBtn: {
+      width: 36,
+      height: 36,
+      borderRadius: 18,
+      backgroundColor: p.inkRaised,
+      alignItems: "center",
+      justifyContent: "center",
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: p.hairlineStrong,
+    },
+  });

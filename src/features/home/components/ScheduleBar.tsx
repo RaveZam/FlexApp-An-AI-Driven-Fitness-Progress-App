@@ -1,12 +1,16 @@
-import { FontFamilies, Palette } from "@/constants/theme";
+import { FontFamilies } from "@/constants/theme";
 import { getWeekDates } from "@/src/features/home/helpers/weekDates";
 import { useScheduleBar } from "@/src/features/home/hooks/useScheduleBar";
+import { usePalette, type Palette } from "@/src/theme";
+import { useMemo } from "react";
 import { Dimensions, StyleSheet, Text, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
 const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 export default function ScheduleBar() {
+  const p = usePalette();
+  const styles = useMemo(() => makeStyles(p), [p]);
   const { plannedDays, completedDays } = useScheduleBar();
 
   const today = new Date();
@@ -36,31 +40,31 @@ export default function ScheduleBar() {
             const isMissed = isPlanned && index < todayIdx && !isCompleted;
 
             const nameColor = isCompleted
-              ? Palette.accent
+              ? p.accent
               : isMissed
-              ? Palette.danger
+              ? p.danger
               : isToday
-              ? Palette.accent
+              ? p.accent
               : isPlanned
-              ? Palette.bone
-              : Palette.mutedSoft;
+              ? p.bone
+              : p.mutedSoft;
             const borderColor = isCompleted
-              ? Palette.accent
+              ? p.accent
               : isMissed
-              ? Palette.danger
+              ? p.danger
               : isToday || isPlanned
-              ? Palette.accent
-              : Palette.hairline;
-            const backgroundColor = isCompleted ? Palette.accent : "transparent";
+              ? p.accent
+              : p.hairline;
+            const backgroundColor = isCompleted ? p.accent : "transparent";
             const numColor = isCompleted
-              ? Palette.ink
+              ? p.onAccent
               : isMissed
-              ? Palette.danger
+              ? p.danger
               : isToday
-              ? Palette.accent
+              ? p.accent
               : isPlanned
-              ? Palette.bone
-              : Palette.mutedSoft;
+              ? p.bone
+              : p.mutedSoft;
 
             return (
               <Animated.View
@@ -97,70 +101,71 @@ export default function ScheduleBar() {
   );
 }
 
-const styles = StyleSheet.create({
-  wrap: {
-    paddingHorizontal: 20,
-    paddingTop: 18,
-    paddingBottom: 4,
-    backgroundColor: "transparent",
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "flex-end",
-    justifyContent: "space-between",
-    marginBottom: 18,
-  },
-  title: {
-    color: Palette.bone,
-    fontSize: 22,
-    fontFamily: FontFamilies.displayMedium,
-    letterSpacing: -0.4,
-  },
-  legend: { flexDirection: "row", alignItems: "center", gap: 8, paddingBottom: 4 },
-  legendDot: { width: 5, height: 5, borderRadius: 2.5, backgroundColor: Palette.accent },
-  legendText: {
-    color: Palette.muted,
-    fontSize: 10,
-    fontFamily: FontFamilies.regular,
-    letterSpacing: 1.4,
-    textTransform: "uppercase",
-  },
-  weekTrack: { position: "relative", paddingBottom: 6 },
-  baseline: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    top: 18,
-    height: StyleSheet.hairlineWidth,
-    backgroundColor: Palette.hairline,
-  },
-  weekRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    gap: 6,
-  },
-  dayCol: { alignItems: "center", justifyContent: "center" },
-  dayName: {
-    fontSize: 9,
-    fontFamily: FontFamilies.medium,
-    letterSpacing: 1.6,
-    marginBottom: 10,
-  },
-  dayCircle: {
-    borderWidth: StyleSheet.hairlineWidth,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  dayNum: {
-    fontSize: 12,
-    fontFamily: FontFamilies.displayMedium,
-    fontVariant: ["tabular-nums"],
-  },
-  todayDot: {
-    width: 3,
-    height: 3,
-    borderRadius: 1.5,
-    backgroundColor: Palette.accent,
-    marginTop: 6,
-  },
-});
+const makeStyles = (p: Palette) =>
+  StyleSheet.create({
+    wrap: {
+      paddingHorizontal: 20,
+      paddingTop: 18,
+      paddingBottom: 4,
+      backgroundColor: "transparent",
+    },
+    header: {
+      flexDirection: "row",
+      alignItems: "flex-end",
+      justifyContent: "space-between",
+      marginBottom: 18,
+    },
+    title: {
+      color: p.bone,
+      fontSize: 22,
+      fontFamily: FontFamilies.displayMedium,
+      letterSpacing: -0.4,
+    },
+    legend: { flexDirection: "row", alignItems: "center", gap: 8, paddingBottom: 4 },
+    legendDot: { width: 5, height: 5, borderRadius: 2.5, backgroundColor: p.accent },
+    legendText: {
+      color: p.muted,
+      fontSize: 10,
+      fontFamily: FontFamilies.regular,
+      letterSpacing: 1.4,
+      textTransform: "uppercase",
+    },
+    weekTrack: { position: "relative", paddingBottom: 6 },
+    baseline: {
+      position: "absolute",
+      left: 0,
+      right: 0,
+      top: 18,
+      height: StyleSheet.hairlineWidth,
+      backgroundColor: p.hairline,
+    },
+    weekRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      gap: 6,
+    },
+    dayCol: { alignItems: "center", justifyContent: "center" },
+    dayName: {
+      fontSize: 9,
+      fontFamily: FontFamilies.medium,
+      letterSpacing: 1.6,
+      marginBottom: 10,
+    },
+    dayCircle: {
+      borderWidth: StyleSheet.hairlineWidth,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    dayNum: {
+      fontSize: 12,
+      fontFamily: FontFamilies.displayMedium,
+      fontVariant: ["tabular-nums"],
+    },
+    todayDot: {
+      width: 3,
+      height: 3,
+      borderRadius: 1.5,
+      backgroundColor: p.accent,
+      marginTop: 6,
+    },
+  });

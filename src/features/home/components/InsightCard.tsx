@@ -1,6 +1,7 @@
-import { FontFamilies, Palette } from "@/constants/theme";
+import { FontFamilies } from "@/constants/theme";
+import { usePalette, type Palette } from "@/src/theme";
 import { LinearGradient } from "expo-linear-gradient";
-import React from "react";
+import React, { useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 interface InsightCardProps {
@@ -10,10 +11,12 @@ interface InsightCardProps {
 }
 
 export function InsightCard({ icon, mainText, subText }: InsightCardProps) {
+  const p = usePalette();
+  const styles = useMemo(() => makeStyles(p), [p]);
   return (
     <View style={styles.card}>
       <LinearGradient
-        colors={["rgba(52,211,153,0.06)", "rgba(52,211,153,0)"]}
+        colors={[p.accentSoft, "transparent"]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={StyleSheet.absoluteFillObject}
@@ -29,49 +32,50 @@ export function InsightCard({ icon, mainText, subText }: InsightCardProps) {
   );
 }
 
-const styles = StyleSheet.create({
-  card: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 14,
-    padding: 16,
-    borderRadius: 16,
-    backgroundColor: Palette.inkRaised,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: Palette.hairlineStrong,
-    overflow: "hidden",
-  },
-  medallion: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: Palette.accentBorder,
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 4,
-  },
-  medallionInner: {
-    flex: 1,
-    width: "100%",
-    borderRadius: 20,
-    backgroundColor: "rgba(52,211,153,0.08)",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  main: {
-    color: Palette.bone,
-    fontSize: 13,
-    fontFamily: FontFamilies.displayMedium,
-    letterSpacing: -0.2,
-    lineHeight: 18,
-  },
-  sub: {
-    color: Palette.muted,
-    fontSize: 11,
-    fontFamily: FontFamilies.regular,
-    marginTop: 4,
-    letterSpacing: 0.3,
-    lineHeight: 15,
-  },
-});
+const makeStyles = (p: Palette) =>
+  StyleSheet.create({
+    card: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 14,
+      padding: 16,
+      borderRadius: 16,
+      backgroundColor: p.inkRaised,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: p.hairlineStrong,
+      overflow: "hidden",
+    },
+    medallion: {
+      width: 44,
+      height: 44,
+      borderRadius: 22,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: p.accentBorder,
+      alignItems: "center",
+      justifyContent: "center",
+      padding: 4,
+    },
+    medallionInner: {
+      flex: 1,
+      width: "100%",
+      borderRadius: 20,
+      backgroundColor: p.accentSoft,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    main: {
+      color: p.bone,
+      fontSize: 13,
+      fontFamily: FontFamilies.displayMedium,
+      letterSpacing: -0.2,
+      lineHeight: 18,
+    },
+    sub: {
+      color: p.muted,
+      fontSize: 11,
+      fontFamily: FontFamilies.regular,
+      marginTop: 4,
+      letterSpacing: 0.3,
+      lineHeight: 15,
+    },
+  });

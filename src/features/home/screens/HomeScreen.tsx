@@ -4,7 +4,6 @@ import "react-native-reanimated";
 import ActionButton from "@/components/ui/ActionButton";
 import BlurOverlay from "@/components/ui/BlurOverlay";
 import LoadingOverlay from "@/components/ui/LoadingOverlay";
-import { Palette } from "@/constants/theme";
 import {
   PlateauCard,
   ProgressiveOverload,
@@ -12,9 +11,10 @@ import {
   TodaysWorkoutSection,
 } from "@/src/features/home/components";
 import UserInfoCard from "@/src/features/home/components/UserInfoCard";
+import { usePalette, type Palette } from "@/src/theme";
 
 import { LinearGradient } from "expo-linear-gradient";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import Animated, {
   configureReanimatedLogger,
@@ -32,6 +32,8 @@ import { useWorkoutPicker } from "../hooks/useWorkoutPicker";
 configureReanimatedLogger({ level: ReanimatedLogLevel.warn, strict: false });
 
 export default function Index() {
+  const p = usePalette();
+  const styles = useMemo(() => makeStyles(p), [p]);
   const isRestDay = false;
   const startWorkout = useStartWorkout();
   const activeSession = useGetActiveSession();
@@ -58,7 +60,7 @@ export default function Index() {
   return (
     <SafeAreaView style={styles.safe} edges={["top"]}>
       <LinearGradient
-        colors={["rgba(52,211,153,0.07)", "transparent"]}
+        colors={[p.accentSoft, "transparent"]}
         start={{ x: 0.5, y: 0 }}
         end={{ x: 0.5, y: 0.35 }}
         style={StyleSheet.absoluteFillObject}
@@ -142,14 +144,15 @@ export default function Index() {
   );
 }
 
-const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: Palette.ink },
-  container: { flex: 1, backgroundColor: "transparent" },
-  divider: {
-    marginHorizontal: 20,
-    marginVertical: 22,
-    height: StyleSheet.hairlineWidth,
-    backgroundColor: Palette.hairlineStrong,
-  },
-  bottomArea: { paddingHorizontal: 20, paddingTop: 12, paddingBottom: 14 },
-});
+const makeStyles = (p: Palette) =>
+  StyleSheet.create({
+    safe: { flex: 1, backgroundColor: p.ink },
+    container: { flex: 1, backgroundColor: "transparent" },
+    divider: {
+      marginHorizontal: 20,
+      marginVertical: 22,
+      height: StyleSheet.hairlineWidth,
+      backgroundColor: p.hairlineStrong,
+    },
+    bottomArea: { paddingHorizontal: 20, paddingTop: 12, paddingBottom: 14 },
+  });
