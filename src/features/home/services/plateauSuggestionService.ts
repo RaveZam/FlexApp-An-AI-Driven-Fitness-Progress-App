@@ -5,6 +5,7 @@ import {
 } from "@/src/features/home/services/plateauTipsLocalService";
 import { supabase } from "@/src/lib/supabase";
 
+//This always run, but always check first is there is already a tip for that exercise. if There is skip completely
 export async function getTip(
   userId: string,
   p: PlateauResult,

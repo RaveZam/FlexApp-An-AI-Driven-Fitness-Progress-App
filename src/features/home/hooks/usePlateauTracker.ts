@@ -9,7 +9,8 @@ import { getTip } from "@/src/features/home/services/plateauSuggestionService";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useEffect, useState } from "react";
 
-const DETECTION_LIMIT = 12;
+// How many plateau we will detect
+const DETECTION_LIMIT = 10;
 
 export type PlateauWithTip = PlateauResult & { tip: string | null };
 
@@ -22,6 +23,7 @@ export function usePlateauTracker(): { plateaus: PlateauWithTip[] } {
 
   const [plateaus, setPlateaus] = useState<PlateauResult[]>([]);
 
+  //This finds the plateaued workouts
   const load = useCallback(() => {
     if (!userId) {
       setPlateaus([]);
@@ -37,10 +39,12 @@ export function usePlateauTracker(): { plateaus: PlateauWithTip[] } {
 
   const [tips, setTips] = useState<Record<string, string | null>>({});
 
+  //This resets the tips when the user changes
   useEffect(() => {
     setTips({});
   }, [userId]);
 
+  //This fetches the tips for the plateaued workouts, returns cached if there is, if not query for one and set it
   useEffect(() => {
     if (!userId) return;
 
@@ -54,6 +58,7 @@ export function usePlateauTracker(): { plateaus: PlateauWithTip[] } {
     }
   }, [userId, plateaus]);
 
+  //This adds the tips to the plateaued workouts
   const withTips: PlateauWithTip[] = plateaus.map((p) => ({
     ...p,
     tip: tips[tipKey(p)] ?? null,
