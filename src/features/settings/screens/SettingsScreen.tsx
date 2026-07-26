@@ -1,6 +1,7 @@
 import Avatar from "@/components/Avatar";
 import LoadingOverlay from "@/components/ui/LoadingOverlay";
 import Popup from "@/components/ui/Popup";
+import { useTheme, usePalette, type ThemePreference } from "@/src/theme";
 import React, { useState } from "react";
 import {
   ScrollView,
@@ -12,7 +13,15 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useSettings } from "../hooks/useSettings";
 
+const THEME_OPTIONS: { value: ThemePreference; label: string }[] = [
+  { value: "light", label: "Light" },
+  { value: "dark", label: "Dark" },
+  { value: "system", label: "System" },
+];
+
 export default function Settings() {
+  const p = usePalette();
+  const { preference, setPreference } = useTheme();
   const { userName, userEmail, avatarUri, loggingOut, clearHistory, cancelInProgress, logout } =
     useSettings();
   const [isLogoutPopupVisible, setLogoutPopupVisible] = useState(false);
@@ -35,15 +44,19 @@ export default function Settings() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#0f0f0f]">
+    <SafeAreaView className="flex-1" style={{ backgroundColor: p.ink }}>
       <ScrollView
-        className="flex-1 bg-[#0f0f0f]"
+        className="flex-1"
+        style={{ backgroundColor: p.ink }}
         contentContainerClassName="px-5 pt-10 pb-6"
         showsVerticalScrollIndicator={false}
       >
-        <Text className="text-white text-2xl font-bold mb-6">Settings</Text>
+        <Text className="text-2xl font-bold mb-6" style={{ color: p.bone }}>Settings</Text>
 
-        <View className="mb-8 bg-[#191919] p-6 rounded-xl border border-[#1a472a]/20">
+        <View
+          className="mb-8 p-6 rounded-xl border"
+          style={{ backgroundColor: p.inkRaised, borderColor: p.accentBorderSoft }}
+        >
           <View className="flex-row items-center mb-4">
             <Avatar
               uri={avatarUri}
@@ -52,25 +65,28 @@ export default function Settings() {
               size={60}
             />
             <View className="ml-4 flex-1">
-              <Text className="text-white text-lg font-semibold">
+              <Text className="text-lg font-semibold" style={{ color: p.bone }}>
                 {userName}
               </Text>
-              <Text className="text-gray-400 text-sm">{userEmail}</Text>
+              <Text className="text-sm" style={{ color: p.muted }}>{userEmail}</Text>
             </View>
-            <TouchableOpacity className="bg-[#1a472a]/80 p-2 rounded-full border border-[#10b981]/30">
-              <Text className="text-[#10b981] text-xs font-semibold">Edit</Text>
+            <TouchableOpacity
+              className="p-2 rounded-full border"
+              style={{ backgroundColor: p.accentSoft, borderColor: p.accentBorder }}
+            >
+              <Text className="text-xs font-semibold" style={{ color: p.accent }}>Edit</Text>
             </TouchableOpacity>
           </View>
           <View className="flex-row justify-between items-center">
             <View>
-              <Text className="text-gray-400 text-xs uppercase mb-1">
+              <Text className="text-xs uppercase mb-1" style={{ color: p.muted }}>
                 Member Since
               </Text>
-              <Text className="text-white text-sm">January 2024</Text>
+              <Text className="text-sm" style={{ color: p.bone }}>January 2024</Text>
             </View>
             <View>
-              <Text className="text-gray-400 text-xs uppercase mb-1">Plan</Text>
-              <Text className="text-[#10b981] text-sm font-semibold">
+              <Text className="text-xs uppercase mb-1" style={{ color: p.muted }}>Plan</Text>
+              <Text className="text-sm font-semibold" style={{ color: p.accent }}>
                 Premium
               </Text>
             </View>
@@ -78,70 +94,106 @@ export default function Settings() {
         </View>
 
         <View className="mb-6">
-          <Text className="text-gray-400 uppercase text-xs mb-2">Account</Text>
-          <TouchableOpacity className="bg-[#191919]/60 p-4 rounded-xl mb-3 border border-[#1a472a]/30 backdrop-blur-sm">
-            <Text className="text-white text-base">Change Email</Text>
+          <Text className="uppercase text-xs mb-2" style={{ color: p.muted }}>Account</Text>
+          <TouchableOpacity
+            className="p-4 rounded-xl mb-3 border"
+            style={{ backgroundColor: p.accentSoft, borderColor: p.accentBorderSoft }}
+          >
+            <Text className="text-base" style={{ color: p.bone }}>Change Email</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            className="bg-[#191919]/60 p-4 rounded-xl border border-red-500/30 backdrop-blur-sm"
+            className="p-4 rounded-xl border"
+            style={{ backgroundColor: p.dangerSoft, borderColor: p.dangerBorder }}
             onPress={() => setLogoutPopupVisible(true)}
           >
-            <Text className="text-red-400 text-base font-semibold">
+            <Text className="text-base font-semibold" style={{ color: p.danger }}>
               Log Out
             </Text>
           </TouchableOpacity>
         </View>
 
         <View className="mb-6">
-          <Text className="text-gray-400 uppercase text-xs mb-2">
+          <Text className="uppercase text-xs mb-2" style={{ color: p.muted }}>
             Preferences
           </Text>
-          <View className="bg-[#191919]/60 p-4 rounded-xl mb-3 flex-row justify-between items-center border border-[#1a472a]/30 backdrop-blur-sm">
-            <Text className="text-white">Notifications</Text>
+          <View
+            className="p-4 rounded-xl mb-3 flex-row justify-between items-center border"
+            style={{ backgroundColor: p.accentSoft, borderColor: p.accentBorderSoft }}
+          >
+            <Text style={{ color: p.bone }}>Notifications</Text>
             <Switch
-              trackColor={{ false: "#374151", true: "#10b981" }}
-              thumbColor={true ? "#ffffff" : "#9ca3af"}
+              trackColor={{ false: p.mutedSoft, true: p.accent }}
+              thumbColor={p.bone}
             />
           </View>
-          <View className="bg-[#191919]/60 p-4 rounded-xl mb-3 flex-row justify-between items-center border border-[#1a472a]/30 backdrop-blur-sm">
-            <Text className="text-white">Dark Mode</Text>
-            <Switch
-              value={true}
-              trackColor={{ false: "#374151", true: "#10b981" }}
-              thumbColor={true ? "#ffffff" : "#9ca3af"}
-            />
+          <View
+            className="p-4 rounded-xl flex-row justify-between items-center border"
+            style={{ backgroundColor: p.accentSoft, borderColor: p.accentBorderSoft }}
+          >
+            <Text style={{ color: p.bone }}>Theme</Text>
+            <View className="flex-row" style={{ gap: 6 }}>
+              {THEME_OPTIONS.map((opt) => {
+                const selected = preference === opt.value;
+                return (
+                  <TouchableOpacity
+                    key={opt.value}
+                    onPress={() => setPreference(opt.value)}
+                    className="px-3 py-1.5 rounded-full border"
+                    style={{
+                      backgroundColor: selected ? p.accent : "transparent",
+                      borderColor: selected ? p.accent : p.hairlineStrong,
+                    }}
+                  >
+                    <Text
+                      className="text-xs font-semibold"
+                      style={{ color: selected ? p.onAccent : p.muted }}
+                    >
+                      {opt.label}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
           </View>
         </View>
 
         <View className="mb-6">
-          <Text className="text-gray-400 uppercase text-xs mb-2">Data</Text>
+          <Text className="uppercase text-xs mb-2" style={{ color: p.muted }}>Data</Text>
           <TouchableOpacity
-            className="bg-[#191919]/60 p-4 rounded-xl mb-3 border border-[#1a472a]/30 backdrop-blur-sm"
+            className="p-4 rounded-xl mb-3 border"
+            style={{ backgroundColor: p.accentSoft, borderColor: p.accentBorderSoft }}
             onPress={() => setCancelInProgressPopupVisible(true)}
           >
-            <Text className="text-white text-base">Cancel In-Progress Workouts</Text>
+            <Text className="text-base" style={{ color: p.bone }}>Cancel In-Progress Workouts</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            className="bg-[#191919]/60 p-4 rounded-xl border border-red-500/30 backdrop-blur-sm"
+            className="p-4 rounded-xl border"
+            style={{ backgroundColor: p.dangerSoft, borderColor: p.dangerBorder }}
             onPress={() => setClearHistoryPopupVisible(true)}
           >
-            <Text className="text-red-400 text-base font-semibold">Clear History</Text>
+            <Text className="text-base font-semibold" style={{ color: p.danger }}>Clear History</Text>
           </TouchableOpacity>
         </View>
 
         <View className="mb-6">
-          <Text className="text-gray-400 uppercase text-xs mb-2">App</Text>
-          <TouchableOpacity className="bg-[#191919}/60 p-4 rounded-xl mb-3 border border-[#1a472a]/30 backdrop-blur-sm">
-            <Text className="text-white">About</Text>
+          <Text className="uppercase text-xs mb-2" style={{ color: p.muted }}>App</Text>
+          <TouchableOpacity
+            className="p-4 rounded-xl mb-3 border"
+            style={{ backgroundColor: p.accentSoft, borderColor: p.accentBorderSoft }}
+          >
+            <Text style={{ color: p.bone }}>About</Text>
           </TouchableOpacity>
-          <TouchableOpacity className="bg-[#191919]/60 p-4 rounded-xl border border-[#1a472a]/30 backdrop-blur-sm">
-            <Text className="text-white">Privacy Policy</Text>
+          <TouchableOpacity
+            className="p-4 rounded-xl border"
+            style={{ backgroundColor: p.accentSoft, borderColor: p.accentBorderSoft }}
+          >
+            <Text style={{ color: p.bone }}>Privacy Policy</Text>
           </TouchableOpacity>
         </View>
 
         {/* Version Info */}
         <View className="mt-8">
-          <Text className="text-gray-500 text-center text-xs">
+          <Text className="text-center text-xs" style={{ color: p.muted }}>
             Version 1.0.0
           </Text>
         </View>
