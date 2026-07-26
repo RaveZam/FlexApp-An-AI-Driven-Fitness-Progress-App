@@ -1,8 +1,9 @@
-import { FontFamilies, Palette } from "@/constants/theme";
+import { FontFamilies } from "@/constants/theme";
 import type { SessionExercise, SessionSet } from "@/src/features/workouts";
+import { usePalette, type Palette } from "@/src/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
-import React from "react";
+import React, { useMemo } from "react";
 import {
   ActivityIndicator,
   Pressable,
@@ -38,6 +39,8 @@ function formatDuration(startedAt: string, completedAt: string): string {
 }
 
 function StatTile({ label, value }: { label: string; value: string }) {
+  const p = usePalette();
+  const styles = useMemo(() => makeStyles(p), [p]);
   return (
     <View style={styles.statTile}>
       <Text style={styles.statValue}>{value}</Text>
@@ -47,6 +50,8 @@ function StatTile({ label, value }: { label: string; value: string }) {
 }
 
 function SetRow({ set, isLast }: { set: SessionSet; isLast: boolean }) {
+  const p = usePalette();
+  const styles = useMemo(() => makeStyles(p), [p]);
   const dim = !set.completed;
   return (
     <View style={[styles.setRow, !isLast && styles.setRowDivider]}>
@@ -63,9 +68,9 @@ function SetRow({ set, isLast }: { set: SessionSet; isLast: boolean }) {
       </Text>
       <View style={styles.setCellCheck}>
         {set.completed ? (
-          <Ionicons name="checkmark-circle" size={16} color={Palette.accent} />
+          <Ionicons name="checkmark-circle" size={16} color={p.accent} />
         ) : (
-          <Ionicons name="ellipse-outline" size={16} color={Palette.mutedSoft} />
+          <Ionicons name="ellipse-outline" size={16} color={p.mutedSoft} />
         )}
       </View>
     </View>
@@ -73,6 +78,8 @@ function SetRow({ set, isLast }: { set: SessionSet; isLast: boolean }) {
 }
 
 function ExerciseCard({ exercise, index }: { exercise: SessionExercise; index: number }) {
+  const p = usePalette();
+  const styles = useMemo(() => makeStyles(p), [p]);
   const completedSets = exercise.sets.filter((s) => s.completed).length;
   return (
     <Animated.View entering={FadeInRight.delay(index * 80).duration(350)} style={styles.exerciseCard}>
@@ -101,6 +108,8 @@ function ExerciseCard({ exercise, index }: { exercise: SessionExercise; index: n
 }
 
 export default function SessionDetailScreen() {
+  const p = usePalette();
+  const styles = useMemo(() => makeStyles(p), [p]);
   const { id } = useLocalSearchParams<{ id: string }>();
   const { session, loading } = useSessionDetail(id ?? "");
 
@@ -108,7 +117,7 @@ export default function SessionDetailScreen() {
     return (
       <SafeAreaView style={styles.safe} edges={["top"]}>
         <View style={styles.center}>
-          <ActivityIndicator color={Palette.accent} />
+          <ActivityIndicator color={p.accent} />
         </View>
       </SafeAreaView>
     );
@@ -118,7 +127,7 @@ export default function SessionDetailScreen() {
     return (
       <SafeAreaView style={styles.safe} edges={["top"]}>
         <Pressable style={styles.backBtn} onPress={() => router.back()}>
-          <Ionicons name="chevron-back" size={20} color={Palette.bone} />
+          <Ionicons name="chevron-back" size={20} color={p.bone} />
           <Text style={styles.backLabel}>History</Text>
         </Pressable>
         <View style={styles.center}>
@@ -148,7 +157,7 @@ export default function SessionDetailScreen() {
     <SafeAreaView style={styles.safe} edges={["top"]}>
       <Animated.View entering={FadeInDown.delay(0).duration(300)} style={styles.topBar}>
         <Pressable style={styles.backBtn} onPress={() => router.back()}>
-          <Ionicons name="chevron-back" size={20} color={Palette.bone} />
+          <Ionicons name="chevron-back" size={20} color={p.bone} />
           <Text style={styles.backLabel}>History</Text>
         </Pressable>
       </Animated.View>
@@ -186,10 +195,11 @@ export default function SessionDetailScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (p: Palette) =>
+  StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: Palette.ink,
+    backgroundColor: p.ink,
   },
   center: {
     flex: 1,
@@ -212,7 +222,7 @@ const styles = StyleSheet.create({
   backLabel: {
     fontFamily: FontFamilies.medium,
     fontSize: 15,
-    color: Palette.bone,
+    color: p.bone,
   },
   scrollContent: {
     paddingHorizontal: 16,
@@ -225,20 +235,20 @@ const styles = StyleSheet.create({
   sessionName: {
     fontFamily: FontFamilies.displaySemibold,
     fontSize: 26,
-    color: Palette.bone,
+    color: p.bone,
     letterSpacing: -0.5,
   },
   sessionDate: {
     fontFamily: FontFamilies.regular,
     fontSize: 13,
-    color: Palette.muted,
+    color: p.muted,
   },
   statsStrip: {
     flexDirection: "row",
-    backgroundColor: "#191919",
+    backgroundColor: p.inkRaised,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: "rgba(245,243,239,0.04)",
+    borderColor: p.hairline,
     marginBottom: 24,
     overflow: "hidden",
   },
@@ -251,18 +261,18 @@ const styles = StyleSheet.create({
   statValue: {
     fontFamily: FontFamilies.bold,
     fontSize: 18,
-    color: Palette.bone,
+    color: p.bone,
   },
   statLabel: {
     fontFamily: FontFamilies.regular,
     fontSize: 11,
-    color: Palette.muted,
+    color: p.muted,
     letterSpacing: 0.5,
     textTransform: "uppercase",
   },
   statDivider: {
     width: 1,
-    backgroundColor: "rgba(245,243,239,0.07)",
+    backgroundColor: p.hairline,
     marginVertical: 12,
   },
   sectionLabelRow: {
@@ -275,28 +285,28 @@ const styles = StyleSheet.create({
   sectionLabel: {
     fontFamily: FontFamilies.semibold,
     fontSize: 11,
-    color: Palette.bone,
+    color: p.bone,
     letterSpacing: 1.5,
     textTransform: "uppercase",
   },
   sectionRule: {
     flex: 1,
     height: 1,
-    backgroundColor: Palette.hairline,
+    backgroundColor: p.hairline,
   },
   sectionCount: {
     fontFamily: FontFamilies.medium,
     fontSize: 11,
-    color: Palette.muted,
+    color: p.muted,
   },
   exerciseList: {
     gap: 12,
   },
   exerciseCard: {
-    backgroundColor: Palette.inkRaised,
+    backgroundColor: p.inkRaised,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: Palette.hairline,
+    borderColor: p.hairline,
     overflow: "hidden",
   },
   exerciseHeader: {
@@ -311,34 +321,34 @@ const styles = StyleSheet.create({
     width: 22,
     height: 22,
     borderRadius: 6,
-    backgroundColor: Palette.accentSoft,
+    backgroundColor: p.accentSoft,
     borderWidth: 1,
-    borderColor: Palette.accentBorderSoft,
+    borderColor: p.accentBorderSoft,
     alignItems: "center",
     justifyContent: "center",
   },
   exerciseBadgeText: {
     fontFamily: FontFamilies.semibold,
     fontSize: 11,
-    color: Palette.accent,
+    color: p.accent,
   },
   exerciseName: {
     fontFamily: FontFamilies.semibold,
     fontSize: 15,
-    color: Palette.bone,
+    color: p.bone,
     flex: 1,
   },
   exerciseMeta: {
     fontFamily: FontFamilies.regular,
     fontSize: 12,
-    color: Palette.accent,
+    color: p.accent,
   },
   setTable: {
     borderTopWidth: 1,
-    borderTopColor: "rgba(245,243,239,0.07)",
+    borderTopColor: p.hairline,
   },
   setHeaderRow: {
-    backgroundColor: "rgba(245,243,239,0.03)",
+    backgroundColor: p.hairline,
   },
   setRow: {
     flexDirection: "row",
@@ -348,12 +358,12 @@ const styles = StyleSheet.create({
   },
   setRowDivider: {
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(245,243,239,0.05)",
+    borderBottomColor: p.hairline,
   },
   setHeaderCell: {
     fontFamily: FontFamilies.medium,
     fontSize: 10,
-    color: Palette.muted,
+    color: p.muted,
     letterSpacing: 0,
     textTransform: "uppercase",
     flex: 1,
@@ -361,13 +371,13 @@ const styles = StyleSheet.create({
   setNum: {
     fontFamily: FontFamilies.medium,
     fontSize: 13,
-    color: Palette.muted,
+    color: p.muted,
     width: 24,
   },
   setCell: {
     fontFamily: FontFamilies.regular,
     fontSize: 14,
-    color: Palette.bone,
+    color: p.bone,
     flex: 1,
   },
   setCellCheck: {
@@ -380,6 +390,6 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontFamily: FontFamilies.medium,
     fontSize: 15,
-    color: Palette.muted,
+    color: p.muted,
   },
 });

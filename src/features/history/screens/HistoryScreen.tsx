@@ -1,7 +1,8 @@
-import { FontFamilies, Palette } from "@/constants/theme";
+import { FontFamilies } from "@/constants/theme";
+import { usePalette, type Palette } from "@/src/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Modal,
@@ -30,6 +31,8 @@ const MONTH_ABBR = [
 ];
 
 function OverviewCard({ stats }: { stats: OverviewStats }) {
+  const p = usePalette();
+  const styles = useMemo(() => makeStyles(p), [p]);
   return (
     <Animated.View entering={FadeInDown.duration(400)} style={styles.overview}>
       <View style={styles.overviewTile}>
@@ -39,7 +42,7 @@ function OverviewCard({ stats }: { stats: OverviewStats }) {
       <View style={styles.overviewDivider} />
       <View style={styles.overviewTile}>
         <View style={styles.streakValueRow}>
-          <Ionicons name="flame" size={16} color={stats.streak > 0 ? Palette.accent : Palette.mutedSoft} />
+          <Ionicons name="flame" size={16} color={stats.streak > 0 ? p.accent : p.mutedSoft} />
           <Text style={[styles.overviewValue, stats.streak > 0 && styles.accentValue]}>
             {stats.streak}
           </Text>
@@ -64,6 +67,8 @@ function SessionCard({
   index: number;
   onMenu: (item: WorkoutSessionSummary) => void;
 }) {
+  const p = usePalette();
+  const styles = useMemo(() => makeStyles(p), [p]);
   const date = new Date(item.completedAt);
   const dayAbbr = DAY_ABBR[date.getDay()];
   const dayNum = date.getDate();
@@ -88,7 +93,7 @@ function SessionCard({
             <Text style={styles.cardTitle} numberOfLines={1}>{item.name}</Text>
             <View style={[styles.statusDot, { backgroundColor: STATUS_COLOR[item.status] }]} />
             <Pressable onPress={() => onMenu(item)} style={styles.menuBtn} hitSlop={10}>
-              <Ionicons name="ellipsis-horizontal" size={18} color={Palette.muted} />
+              <Ionicons name="ellipsis-horizontal" size={18} color={p.muted} />
             </Pressable>
           </View>
           <View style={styles.metaRow}>
@@ -116,6 +121,8 @@ function SessionMenu({
   onClose: () => void;
   onDelete: (id: string) => void;
 }) {
+  const p = usePalette();
+  const styles = useMemo(() => makeStyles(p), [p]);
   return (
     <Modal visible={!!session} transparent animationType="fade" onRequestClose={onClose}>
       <Pressable style={styles.menuOverlay} onPress={onClose}>
@@ -148,6 +155,8 @@ function SessionMenu({
 }
 
 export default function HistoryScreen() {
+  const p = usePalette();
+  const styles = useMemo(() => makeStyles(p), [p]);
   const { sessions, stats, sections, loading, deleteOne } = useSessionHistory();
   const [menuSession, setMenuSession] = useState<WorkoutSessionSummary | null>(null);
 
@@ -164,12 +173,12 @@ export default function HistoryScreen() {
 
       {loading ? (
         <View style={styles.center}>
-          <ActivityIndicator color={Palette.accent} />
+          <ActivityIndicator color={p.accent} />
         </View>
       ) : sessions.length === 0 ? (
         <View style={styles.center}>
           <View style={styles.emptyIcon}>
-            <Ionicons name="barbell-outline" size={28} color={Palette.muted} />
+            <Ionicons name="barbell-outline" size={28} color={p.muted} />
           </View>
           <Text style={styles.emptyTitle}>No completed workouts yet</Text>
           <Text style={styles.emptySub}>Finish a session and it will appear here</Text>
@@ -205,10 +214,11 @@ export default function HistoryScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (p: Palette) =>
+  StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: Palette.ink,
+    backgroundColor: p.ink,
   },
   header: {
     paddingHorizontal: 20,
@@ -218,12 +228,12 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
     justifyContent: "space-between",
     borderBottomWidth: 1,
-    borderBottomColor: Palette.hairlineStrong,
+    borderBottomColor: p.hairlineStrong,
   },
   eyebrow: {
     fontFamily: FontFamilies.medium,
     fontSize: 10,
-    color: Palette.accent,
+    color: p.accent,
     letterSpacing: 2.5,
     textTransform: "uppercase",
     marginBottom: 4,
@@ -231,7 +241,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontFamily: FontFamilies.displaySemibold,
     fontSize: 34,
-    color: Palette.bone,
+    color: p.bone,
     letterSpacing: -0.8,
     lineHeight: 36,
   },
@@ -243,10 +253,10 @@ const styles = StyleSheet.create({
   // Overview
   overview: {
     flexDirection: "row",
-    backgroundColor: Palette.inkRaised,
+    backgroundColor: p.inkRaised,
     borderRadius: 18,
     borderWidth: 1,
-    borderColor: Palette.hairlineStrong,
+    borderColor: p.hairlineStrong,
     paddingVertical: 18,
     marginTop: 16,
     marginBottom: 4,
@@ -265,22 +275,22 @@ const styles = StyleSheet.create({
   overviewValue: {
     fontFamily: FontFamilies.displaySemibold,
     fontSize: 26,
-    color: Palette.bone,
+    color: p.bone,
     letterSpacing: -0.5,
   },
   accentValue: {
-    color: Palette.accent,
+    color: p.accent,
   },
   overviewLabel: {
     fontFamily: FontFamilies.medium,
     fontSize: 10,
-    color: Palette.muted,
+    color: p.muted,
     letterSpacing: 0.8,
     textTransform: "uppercase",
   },
   overviewDivider: {
     width: 1,
-    backgroundColor: Palette.hairlineStrong,
+    backgroundColor: p.hairlineStrong,
     marginVertical: 2,
   },
 
@@ -296,19 +306,19 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontFamily: FontFamilies.semibold,
     fontSize: 11,
-    color: Palette.bone,
+    color: p.bone,
     letterSpacing: 1.5,
     textTransform: "uppercase",
   },
   sectionRule: {
     flex: 1,
     height: 1,
-    backgroundColor: Palette.hairline,
+    backgroundColor: p.hairline,
   },
   sectionCount: {
     fontFamily: FontFamilies.medium,
     fontSize: 11,
-    color: Palette.muted,
+    color: p.muted,
     letterSpacing: 0.5,
   },
 
@@ -316,21 +326,21 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: Palette.inkRaised,
+    backgroundColor: p.inkRaised,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: Palette.hairlineStrong,
+    borderColor: p.hairlineStrong,
     marginBottom: 12,
     overflow: "hidden",
   },
   cardPressed: {
     opacity: 0.7,
-    borderColor: Palette.accentBorderSoft,
+    borderColor: p.accentBorderSoft,
   },
   accentBar: {
     width: 3,
     alignSelf: "stretch",
-    backgroundColor: Palette.accent,
+    backgroundColor: p.accent,
   },
   dateBlock: {
     alignItems: "center",
@@ -342,20 +352,20 @@ const styles = StyleSheet.create({
   dayAbbr: {
     fontFamily: FontFamilies.medium,
     fontSize: 9,
-    color: Palette.muted,
+    color: p.muted,
     letterSpacing: 1,
     textTransform: "uppercase",
   },
   dayNum: {
     fontFamily: FontFamilies.displaySemibold,
     fontSize: 22,
-    color: Palette.bone,
+    color: p.bone,
     lineHeight: 26,
   },
   monthAbbr: {
     fontFamily: FontFamilies.medium,
     fontSize: 9,
-    color: Palette.accent,
+    color: p.accent,
     letterSpacing: 1,
   },
   cardBody: {
@@ -365,7 +375,7 @@ const styles = StyleSheet.create({
     paddingRight: 6,
     gap: 5,
     borderLeftWidth: 1,
-    borderLeftColor: "rgba(245,243,239,0.28)",
+    borderLeftColor: p.hairlineStrong,
   },
   titleRow: {
     flexDirection: "row",
@@ -375,7 +385,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontFamily: FontFamilies.semibold,
     fontSize: 15,
-    color: "#ffffff",
+    color: p.bone,
   },
   statusDot: {
     width: 8,
@@ -391,17 +401,17 @@ const styles = StyleSheet.create({
   metaStat: {
     fontFamily: FontFamilies.regular,
     fontSize: 12,
-    color: Palette.muted,
+    color: p.muted,
   },
   metaDivider: {
     width: 1,
     height: 10,
-    backgroundColor: Palette.hairlineStrong,
+    backgroundColor: p.hairlineStrong,
   },
   volumeStat: {
     fontFamily: FontFamilies.medium,
     fontSize: 11,
-    color: Palette.accent,
+    color: p.accent,
     letterSpacing: 0.2,
   },
   menuBtn: {
@@ -420,9 +430,9 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 20,
-    backgroundColor: Palette.inkRaised,
+    backgroundColor: p.inkRaised,
     borderWidth: 1,
-    borderColor: Palette.hairline,
+    borderColor: p.hairline,
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 16,
@@ -430,13 +440,13 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontFamily: FontFamilies.semibold,
     fontSize: 15,
-    color: Palette.bone,
+    color: p.bone,
     marginBottom: 4,
   },
   emptySub: {
     fontFamily: FontFamilies.regular,
     fontSize: 13,
-    color: Palette.muted,
+    color: p.muted,
     textAlign: "center",
     paddingHorizontal: 40,
   },
@@ -448,10 +458,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 28,
   },
   menuSheet: {
-    backgroundColor: Palette.inkRaised,
+    backgroundColor: p.inkRaised,
     borderRadius: 24,
     borderWidth: 1,
-    borderColor: Palette.hairlineStrong,
+    borderColor: p.hairlineStrong,
     paddingHorizontal: 16,
     paddingTop: 20,
     paddingBottom: 16,
@@ -461,19 +471,19 @@ const styles = StyleSheet.create({
     paddingBottom: 18,
     marginBottom: 6,
     borderBottomWidth: 1,
-    borderBottomColor: Palette.hairline,
+    borderBottomColor: p.hairline,
     gap: 4,
   },
   menuTitle: {
     fontFamily: FontFamilies.displaySemibold,
     fontSize: 19,
-    color: Palette.bone,
+    color: p.bone,
     letterSpacing: -0.3,
   },
   menuSubtitle: {
     fontFamily: FontFamilies.regular,
     fontSize: 13,
-    color: Palette.muted,
+    color: p.muted,
   },
   menuActions: {
     flexDirection: "row",
@@ -486,14 +496,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 16,
     borderRadius: 14,
-    backgroundColor: "rgba(239,68,68,0.10)",
+    backgroundColor: p.dangerSoft,
     borderWidth: 1,
-    borderColor: "rgba(239,68,68,0.22)",
+    borderColor: p.dangerBorder,
   },
   menuDeleteLabel: {
     fontFamily: FontFamilies.semibold,
     fontSize: 16,
-    color: "#ef4444",
+    color: p.danger,
     letterSpacing: 0.2,
   },
   menuPressed: {
@@ -505,12 +515,12 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: Palette.hairlineStrong,
+    borderColor: p.hairlineStrong,
   },
   menuCancelLabel: {
     fontFamily: FontFamilies.medium,
     fontSize: 16,
-    color: Palette.bone,
+    color: p.bone,
     letterSpacing: 0.2,
   },
 });
