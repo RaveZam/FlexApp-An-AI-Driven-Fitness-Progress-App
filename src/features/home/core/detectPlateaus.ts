@@ -40,7 +40,7 @@ export function detectPlateaus(
       prFlags.push(pr);
       if (pr) {
         best = { weight: point.weight, reps: point.reps };
-        lastImprovedAt = point.completedAt;
+        lastImprovedAt = point.startedAt;
       }
     }
 

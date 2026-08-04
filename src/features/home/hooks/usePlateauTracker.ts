@@ -51,7 +51,11 @@ export function usePlateauTracker(): { plateaus: PlateauWithTip[] } {
 
     for (const p of plateaus) {
       const key = tipKey(p);
-      setTips((prev) => (key in prev ? prev : { ...prev, [key]: null }));
+
+      if (!(key in tips)) {
+        setTips((prev) => ({ ...prev, [key]: null }));
+        //We prepare this state to be { name: "incline_dumbell_press" weight: "40' reps:"12"", tip: ""}
+      }
 
       getTip(userId, p).then((tip) => {
         if (tip) setTips((prev) => ({ ...prev, [key]: tip }));
