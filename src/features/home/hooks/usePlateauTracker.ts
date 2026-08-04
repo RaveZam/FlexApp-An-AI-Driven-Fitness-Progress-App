@@ -4,12 +4,12 @@ import {
   type PlateauResult,
 } from "@/src/features/home/core/detectPlateaus";
 import { toExerciseProgress } from "@/src/features/home/core/toExerciseProgress";
-import { listLoggedWorkouts } from "@/src/features/home/services/ProgressiveOverloadDao/progressiveOverloadDao";
 import { getTip } from "@/src/features/home/services/plateauSuggestionService";
+import { listRecentTopSetsByUser } from "@/src/lib/dao/exerciseStats";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useEffect, useState } from "react";
 
-// How many plateau we will detect
+// How many of each exercise's own past occurrences to look at for plateau detection.
 const DETECTION_LIMIT = 10;
 
 export type PlateauWithTip = PlateauResult & { tip: string | null };
@@ -30,7 +30,8 @@ export function usePlateauTracker(): { plateaus: PlateauWithTip[] } {
       return;
     }
     const exercises = toExerciseProgress(
-      listLoggedWorkouts(userId, DETECTION_LIMIT),
+      listRecentTopSetsByUser(userId),
+      DETECTION_LIMIT,
     );
     setPlateaus(detectPlateaus(exercises));
   }, [userId]);
