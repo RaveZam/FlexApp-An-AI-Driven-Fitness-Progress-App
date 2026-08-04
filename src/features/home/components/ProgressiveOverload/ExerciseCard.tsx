@@ -56,9 +56,7 @@ export function ExerciseCard({ exercise, delay }: Props) {
   const chartWidth =
     points.length * BAR_WIDTH + Math.max(0, points.length - 1) * BAR_GAP;
 
-  console.log(exercise);
-
-  if (points.some((p) => p.reps === 0)) {
+  if (points.length === 0) {
     return null;
   }
 
