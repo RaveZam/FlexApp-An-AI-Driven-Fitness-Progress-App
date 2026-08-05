@@ -1,7 +1,7 @@
 import { usePalette, type Palette } from "@/src/theme";
 import { LinearGradient } from "expo-linear-gradient";
 import { useEffect, useMemo } from "react";
-import { StyleSheet, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 import ReAnimated, {
   Easing,
   useAnimatedStyle,
@@ -20,9 +20,19 @@ type Props = {
   restingOpacity: number;
   isBest: boolean;
   isLatest: boolean;
+  isSelected?: boolean;
+  onPress?: () => void;
 };
 
-export function ProgressionBar({ index, heightPx, restingOpacity, isBest, isLatest }: Props) {
+export function ProgressionBar({
+  index,
+  heightPx,
+  restingOpacity,
+  isBest,
+  isLatest,
+  isSelected,
+  onPress,
+}: Props) {
   const p = usePalette();
   const styles = useMemo(() => makeStyles(p), [p]);
   const grow = useSharedValue(0);
@@ -35,16 +45,21 @@ export function ProgressionBar({ index, heightPx, restingOpacity, isBest, isLate
 
   const growStyle = useAnimatedStyle(() => ({ height: heightPx * grow.value }));
 
-  return (
+  const bar = (
     <View style={styles.column}>
       {/* Cap dot marks the most recent session at a glance. */}
       <View style={[styles.cap, isLatest ? styles.capActive : styles.capHidden]} />
       <ReAnimated.View
-        style={[styles.bar, { opacity: isBest ? 1 : restingOpacity }, growStyle]}
+        style={[
+          styles.bar,
+          { opacity: isBest || isSelected ? 1 : restingOpacity },
+          isSelected && styles.barSelected,
+          growStyle,
+        ]}
       >
         <LinearGradient
           colors={
-            isBest
+            isBest || isSelected
               ? [p.accent, p.accentDeep]
               : [p.accent, p.accentBorderSoft]
           }
@@ -54,6 +69,14 @@ export function ProgressionBar({ index, heightPx, restingOpacity, isBest, isLate
         />
       </ReAnimated.View>
     </View>
+  );
+
+  if (!onPress) return bar;
+
+  return (
+    <Pressable hitSlop={6} onPress={onPress}>
+      {bar}
+    </Pressable>
   );
 }
 
@@ -78,5 +101,9 @@ const makeStyles = (p: Palette) =>
       borderTopLeftRadius: 3,
       borderTopRightRadius: 3,
       overflow: "hidden",
+    },
+    barSelected: {
+      borderWidth: 1,
+      borderColor: p.bone,
     },
   });
