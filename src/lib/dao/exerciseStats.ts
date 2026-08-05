@@ -251,6 +251,55 @@ export function listRecentTopSetsByUser(
   }));
 }
 
+export type SessionSetDetail = {
+  setIndex: number;
+  targetReps: number;
+  actualReps: number | null;
+  actualRepsLeft: number | null;
+  actualRepsRight: number | null;
+  weight: number | null;
+  completed: boolean;
+};
+
+// Every set (not just the top set) an exercise had in one specific session —
+// same se.name matching convention as listRecentTopSetsByUser — used to fill
+// in the per-session detail panel of the exercise history modal.
+export function listSessionSetsForExercise(
+  userId: string,
+  sessionId: string,
+  exerciseName: string,
+): SessionSetDetail[] {
+  return getDb()
+    .getAllSync<{
+      set_index: number;
+      target_reps: number;
+      actual_reps: number | null;
+      actual_reps_left: number | null;
+      actual_reps_right: number | null;
+      weight: number | null;
+      completed: number;
+    }>(
+      `SELECT ss.set_index, ss.target_reps, ss.actual_reps,
+              ss.actual_reps_left, ss.actual_reps_right,
+              ss.weight, ss.completed
+       FROM session_sets ss
+       JOIN session_exercises se ON ss.session_exercise_id = se.id
+       JOIN workout_sessions ws ON se.session_id = ws.id
+       WHERE ws.user_id = ? AND ws.id = ? AND se.name = ?
+       ORDER BY ss.set_index ASC`,
+      [userId, sessionId, exerciseName],
+    )
+    .map((r) => ({
+      setIndex: r.set_index,
+      targetReps: r.target_reps,
+      actualReps: r.actual_reps,
+      actualRepsLeft: r.actual_reps_left,
+      actualRepsRight: r.actual_reps_right,
+      weight: r.weight,
+      completed: r.completed === 1,
+    }));
+}
+
 export function listAllExerciseTopSets(
   userId: string,
   exerciseName: string,
