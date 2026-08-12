@@ -1,8 +1,8 @@
 import { useStorageCleaner } from "@/hooks/useStorageCleaner";
-import { AuthProvider } from "@/src/features/auth/hooks/useAuth";
+import { useAuthGuard } from "@/src/features/auth/hooks/useAuthGuard";
+import { useSyncScheduler } from "@/src/features/outbox";
 import { ActivePlanProvider } from "@/src/features/workouts/context/ActivePlanContext";
 import { initDb } from "@/src/lib/db";
-import { runOutboxSync } from "@/src/features/outbox";
 import {
   Palettes,
   ThemeProvider as AppThemeProvider,
@@ -30,11 +30,8 @@ import {
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import * as SystemUI from "expo-system-ui";
-import { useEffect, useRef, useState } from "react";
-import { AppState, type AppStateStatus } from "react-native";
+import { useEffect, useState } from "react";
 import "react-native-reanimated";
-
-const SYNC_INTERVAL_MS = 30_000;
 
 export default function RootLayout() {
   useStorageCleaner();
@@ -52,50 +49,24 @@ export default function RootLayout() {
   });
 
   const [dbReady, setDbReady] = useState(false);
-  const appState = useRef(AppState.currentState);
 
   useEffect(() => {
-    initDb().then(() => {
-      setDbReady(true);
-      runOutboxSync();
-    });
-
-    // Sync when app returns to foreground
-    const subscription = AppState.addEventListener(
-      "change",
-      (next: AppStateStatus) => {
-        if (appState.current.match(/inactive|background/) && next === "active") {
-          runOutboxSync();
-        }
-        appState.current = next;
-      }
-    );
-
-    // Periodic sync while app is active
-    const interval = setInterval(() => {
-      if (AppState.currentState === "active") {
-        runOutboxSync();
-      }
-    }, SYNC_INTERVAL_MS);
-
-    return () => {
-      subscription.remove();
-      clearInterval(interval);
-    };
+    initDb().then(() => setDbReady(true));
   }, []);
 
-  if (!loaded || !dbReady) {
+  const { checking, allowed } = useAuthGuard();
+  useSyncScheduler(allowed);
+
+  if (!loaded || !dbReady || checking) {
     return null;
   }
 
   return (
-    <AuthProvider>
-      <ActivePlanProvider>
-        <AppThemeProvider>
-          <RootLayoutNav />
-        </AppThemeProvider>
-      </ActivePlanProvider>
-    </AuthProvider>
+    <ActivePlanProvider>
+      <AppThemeProvider>
+        <RootLayoutNav />
+      </AppThemeProvider>
+    </ActivePlanProvider>
   );
 }
 

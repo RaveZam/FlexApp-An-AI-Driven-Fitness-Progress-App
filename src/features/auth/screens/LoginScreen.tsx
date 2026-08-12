@@ -1,10 +1,11 @@
 import { AntDesign } from "@expo/vector-icons";
-import { useAuth } from "@/src/features/auth/hooks/useAuth";
+import { useLogin } from "@/src/features/auth/hooks/useLogin";
+import useSessionRedirect from "@/src/features/auth/hooks/useSessionRedirect";
 import LoadingOverlay from "@/components/ui/LoadingOverlay";
 import Popup from "@/components/ui/Popup";
 import { usePalette } from "@/src/theme";
 import { router } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -12,54 +13,23 @@ export default function LoginScreen() {
   const p = usePalette();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [isErrorPopupVisible, setErrorPopupVisible] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-  const { signIn, signInWithGoogle, session } = useAuth();
+  const { signIn, signInWithGoogle, loading, errorMessage, dismissError } =
+    useLogin();
+  const offline = useSessionRedirect();
 
-  useEffect(() => {
-    if (session) {
-      router.replace("/");
-    }
-  }, [session]);
-
-  const handleLogin = async () => {
-    setLoading(true);
-    const { error } = await signIn(email.trim(), password.trim());
-    setLoading(false);
-
-    if (error) {
-      let message = "An unexpected error occurred. Please try again.";
-      if (error.message === "Invalid login credentials") {
-        message = "Invalid email or password. Please try again.";
-      } else if (error.message === "Email not confirmed") {
-        message = "Please confirm your email address before logging in.";
-      }
-      setErrorMessage(message);
-      setErrorPopupVisible(true);
-    } else {
-      router.replace("/");
-    }
-  };
-
-  const handleGoogleLogin = async () => {
-    setLoading(true);
-    const { error, cancelled } = await signInWithGoogle();
-    setLoading(false);
-
-    if (cancelled) return;
-    if (error) {
-      setErrorMessage(`Google sign-in failed: ${error.message ?? "Unknown error"}`);
-      setErrorPopupVisible(true);
-    } else {
-      router.replace("/");
-    }
-  };
+  const handleLogin = () => signIn(email, password);
+  const handleGoogleLogin = () => signInWithGoogle();
 
   return (
     <SafeAreaView className="flex-1">
       <View className="flex-1 px-6 justify-center" style={{ backgroundColor: p.ink }}>
         <Text className="text-3xl font-bold mb-8" style={{ color: p.bone }}>Welcome Back</Text>
+
+        {offline && (
+          <Text className="mb-4" style={{ color: p.danger }}>
+            No connection — reconnect to sign in.
+          </Text>
+        )}
 
         <Text className="mb-2" style={{ color: p.bone }}>Email</Text>
         <TextInput
@@ -86,8 +56,9 @@ export default function LoginScreen() {
 
         <TouchableOpacity
           className="rounded-xl py-3"
-          style={{ backgroundColor: p.accent }}
+          style={{ backgroundColor: p.accent, opacity: offline ? 0.5 : 1 }}
           onPress={handleLogin}
+          disabled={offline}
         >
           <Text className="text-center font-semibold text-base" style={{ color: p.onAccent }}>
             Login
@@ -123,12 +94,12 @@ export default function LoginScreen() {
         </Text>
         <LoadingOverlay isVisible={loading} />
         <Popup
-          isVisible={isErrorPopupVisible}
-          onClose={() => setErrorPopupVisible(false)}
+          isVisible={errorMessage !== null}
+          onClose={dismissError}
           iconName="alert-circle-outline"
           iconColor={p.danger}
-          message={errorMessage}
-          buttons={[{ text: "OK", onPress: () => setErrorPopupVisible(false) }]}
+          message={errorMessage ?? ""}
+          buttons={[{ text: "OK", onPress: dismissError }]}
         />
       </View>
     </SafeAreaView>

@@ -1,48 +1,22 @@
-import { useAuth } from "@/src/features/auth/hooks/useAuth";
+import { useRegister } from "@/src/features/auth/hooks/useRegister";
+import useSessionRedirect from "@/src/features/auth/hooks/useSessionRedirect";
 import LoadingOverlay from "@/components/ui/LoadingOverlay";
 import { usePalette } from "@/src/theme";
 import { AntDesign } from "@expo/vector-icons";
 import { router } from "expo-router";
-import React, { useEffect, useState } from "react";
-import { Alert, Text, TextInput, TouchableOpacity, View } from "react-native";
+import React, { useState } from "react";
+import { Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function RegisterScreen() {
   const p = usePalette();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const { signUp, signInWithGoogle, session } = useAuth();
+  const { signUp, signInWithGoogle, loading } = useRegister();
+  useSessionRedirect();
 
-  useEffect(() => {
-    if (session) {
-      router.replace("/");
-    }
-  }, [session]);
-
-  const handleRegister = async () => {
-    setLoading(true);
-    const { error } = await signUp(email.trim(), password.trim());
-    setLoading(false);
-    if (error) Alert.alert("Signup Failed", error.message);
-    else Alert.alert("Success", "Please check your email to confirm");
-  };
-
-  const handleGoogleSignup = async () => {
-    setLoading(true);
-    const { error, cancelled } = await signInWithGoogle();
-    setLoading(false);
-
-    if (cancelled) return;
-    if (error) {
-      Alert.alert(
-        "Google sign-in failed",
-        error.message ?? "Unknown error"
-      );
-    } else {
-      router.replace("/");
-    }
-  };
+  const handleRegister = () => signUp(email, password);
+  const handleGoogleSignup = () => signInWithGoogle();
 
   return (
     <SafeAreaView className="flex-1">
