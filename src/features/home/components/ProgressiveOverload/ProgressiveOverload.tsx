@@ -10,7 +10,8 @@ export function ProgressiveOverload() {
   const p = usePalette();
   const styles = useMemo(() => makeStyles(p), [p]);
   const [bodyFilter, setBodyFilter] = useState("");
-  const { exercises, muscleGroups, selectedGroup } = useProgressiveOverload(bodyFilter);
+  const { exercises, muscleGroups, selectedGroup } =
+    useProgressiveOverload(bodyFilter);
 
   return (
     <View style={styles.section}>
@@ -35,7 +36,11 @@ export function ProgressiveOverload() {
                 style={[styles.chip, active && styles.chipActive]}
               >
                 {active && <View style={styles.chipDot} />}
-                <Text style={[styles.chipText, active && styles.chipTextActive]}>{chip}</Text>
+                <Text
+                  style={[styles.chipText, active && styles.chipTextActive]}
+                >
+                  {chip}
+                </Text>
               </Pressable>
             );
           })}
@@ -49,7 +54,11 @@ export function ProgressiveOverload() {
         </View>
       ) : (
         exercises.map((exercise, i) => (
-          <ExerciseCard key={exercise.name} exercise={exercise} delay={i * 70} />
+          <ExerciseCard
+            key={exercise.name}
+            exercise={exercise}
+            delay={i * 70}
+          />
         ))
       )}
     </View>

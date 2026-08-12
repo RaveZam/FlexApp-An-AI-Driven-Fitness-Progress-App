@@ -1,10 +1,10 @@
-import { useAuth } from "@/src/features/auth";
 import {
   detectPlateaus,
   type PlateauResult,
 } from "@/src/features/home/core/detectPlateaus";
 import { toExerciseProgress } from "@/src/features/home/core/toExerciseProgress";
 import { getTip } from "@/src/features/home/services/plateauSuggestionService";
+import { getCurrentUserId } from "@/src/lib/current-user";
 import { listRecentTopSetsByUser } from "@/src/lib/dao/exerciseStats";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useEffect, useState } from "react";
@@ -19,7 +19,7 @@ function tipKey(p: PlateauResult): string {
 }
 
 export function usePlateauTracker(): { plateaus: PlateauWithTip[] } {
-  const { userId } = useAuth();
+  const userId = getCurrentUserId();
 
   const [plateaus, setPlateaus] = useState<PlateauResult[]>([]);
 

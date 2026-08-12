@@ -1,13 +1,13 @@
 import type { Workout } from "@/src/features/workouts";
 import { usePlans } from "@/src/features/workouts/plan/hooks/usePlans";
+import { getCurrentUserId } from "@/src/lib/current-user";
 import { upsertActiveWorkoutForUser } from "@/src/lib/dao/preferences";
 import { getLocalDateKey } from "@/src/lib/date";
 import { useState } from "react";
-import { useAuth } from "../../auth";
 import useGetActivePlan from "./useGetActivePlan";
 
 export function useWorkoutPicker(onPicked?: () => void) {
-  const { user } = useAuth();
+  const userId = getCurrentUserId();
   const activePlanId = useGetActivePlan();
   const { plans } = usePlans();
   const [visible, setVisible] = useState(false);
@@ -26,9 +26,9 @@ export function useWorkoutPicker(onPicked?: () => void) {
 
   //Takes the picked workout gotten from the the picker modal, and upsert the that workout id with a date key
   function pickWorkout(workout: Workout) {
-    if (user?.id) {
+    if (userId) {
       upsertActiveWorkoutForUser(
-        user.id,
+        userId,
         workout.id,
         getLocalDateKey(),
         new Date().toISOString(),

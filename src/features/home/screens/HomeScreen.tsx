@@ -52,7 +52,10 @@ export default function Index() {
   } = useWorkoutPicker(refreshActiveWorkout);
 
   const canChangeDay =
-    !isRestDay && !activeSession && !showFinished && pickableWorkouts.length > 0;
+    !isRestDay &&
+    !activeSession &&
+    !showFinished &&
+    pickableWorkouts.length > 0;
 
   const [collapsed] = useState(false);
   const [isLoading] = useState(false);
@@ -119,15 +122,15 @@ export default function Index() {
               activeSession
                 ? "Resume Workout"
                 : showFinished
-                ? "Workout Finished"
-                : "Start Workout"
+                  ? "Workout Finished"
+                  : "Start Workout"
             }
             icon={
               activeSession
                 ? "play-skip-forward"
                 : showFinished
-                ? "checkmark-done"
-                : "play"
+                  ? "checkmark-done"
+                  : "play"
             }
             disabled={isRestDay || showFinished}
           />

@@ -1,6 +1,10 @@
 import Avatar from "@/components/Avatar";
 import { FontFamilies } from "@/constants/theme";
-import { useAuth } from "@/src/features/auth";
+import {
+  getCurrentUserAvatarUrl,
+  getCurrentUserEmail,
+  getCurrentUserName,
+} from "@/src/lib/current-user";
 import { usePalette, type Palette } from "@/src/theme";
 import Fontisto from "@expo/vector-icons/Fontisto";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -17,13 +21,9 @@ import Animated, {
 export default function UserInfoCard() {
   const p = usePalette();
   const styles = useMemo(() => makeStyles(p), [p]);
-  const { user } = useAuth();
-  const avatarUri =
-    user?.user_metadata?.avatar_url ?? user?.user_metadata?.picture;
-  const displayName =
-    user?.user_metadata?.full_name ??
-    user?.user_metadata?.name ??
-    user?.user_metadata?.username;
+  const avatarUri = getCurrentUserAvatarUrl();
+  const displayName = getCurrentUserName();
+  const email = getCurrentUserEmail();
 
   const opacity = useSharedValue(0);
   const translateY = useSharedValue(-8);
@@ -57,7 +57,7 @@ export default function UserInfoCard() {
         <Avatar
           uri={avatarUri}
           name={displayName}
-          email={user?.email}
+          email={email}
           size={36}
         />
       </View>

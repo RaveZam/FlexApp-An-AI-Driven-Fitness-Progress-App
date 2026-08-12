@@ -1,4 +1,4 @@
-import { useAuth } from "@/src/features/auth";
+import { getCurrentUserId } from "@/src/lib/current-user";
 import {
   listSessionSetsForExercise,
   type SessionSetDetail,
@@ -9,12 +9,12 @@ export function useExerciseSessionSets(
   sessionId: string | null,
   exerciseName: string,
 ): { sets: SessionSetDetail[] } {
-  const { user } = useAuth();
+  const userId = getCurrentUserId();
 
   const sets = useMemo<SessionSetDetail[]>(() => {
-    if (!user?.id || !sessionId) return [];
-    return listSessionSetsForExercise(user.id, sessionId, exerciseName);
-  }, [user?.id, sessionId, exerciseName]);
+    if (!sessionId) return [];
+    return listSessionSetsForExercise(userId, sessionId, exerciseName);
+  }, [userId, sessionId, exerciseName]);
 
   return { sets };
 }

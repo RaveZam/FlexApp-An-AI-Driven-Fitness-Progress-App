@@ -1,16 +1,16 @@
+import { getCurrentUserId } from "@/src/lib/current-user";
 import { getActivePlanIdForUser } from "@/src/lib/dao/preferences";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useState } from "react";
-import { useAuth } from "../../auth";
 
 export default function useGetActivePlan() {
-  const { user } = useAuth();
+  const userId = getCurrentUserId();
   const [activePlanId, setActivePlanId] = useState<string | null>(null);
 
   useFocusEffect(
     useCallback(() => {
-      setActivePlanId(user?.id ? getActivePlanIdForUser(user.id) : null);
-    }, [user?.id]),
+      setActivePlanId(getActivePlanIdForUser(userId));
+    }, [userId]),
   );
 
   return activePlanId;

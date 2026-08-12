@@ -1,4 +1,3 @@
-import { useAuth } from "@/src/features/auth";
 import { deriveStartButton } from "@/src/features/home/helpers/startButton";
 import {
   useActivePlan,
@@ -8,20 +7,15 @@ import {
   type Workout,
 } from "@/src/features/workouts";
 import { router, useFocusEffect } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 
 export function useHomeScreen() {
-  const { session } = useAuth();
   const { activePlanId } = useActivePlan();
   const { workouts: todaysWorkouts } = useTodaysWorkouts();
   const { activeSession, refresh: refreshActiveSession } = useActiveSession();
   const { startSession } = useStartSession();
 
   const [multiPickerVisible, setMultiPickerVisible] = useState(false);
-
-  useEffect(() => {
-    if (!session) router.replace("/login");
-  }, [session]);
 
   // Re-read the active session from local storage whenever Home regains focus
   // (e.g. after finishing/cancelling a workout in the session screen).

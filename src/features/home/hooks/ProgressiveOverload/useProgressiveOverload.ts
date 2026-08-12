@@ -1,17 +1,17 @@
-import { useAuth } from "@/src/features/auth";
 import { toExerciseProgress } from "@/src/features/home/core/toExerciseProgress";
 import type { ExerciseProgress } from "@/src/features/home/types/progressiveOverload";
+import { getCurrentUserId } from "@/src/lib/current-user";
 import { listRecentTopSetsByUser } from "@/src/lib/dao/exerciseStats";
 import { useMemo } from "react";
 
 export const ALL_BODY_PARTS = "All";
 
 export function useProgressiveOverload(bodyFilter: string = ALL_BODY_PARTS) {
-  const { user } = useAuth();
+  const userId = getCurrentUserId();
 
   const all = useMemo<ExerciseProgress[]>(
-    () => toExerciseProgress(listRecentTopSetsByUser(user?.id ?? null), 7),
-    [user],
+    () => toExerciseProgress(listRecentTopSetsByUser(userId), 7),
+    [userId],
   );
 
   const muscleGroups = useMemo(() => {
