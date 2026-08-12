@@ -1,4 +1,4 @@
-import { useAuth } from "@/src/features/auth/hooks/useAuth";
+import { getCurrentUserId } from "@/src/lib/current-user";
 import { listRecentTopSetsByCatalogId } from "@/src/lib/dao/exerciseStats";
 
 export type ExerciseSessionPoint = {
@@ -11,11 +11,11 @@ export type ExerciseSessionPoint = {
 export function useGetLast7TopSetsExercise(
   catalogExerciseId: string | null,
 ): ExerciseSessionPoint[] {
-  const { user } = useAuth();
+  const userId = getCurrentUserId();
 
-  if (!user || !catalogExerciseId) return [];
+  if (!catalogExerciseId) return [];
 
-  return listRecentTopSetsByCatalogId(user.id, catalogExerciseId, 7).map(
+  return listRecentTopSetsByCatalogId(userId, catalogExerciseId, 7).map(
     (r) => ({
       sessionId: r.sessionId,
       startedAt: r.startedAt,

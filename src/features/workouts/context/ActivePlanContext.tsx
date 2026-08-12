@@ -1,4 +1,4 @@
-import { useAuth } from "@/src/features/auth";
+import { getCurrentUserId } from "@/src/lib/current-user";
 import {
   createContext,
   ReactNode,
@@ -30,40 +30,40 @@ type ActivePlanContextValue = {
 const ActivePlanContext = createContext<ActivePlanContextValue | null>(null);
 
 export function ActivePlanProvider({ children }: { children: ReactNode }) {
-  const { user } = useAuth();
+  const userId = getCurrentUserId();
   const [activePlanId, setActivePlanId] = useState<string | null>(null);
   const [activeSession, setActiveSession] = useState<WorkoutSession | null>(null);
   const [loading, setLoading] = useState(true);
 
   //This exists here since if we put this on home id be technically having a DAO on home.
   const refreshActiveSession = useCallback(() => {
-    if (!user) {
+    if (!userId) {
       setActiveSession(null);
       return;
     }
-    setActiveSession(getActiveSession(user.id));
-  }, [user]);
+    setActiveSession(getActiveSession(userId));
+  }, [userId]);
 
   useEffect(() => {
-    if (!user) {
+    if (!userId) {
       setActivePlanId(null);
       setActiveSession(null);
       setLoading(false);
       return;
     }
-    const prefs = getPreferences(user.id);
+    const prefs = getPreferences(userId);
     setActivePlanId(prefs?.activePlanId ?? null);
-    setActiveSession(getActiveSession(user.id));
+    setActiveSession(getActiveSession(userId));
     setLoading(false);
-  }, [user]);
+  }, [userId]);
 
   const setActivePlan = useCallback(
     (planId: string | null) => {
-      if (!user) return;
-      setActivePlanLocal(user.id, planId);
+      if (!userId) return;
+      setActivePlanLocal(userId, planId);
       setActivePlanId(planId);
     },
-    [user]
+    [userId]
   );
 
   return (

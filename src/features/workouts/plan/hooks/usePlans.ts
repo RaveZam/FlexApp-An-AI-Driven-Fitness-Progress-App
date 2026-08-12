@@ -1,4 +1,4 @@
-import { useAuth } from "@/src/features/auth";
+import { getCurrentUserId } from "@/src/lib/current-user";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
 import { fetchPlans } from "../../services/workoutSupabaseService";
@@ -6,8 +6,7 @@ import { listPlans, upsertPlans } from "../../services/workoutLocalService";
 import type { WorkoutPlan } from "../../types";
 
 export function usePlans() {
-  const { session } = useAuth();
-  const userId = session?.user.id ?? null;
+  const userId = getCurrentUserId();
 
   const [plans, setPlans] = useState<WorkoutPlan[]>([]);
   const [loading, setLoading] = useState(true);

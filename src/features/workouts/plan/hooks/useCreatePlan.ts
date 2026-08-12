@@ -1,4 +1,4 @@
-import { useAuth } from "@/src/features/auth";
+import { getCurrentUserId } from "@/src/lib/current-user";
 import { generateUUID } from "@/src/lib/uuid";
 import { useRouter } from "expo-router";
 import { useState } from "react";
@@ -7,14 +7,14 @@ import { insertPlanLocal } from "../../services/workoutLocalService";
 import type { WorkoutPlan, WorkoutPlanInput } from "../../types";
 
 export function useCreatePlan() {
-  const { session } = useAuth();
   const router = useRouter();
   const [planName, setPlanName] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function createPlan(input: WorkoutPlanInput): Promise<WorkoutPlan> {
-    if (!session?.user.id) throw new Error("Not authenticated");
+    const userId = getCurrentUserId();
+    if (!userId) throw new Error("Not authenticated");
 
     setSaving(true);
     setError(null);
@@ -22,7 +22,6 @@ export function useCreatePlan() {
     try {
       const now = new Date().toISOString();
       const planId = generateUUID();
-      const userId = session.user.id;
 
       const plan: WorkoutPlan = {
         id: planId,

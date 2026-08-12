@@ -1,4 +1,4 @@
-import { useAuth } from "@/src/features/auth";
+import { getCurrentUserId } from "@/src/lib/current-user";
 import { getActiveSessionForUser } from "@/src/lib/dao/sessions";
 import type { ReactNode } from "react";
 import { createContext, useCallback, useMemo, useState } from "react";
@@ -22,10 +22,10 @@ type SessionContextValue = {
 export const SessionContext = createContext<SessionContextValue | null>(null);
 
 export function WorkoutSessionProvider({ children }: { children: ReactNode }) {
-  const { user } = useAuth();
+  const userId = getCurrentUserId();
 
   const [session, setSession] = useState(() =>
-    getActiveSessionForUser(user?.id ?? ""),
+    getActiveSessionForUser(userId),
   );
 
   // Resolve the resume point once at mount so a continued session lands on the
@@ -34,8 +34,8 @@ export function WorkoutSessionProvider({ children }: { children: ReactNode }) {
   const [activeIndex, setActiveIndex] = useState(resume.index);
 
   const refreshActiveSession = useCallback(() => {
-    setSession(getActiveSessionForUser(user?.id ?? ""));
-  }, [user?.id]);
+    setSession(getActiveSessionForUser(userId));
+  }, [userId]);
 
   // Bumped each time a set is logged so set reads (useGetSessionSets) refetch
   // without re-reading the unchanged session row.

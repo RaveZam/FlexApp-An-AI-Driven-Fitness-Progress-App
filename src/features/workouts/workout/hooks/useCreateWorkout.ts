@@ -1,16 +1,16 @@
-import { useAuth } from "@/src/features/auth";
+import { getCurrentUserId } from "@/src/lib/current-user";
 import { generateUUID } from "@/src/lib/uuid";
 import { useState } from "react";
 import { insertWorkoutLocal } from "../../services/workoutLocalService";
 import type { Workout, WorkoutInput } from "../../types";
 
 export function useCreateWorkout() {
-  const { session } = useAuth();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function createWorkout(input: WorkoutInput): Promise<Workout> {
-    if (!session?.user.id) throw new Error("Not authenticated");
+    const userId = getCurrentUserId();
+    if (!userId) throw new Error("Not authenticated");
 
     setSaving(true);
     setError(null);
@@ -18,7 +18,6 @@ export function useCreateWorkout() {
     try {
       const now = new Date().toISOString();
       const workoutId = generateUUID();
-      const userId = session.user.id;
 
       const workout: Workout = {
         id: workoutId,

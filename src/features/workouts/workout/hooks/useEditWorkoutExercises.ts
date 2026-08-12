@@ -1,4 +1,4 @@
-import { useAuth } from "@/src/features/auth";
+import { getCurrentUserId } from "@/src/lib/current-user";
 import { generateUUID } from "@/src/lib/uuid";
 import { useState } from "react";
 import {
@@ -13,7 +13,6 @@ export function useEditWorkoutExercises(
   exercises: Exercise[],
   onRefresh: () => void
 ) {
-  const { session } = useAuth();
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [pickerVisible, setPickerVisible] = useState(false);
 
@@ -34,13 +33,14 @@ export function useEditWorkoutExercises(
   }
 
   function addExercise(catalog: CatalogExercise) {
-    if (!session?.user.id) return;
+    const userId = getCurrentUserId();
+    if (!userId) return;
     const now = new Date().toISOString();
     const nextPosition = exercises.length;
     const exercise: Exercise = {
       id: generateUUID(),
       workoutId,
-      userId: session.user.id,
+      userId,
       name: catalog.name,
       catalogExerciseId: catalog.id,
       targetSets: 3,
