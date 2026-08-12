@@ -81,9 +81,7 @@ function DeltaChip({ deltaPct }: { deltaPct: number | null }) {
     <View
       style={[
         styles.chip,
-        // No "dangerSoft" fill token exists — nearest fit is dangerBorder, reused
-        // here as the down-trend chip fill (mirrors the up-trend accentSoft usage).
-        { backgroundColor: up ? p.accentSoft : p.dangerBorder },
+        { backgroundColor: up ? p.accentSoft : p.dangerSoft },
       ]}
     >
       <Feather

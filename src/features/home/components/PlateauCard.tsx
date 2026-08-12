@@ -6,16 +6,6 @@ import { StyleSheet, Text, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { usePlateauTracker } from "../hooks/usePlateauTracker";
 
-// No "dangerSoft" fill token exists in the palette (only dangerBorder was added
-// during Task 3's review). Nearest-fit: derive a faint fill from the danger token
-// itself, at roughly the same alpha ratio accentSoft uses relative to accent.
-function dangerSoftFill(hex: string): string {
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  return `rgba(${r}, ${g}, ${b}, 0.06)`;
-}
-
 export function PlateauCard() {
   const p = usePalette();
   const styles = useMemo(() => makeStyles(p), [p]);
@@ -24,7 +14,10 @@ export function PlateauCard() {
   if (plateaus.length === 0) return null;
 
   return (
-    <Animated.View entering={FadeInDown.delay(200).duration(400)} style={styles.section}>
+    <Animated.View
+      entering={FadeInDown.delay(200).duration(400)}
+      style={styles.section}
+    >
       <Text style={styles.title}>Plateaus</Text>
       <View style={{ gap: 10 }}>
         {plateaus.map((plateau) => (
@@ -36,7 +29,8 @@ export function PlateauCard() {
               </Text>
             </View>
             <Text style={styles.stuck}>
-              Stuck at {plateau.weight} lb × {plateau.reps} for {plateau.sessionsStuck} sessions
+              Stuck at {plateau.weight} lb × {plateau.reps} for{" "}
+              {plateau.sessionsStuck} sessions
             </Text>
             {plateau.tip ? (
               <Text style={styles.tip}>💡 {plateau.tip}</Text>
@@ -61,7 +55,7 @@ const makeStyles = (p: Palette) =>
     },
     card: {
       borderRadius: 14,
-      backgroundColor: dangerSoftFill(p.danger),
+      backgroundColor: p.dangerSoft,
       borderWidth: StyleSheet.hairlineWidth,
       borderColor: p.dangerBorder,
       padding: 14,
