@@ -302,6 +302,11 @@ export async function runOutboxSync(): Promise<void> {
   const hasNetwork = await isWifiConnected();
   if (!hasNetwork) return;
 
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  if (!session) return;
+
   const pending = getPendingRows();
   if (pending.length === 0) return;
 
