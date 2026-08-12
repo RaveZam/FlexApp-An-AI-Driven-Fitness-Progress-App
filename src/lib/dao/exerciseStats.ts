@@ -30,9 +30,10 @@ export type ExerciseTopSetRow = {
 };
 
 export function getBestRecordByCatalogId(
-  userId: string,
+  userId: string | null,
   catalogExerciseId: string,
 ): ExerciseBestRow | null {
+  if (!userId) return null;
   const row = getDb().getFirstSync<{
     weight: number;
     actual_reps: number | null;
@@ -144,10 +145,11 @@ export function listRecentExerciseTopSets(
 }
 
 export function listRecentTopSetsByCatalogId(
-  userId: string,
+  userId: string | null,
   catalogExerciseId: string,
   sessionLimit: number,
 ): RecentTopSetRow[] {
+  if (!userId) return [];
   const rows = getDb().getAllSync<{
     session_id: string;
     started_at: string;
@@ -265,10 +267,11 @@ export type SessionSetDetail = {
 // same se.name matching convention as listRecentTopSetsByUser — used to fill
 // in the per-session detail panel of the exercise history modal.
 export function listSessionSetsForExercise(
-  userId: string,
+  userId: string | null,
   sessionId: string,
   exerciseName: string,
 ): SessionSetDetail[] {
+  if (!userId) return [];
   return getDb()
     .getAllSync<{
       set_index: number;

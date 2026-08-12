@@ -65,10 +65,11 @@ export function getSessionById(sessionId: string): SessionRow | null {
 // completed — otherwise finishing yesterday's forgotten session today
 // would make today look like it's already been worked out.
 export function listCompletedSessionsInRange(
-  userId: string,
+  userId: string | null,
   startISO: string,
   endISO: string,
 ): SessionRow[] {
+  if (!userId) return [];
   return getDb()
     .getAllSync<Raw>(
       `SELECT * FROM workout_sessions

@@ -9,7 +9,8 @@ export type PreferencesRow = {
   updatedAt: string;
 };
 
-export function getActivePlanIdForUser(userId: string): string | null {
+export function getActivePlanIdForUser(userId: string | null): string | null {
+  if (!userId) return null;
   const row = getDb().getFirstSync<{
     active_plan_id: string | null;
   }>("SELECT active_plan_id FROM user_preferences WHERE user_id = ?", [userId]);
@@ -65,9 +66,10 @@ export function upsertActivePlanIdForUser(
 // was set on `dateKey` — a stale (previous-day) override is treated as unset
 // so callers fall back to deriving the workout from the day's schedule.
 export function getActiveWorkoutIdForUser(
-  userId: string,
+  userId: string | null,
   dateKey: string,
 ): string | null {
+  if (!userId) return null;
   const row = getDb().getFirstSync<{
     active_workout_id: string | null;
     active_workout_date: string | null;
@@ -83,7 +85,7 @@ export function getActiveWorkoutIdForUser(
 // a workout that deviates from the current plan, if a workout exist in the dateKey it will return that override for that day to be started, if not
 // just gets the workoutidforday that returns the workout on that plan
 export function resolveActiveWorkoutId(
-  userId: string,
+  userId: string | null,
   planId: string,
   dateKey: string = getLocalDateKey(),
 ): string | null {

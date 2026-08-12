@@ -118,6 +118,11 @@ export async function initDb(): Promise<void> {
       synced_at TEXT
     );
 
+    CREATE TABLE IF NOT EXISTS app_settings (
+      key TEXT PRIMARY KEY,
+      value TEXT
+    );
+
     CREATE TABLE IF NOT EXISTS plateau_tips (
       user_id TEXT NOT NULL,
       exercise_name TEXT NOT NULL,
