@@ -3,7 +3,8 @@ import * as sessionSummaryDao from "@/src/lib/dao/sessionSummary";
 import type { WorkoutSession } from "@/src/features/workouts";
 import type { WorkoutSessionSummary } from "../types";
 
-export function listCompletedSessions(userId: string): WorkoutSessionSummary[] {
+export function listCompletedSessions(userId: string | null): WorkoutSessionSummary[] {
+  if (!userId) return [];
   return sessionSummaryDao.listCompletedSessionSummariesByUser(userId).map((r) => ({
     id: r.id,
     name: r.name,

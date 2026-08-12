@@ -1,30 +1,24 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useFocusEffect } from "expo-router";
-import { useAuth } from "@/src/features/auth";
 import { deleteSession } from "@/src/features/workouts";
+import { getCurrentUserId } from "@/src/lib/current-user";
 import { computeOverviewStats, groupByMonth } from "../sessionStats";
 import { listCompletedSessions } from "../services/historyLocalService";
 import type { WorkoutSessionSummary } from "../types";
 
 export function useSessionHistory() {
-  const { user } = useAuth();
+  const userId = getCurrentUserId();
   const [sessions, setSessions] = useState<WorkoutSessionSummary[]>([]);
   const [loading, setLoading] = useState(true);
 
   const load = useCallback(() => {
-    if (!user) {
-      setSessions([]);
-      setLoading(false);
-      return;
-    }
     setLoading(true);
     try {
-      const result = listCompletedSessions(user.id);
-      setSessions(result);
+      setSessions(listCompletedSessions(userId));
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [userId]);
 
   useEffect(() => { load(); }, [load]);
 
