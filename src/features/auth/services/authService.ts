@@ -1,9 +1,6 @@
 import { supabase } from "@/src/lib/supabase";
 import { clearDeviceTrust } from "@/src/lib/device-trust";
-import {
-  GoogleSignin,
-  statusCodes,
-} from "@react-native-google-signin/google-signin";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
 GoogleSignin.configure({
   webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
@@ -24,8 +21,15 @@ export async function signInWithGoogle(): Promise<{
 }> {
   try {
     await GoogleSignin.hasPlayServices();
-    await GoogleSignin.signIn();
-    const { idToken } = await GoogleSignin.getTokens();
+    const response = await GoogleSignin.signIn();
+    // The library resolves rather than throws on cancel, so this is the only
+    // place a dismissed sheet can be caught.
+    if (response.type === "cancelled") return { error: null, cancelled: true };
+
+    // Read the token off the sign-in response, not getTokens(): getTokens()
+    // refreshes a keychain-restored user, and that refresh can come back
+    // without an ID token.
+    const { idToken } = response.data;
     if (!idToken) {
       return { error: new Error("No ID token returned from Google.") };
     }
@@ -35,9 +39,6 @@ export async function signInWithGoogle(): Promise<{
     });
     return { error };
   } catch (error: any) {
-    if (error?.code === statusCodes.SIGN_IN_CANCELLED) {
-      return { error: null, cancelled: true };
-    }
     return { error };
   }
 }
