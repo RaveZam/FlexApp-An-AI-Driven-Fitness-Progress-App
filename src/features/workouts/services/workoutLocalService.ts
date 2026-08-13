@@ -1,10 +1,11 @@
 import { enqueueOutbox } from "@/src/features/outbox";
+import * as catalogDao from "@/src/lib/dao/catalog";
 import * as plansDao from "@/src/lib/dao/plans";
 import * as workoutDaysDao from "@/src/lib/dao/workoutDays";
 import * as workoutExercisesDao from "@/src/lib/dao/workoutExercises";
 import * as workoutsDao from "@/src/lib/dao/workouts";
 import { getDb } from "@/src/lib/db";
-import type { Exercise, Workout, WorkoutPlan } from "../types";
+import type { CatalogExercise, Exercise, Workout, WorkoutPlan } from "../types";
 
 function hydrateWorkouts(workoutRows: workoutsDao.WorkoutRow[]): Workout[] {
   const daysByWorkout = workoutDaysDao.listWorkoutDaysByWorkoutIds(
@@ -45,49 +46,18 @@ export function insertPlanLocal(plan: WorkoutPlan): void {
   });
 }
 
-export function upsertPlans(plans: WorkoutPlan[]): void {
-  const db = getDb();
-  db.withTransactionSync(() => {
-    for (const p of plans) {
-      plansDao.upsertPlan(p);
-      for (const w of p.workouts) {
-        const existingUpdatedAt = workoutsDao.getWorkoutUpdatedAt(w.id);
-        const remoteIsNewer =
-          !existingUpdatedAt || w.updatedAt >= existingUpdatedAt;
-
-        workoutsDao.upsertWorkout(w);
-        if (remoteIsNewer) {
-          workoutDaysDao.replaceWorkoutDays(w.id, w.daysOfWeek, w.updatedAt);
-        }
-        for (const e of w.exercises) {
-          workoutExercisesDao.upsertWorkoutExercise(e);
-        }
-      }
-    }
-  });
-}
-
 export function listWorkouts(userId: string): Workout[] {
   return hydrateWorkouts(workoutsDao.listWorkoutsByUser(userId));
 }
 
-export function upsertWorkouts(workouts: Workout[]): void {
-  const db = getDb();
-  db.withTransactionSync(() => {
-    for (const w of workouts) {
-      const existingUpdatedAt = workoutsDao.getWorkoutUpdatedAt(w.id);
-      const remoteIsNewer =
-        !existingUpdatedAt || w.updatedAt >= existingUpdatedAt;
-
-      workoutsDao.upsertWorkout(w);
-      if (remoteIsNewer) {
-        workoutDaysDao.replaceWorkoutDays(w.id, w.daysOfWeek, w.updatedAt);
-      }
-      for (const e of w.exercises) {
-        workoutExercisesDao.upsertWorkoutExercise(e);
-      }
-    }
-  });
+export function listExerciseCatalog(): CatalogExercise[] {
+  return catalogDao.listCatalogExercises().map((r) => ({
+    id: r.id,
+    name: r.name,
+    muscleGroup: r.muscleGroup,
+    description: r.description,
+    isUnilateral: r.isUnilateral,
+  }));
 }
 
 export function updateWorkoutDays(

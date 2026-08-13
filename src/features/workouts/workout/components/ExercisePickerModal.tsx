@@ -2,7 +2,6 @@ import { usePalette } from "@/src/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useMemo, useState } from "react";
 import {
-  ActivityIndicator,
   FlatList,
   Modal,
   ScrollView,
@@ -12,7 +11,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { fetchExerciseCatalog } from "../../services/workoutSupabaseService";
+import { useExerciseCatalog } from "../hooks/useExerciseCatalog";
 import type { CatalogExercise } from "../../types";
 
 type Props = {
@@ -23,18 +22,13 @@ type Props = {
 
 export function ExercisePickerModal({ visible, onSelect, onClose }: Props) {
   const p = usePalette();
-  const [catalog, setCatalog] = useState<CatalogExercise[]>([]);
-  const [loading, setLoading] = useState(false);
+  const catalog = useExerciseCatalog();
   const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
 
   useEffect(() => {
     if (!visible) return;
-    setLoading(true);
     setSearch("");
-    fetchExerciseCatalog()
-      .then(setCatalog)
-      .finally(() => setLoading(false));
   }, [visible]);
 
   const muscleGroups = useMemo(() => {
@@ -55,17 +49,20 @@ export function ExercisePickerModal({ visible, onSelect, onClose }: Props) {
   const filtered = useMemo(() => {
     return catalog.filter((e) => {
       const matchesSearch =
-        !search.trim() ||
-        e.name.toLowerCase().includes(search.toLowerCase());
+        !search.trim() || e.name.toLowerCase().includes(search.toLowerCase());
       const matchesFilter =
-        !activeFilter ||
-        (e.muscleGroup ?? "").toLowerCase() === activeFilter;
+        !activeFilter || (e.muscleGroup ?? "").toLowerCase() === activeFilter;
       return matchesSearch && matchesFilter;
     });
   }, [catalog, search, activeFilter]);
 
   return (
-    <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
+    <Modal
+      visible={visible}
+      animationType="slide"
+      presentationStyle="pageSheet"
+      onRequestClose={onClose}
+    >
       <SafeAreaView style={{ flex: 1, backgroundColor: p.ink }} edges={["top"]}>
         {/* Header */}
         <View
@@ -130,134 +127,141 @@ export function ExercisePickerModal({ visible, onSelect, onClose }: Props) {
         </View>
 
         {/* Muscle group filter chips */}
-        {!loading && muscleGroups.length > 0 && (
+        {muscleGroups.length > 0 && (
           <View style={{ height: 44, marginBottom: 8 }}>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ paddingHorizontal: 20, gap: 8, alignItems: "center", height: 44 }}
-          >
-            <TouchableOpacity
-              onPress={() => setActiveFilter(null)}
-              activeOpacity={0.7}
-              style={{
-                paddingHorizontal: 14,
-                paddingVertical: 7,
-                borderRadius: 20,
-                backgroundColor: activeFilter === null ? p.accent : p.inkRaised,
-                borderWidth: 1,
-                borderColor: activeFilter === null ? p.accent : p.hairlineStrong,
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{
+                paddingHorizontal: 20,
+                gap: 8,
+                alignItems: "center",
+                height: 44,
               }}
             >
-              <Text
-                style={{
-                  color: activeFilter === null ? p.onAccent : p.muted,
-                  fontSize: 12,
-                  fontFamily: "Inter_500Medium",
-                  letterSpacing: 0.3,
-                }}
-              >
-                All
-              </Text>
-            </TouchableOpacity>
-
-            {muscleGroups.map((group) => {
-              const active = activeFilter === group;
-              return (
-                <TouchableOpacity
-                  key={group}
-                  onPress={() => setActiveFilter(active ? null : group)}
-                  activeOpacity={0.7}
-                  style={{
-                    paddingHorizontal: 14,
-                    paddingVertical: 7,
-                    borderRadius: 20,
-                    backgroundColor: active ? p.accent : p.inkRaised,
-                    borderWidth: 1,
-                    borderColor: active ? p.accent : p.hairlineStrong,
-                  }}
-                >
-                  <Text
-                    style={{
-                      color: active ? p.onAccent : p.muted,
-                      fontSize: 12,
-                      fontFamily: "Inter_500Medium",
-                      letterSpacing: 0.3,
-                      textTransform: "capitalize",
-                    }}
-                  >
-                    {group}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </ScrollView>
-          </View>
-        )}
-
-        {loading ? (
-          <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-            <ActivityIndicator color={p.accent} />
-          </View>
-        ) : (
-          <FlatList
-            data={filtered}
-            keyExtractor={(item) => item.id}
-            contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 32 }}
-            ItemSeparatorComponent={() => (
-              <View style={{ height: 1, backgroundColor: p.hairline }} />
-            )}
-            renderItem={({ item }) => (
               <TouchableOpacity
-                onPress={() => {
-                  onSelect(item);
-                  onClose();
-                }}
+                onPress={() => setActiveFilter(null)}
                 activeOpacity={0.7}
                 style={{
-                  paddingVertical: 14,
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
+                  paddingHorizontal: 14,
+                  paddingVertical: 7,
+                  borderRadius: 20,
+                  backgroundColor:
+                    activeFilter === null ? p.accent : p.inkRaised,
+                  borderWidth: 1,
+                  borderColor:
+                    activeFilter === null ? p.accent : p.hairlineStrong,
                 }}
               >
-                <View style={{ flex: 1 }}>
-                  <Text
+                <Text
+                  style={{
+                    color: activeFilter === null ? p.onAccent : p.muted,
+                    fontSize: 12,
+                    fontFamily: "Inter_500Medium",
+                    letterSpacing: 0.3,
+                  }}
+                >
+                  All
+                </Text>
+              </TouchableOpacity>
+
+              {muscleGroups.map((group) => {
+                const active = activeFilter === group;
+                return (
+                  <TouchableOpacity
+                    key={group}
+                    onPress={() => setActiveFilter(active ? null : group)}
+                    activeOpacity={0.7}
                     style={{
-                      color: p.bone,
-                      fontSize: 14,
-                      fontFamily: "Inter_500Medium",
-                      marginBottom: item.muscleGroup ? 3 : 0,
+                      paddingHorizontal: 14,
+                      paddingVertical: 7,
+                      borderRadius: 20,
+                      backgroundColor: active ? p.accent : p.inkRaised,
+                      borderWidth: 1,
+                      borderColor: active ? p.accent : p.hairlineStrong,
                     }}
                   >
-                    {item.name}
-                  </Text>
-                  {item.muscleGroup && (
                     <Text
                       style={{
-                        color: p.mutedSoft,
-                        fontSize: 11,
-                        fontFamily: "Inter_400Regular",
+                        color: active ? p.onAccent : p.muted,
+                        fontSize: 12,
+                        fontFamily: "Inter_500Medium",
                         letterSpacing: 0.3,
                         textTransform: "capitalize",
                       }}
                     >
-                      {item.muscleGroup}
+                      {group}
                     </Text>
-                  )}
-                </View>
-                <Ionicons name="add-circle-outline" size={20} color={p.accent} />
-              </TouchableOpacity>
-            )}
-            ListEmptyComponent={
-              <View style={{ paddingTop: 40, alignItems: "center" }}>
-                <Text style={{ color: p.mutedSoft, fontSize: 13, fontFamily: "Inter_400Regular" }}>
-                  No exercises found
-                </Text>
-              </View>
-            }
-          />
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+          </View>
         )}
+
+        <FlatList
+          data={filtered}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 32 }}
+          ItemSeparatorComponent={() => (
+            <View style={{ height: 1, backgroundColor: p.hairline }} />
+          )}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              onPress={() => {
+                onSelect(item);
+                onClose();
+              }}
+              activeOpacity={0.7}
+              style={{
+                paddingVertical: 14,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <View style={{ flex: 1 }}>
+                <Text
+                  style={{
+                    color: p.bone,
+                    fontSize: 14,
+                    fontFamily: "Inter_500Medium",
+                    marginBottom: item.muscleGroup ? 3 : 0,
+                  }}
+                >
+                  {item.name}
+                </Text>
+                {item.muscleGroup && (
+                  <Text
+                    style={{
+                      color: p.mutedSoft,
+                      fontSize: 11,
+                      fontFamily: "Inter_400Regular",
+                      letterSpacing: 0.3,
+                      textTransform: "capitalize",
+                    }}
+                  >
+                    {item.muscleGroup}
+                  </Text>
+                )}
+              </View>
+              <Ionicons name="add-circle-outline" size={20} color={p.accent} />
+            </TouchableOpacity>
+          )}
+          ListEmptyComponent={
+            <View style={{ paddingTop: 40, alignItems: "center" }}>
+              <Text
+                style={{
+                  color: p.mutedSoft,
+                  fontSize: 13,
+                  fontFamily: "Inter_400Regular",
+                }}
+              >
+                No exercises found
+              </Text>
+            </View>
+          }
+        />
       </SafeAreaView>
     </Modal>
   );

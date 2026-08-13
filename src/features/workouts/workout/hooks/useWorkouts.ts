@@ -1,8 +1,7 @@
 import { getCurrentUserId } from "@/src/lib/current-user";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
-import { fetchWorkouts } from "../../services/workoutSupabaseService";
-import { listWorkouts, upsertWorkouts } from "../../services/workoutLocalService";
+import { listWorkouts } from "../../services/workoutLocalService";
 import type { Workout } from "../../types";
 
 export function useWorkouts() {
@@ -10,33 +9,10 @@ export function useWorkouts() {
 
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  const load = useCallback(async () => {
-    if (!userId) {
-      setWorkouts([]);
-      setLoading(false);
-      return;
-    }
-
-    // Read local first for instant render
-    const local = listWorkouts(userId);
-    setWorkouts(local);
+  const load = useCallback(() => {
+    setWorkouts(userId ? listWorkouts(userId) : []);
     setLoading(false);
-
-    // Background sync from Supabase
-    try {
-      const remote = await fetchWorkouts(userId);
-      upsertWorkouts(remote);
-      setWorkouts(listWorkouts(userId));
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Sync failed");
-    }
-  }, [userId]);
-
-  const refreshLocal = useCallback(() => {
-    if (!userId) return;
-    setWorkouts(listWorkouts(userId));
   }, [userId]);
 
   useFocusEffect(
@@ -46,5 +22,5 @@ export function useWorkouts() {
     }, [load])
   );
 
-  return { workouts, loading, error, refresh: load, refreshLocal };
+  return { workouts, loading, refresh: load, refreshLocal: load };
 }
