@@ -3,8 +3,9 @@ import { getActiveSessionForUser } from "@/src/lib/dao/sessions";
 import { router } from "expo-router";
 import { Alert } from "react-native";
 import createSession from "../../workouts/session/services/createSession";
+import { getTodayLabel } from "../helpers/dayLabels";
 
-export function useStartWorkout() {
+export function useStartWorkout(workoutName?: string) {
   const userId = getCurrentUserId();
   const activeSession = getActiveSessionForUser(userId);
 
@@ -21,7 +22,10 @@ export function useStartWorkout() {
       router.push(`/(tabs)/Workouts/session?id=${activeSession.id}` as any);
       return;
     }
-    Alert.alert("Start Workout", "Ready to start your workout?", [
+    const message = workoutName
+      ? `Ready to start ${workoutName} — ${getTodayLabel()}?`
+      : "Ready to start your workout?";
+    Alert.alert("Start Workout", message, [
       { text: "Cancel", style: "cancel" },
       { text: "Start", onPress: beginSession },
     ]);

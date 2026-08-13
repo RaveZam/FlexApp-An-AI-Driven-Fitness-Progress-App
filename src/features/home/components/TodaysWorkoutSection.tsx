@@ -93,6 +93,7 @@ export function TodaysWorkoutSection({ workout, onPress }: Props) {
             <Text style={styles.workoutMeta}>
               {workout.exercises.length} exercise
               {workout.exercises.length !== 1 ? "s" : ""}
+              {onPress ? " · Tap to change" : ""}
             </Text>
           </View>
           <Ionicons

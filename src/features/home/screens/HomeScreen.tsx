@@ -35,13 +35,13 @@ export default function Index() {
   const p = usePalette();
   const styles = useMemo(() => makeStyles(p), [p]);
   const isRestDay = false;
-  const startWorkout = useStartWorkout();
   const activeSession = useGetActiveSession();
   const finishedToday = useHasFinishedWorkoutToday();
   const showFinished = !activeSession && finishedToday;
 
   const { workout: activeWorkout, refresh: refreshActiveWorkout } =
     useGetActiveWorkout();
+  const startWorkout = useStartWorkout(activeWorkout?.name);
 
   const {
     visible: pickerVisible,
