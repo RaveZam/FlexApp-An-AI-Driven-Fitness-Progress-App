@@ -9,7 +9,7 @@ import {
 import type { CatalogExercise, Exercise } from "../../types";
 
 export function useEditWorkoutExercises(
-  workoutId: string,
+  workoutId: string | undefined,
   exercises: Exercise[],
   onRefresh: () => void
 ) {
@@ -34,7 +34,7 @@ export function useEditWorkoutExercises(
 
   function addExercise(catalog: CatalogExercise) {
     const userId = getCurrentUserId();
-    if (!userId) return;
+    if (!userId || !workoutId) return;
     const now = new Date().toISOString();
     const nextPosition = exercises.length;
     const exercise: Exercise = {
