@@ -1,41 +1,20 @@
-import { FontFamilies } from "@/constants/theme";
 import "@/global.css";
 import { usePalette, type Palette } from "@/src/theme";
-import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { useRouter } from "expo-router";
 import { useMemo } from "react";
-import {
-  ActivityIndicator,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
-import Animated, {
-  FadeIn,
-  FadeInDown,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from "react-native-reanimated";
+import { ActivityIndicator, ScrollView, StyleSheet, View } from "react-native";
+import Animated, { FadeInDown } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { PlanCard } from "../PlanCard";
-import { usePlans } from "../hooks/usePlans";
+import { CreatePlanButton } from "../components/CreatePlanButton";
+import { PlanCard } from "../components/PlanCard";
+import { EmptyState } from "../../components/EmptyState";
+import { WorkoutsMasthead } from "../components/WorkoutsMasthead";
+import { useWorkoutsScreen } from "../hooks/useWorkoutsScreen";
 
 export default function WorkoutsScreen() {
   const p = usePalette();
   const styles = useMemo(() => makeStyles(p), [p]);
-  const router = useRouter();
-  const { plans, loading } = usePlans();
-
-  const goToCreate = () => router.push("/(tabs)/Workouts/create-plan");
-
-  const ctaScale = useSharedValue(1);
-  const ctaStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: ctaScale.value }],
-  }));
+  const { plans, loading, openPlan } = useWorkoutsScreen();
 
   return (
     <SafeAreaView style={styles.safe} edges={["top"]}>
@@ -49,24 +28,7 @@ export default function WorkoutsScreen() {
       />
 
       <View style={styles.container}>
-        {/* Editorial masthead */}
-        <Animated.View
-          entering={FadeInDown.delay(40).duration(420)}
-          style={styles.masthead}
-        >
-          <Text style={styles.eyebrow}>Training Library</Text>
-          <Text style={styles.title}>Workouts</Text>
-
-          <View style={styles.statRow}>
-            <Text style={styles.statNumber}>
-              {String(plans.length).padStart(2, "0")}
-            </Text>
-            <Text style={styles.statLabel}>
-              active{"\n"}
-              {plans.length === 1 ? "plan" : "plans"}
-            </Text>
-          </View>
-        </Animated.View>
+        <WorkoutsMasthead planCount={plans.length} />
 
         <View style={styles.hairline} />
 
@@ -83,13 +45,10 @@ export default function WorkoutsScreen() {
               entering={FadeInDown.delay(140).duration(420)}
               style={styles.empty}
             >
-              <View style={styles.emptyGlyph}>
-                <Ionicons name="barbell-outline" size={26} color={p.muted} />
-              </View>
-              <Text style={styles.emptyTitle}>No plans yet</Text>
-              <Text style={styles.emptyBody}>
-                Build your first training plan{"\n"}to start tracking sessions.
-              </Text>
+              <EmptyState
+                title="No plans yet"
+                body={`Build your first training plan\nto start tracking sessions.`}
+              />
             </Animated.View>
           ) : (
             <View style={styles.list}>
@@ -98,35 +57,14 @@ export default function WorkoutsScreen() {
                   key={plan.id}
                   plan={plan}
                   index={index}
-                  onPress={() =>
-                    router.push({
-                      pathname: "/(tabs)/Workouts/plan",
-                      params: { planId: plan.id },
-                    })
-                  }
+                  onPress={() => openPlan(plan.id)}
                 />
               ))}
             </View>
           )}
         </ScrollView>
 
-        {/* Primary action */}
-        <Animated.View
-          entering={FadeIn.delay(360).duration(420)}
-          style={[styles.ctaWrap, ctaStyle]}
-        >
-          <Pressable
-            onPressIn={() => (ctaScale.value = withTiming(0.97, { duration: 120 }))}
-            onPressOut={() => (ctaScale.value = withTiming(1, { duration: 160 }))}
-            onPress={goToCreate}
-            style={styles.cta}
-          >
-            <Text style={styles.ctaText}>Create Plan</Text>
-            <View style={styles.ctaGlyph}>
-              <Ionicons name="add" size={15} color={p.accent} />
-            </View>
-          </Pressable>
-        </Animated.View>
+        <CreatePlanButton />
       </View>
     </SafeAreaView>
   );
@@ -134,116 +72,18 @@ export default function WorkoutsScreen() {
 
 const makeStyles = (p: Palette) =>
   StyleSheet.create({
-  safe: { flex: 1, backgroundColor: p.ink },
-  container: { flex: 1, backgroundColor: "transparent" },
+    safe: { flex: 1, backgroundColor: p.ink },
+    container: { flex: 1, backgroundColor: "transparent" },
 
-  masthead: {
-    paddingHorizontal: 20,
-    paddingTop: 14,
-    paddingBottom: 18,
-  },
-  eyebrow: {
-    color: p.accent,
-    fontSize: 10,
-    fontFamily: FontFamilies.medium,
-    letterSpacing: 3,
-    textTransform: "uppercase",
-    marginBottom: 8,
-  },
-  title: {
-    color: p.bone,
-    fontSize: 40,
-    fontFamily: FontFamilies.displayLight,
-    letterSpacing: -1,
-    lineHeight: 42,
-  },
-  statRow: {
-    flexDirection: "row",
-    alignItems: "flex-end",
-    gap: 10,
-    marginTop: 16,
-  },
-  statNumber: {
-    color: p.bone,
-    fontSize: 30,
-    fontFamily: FontFamilies.displayMedium,
-    letterSpacing: -1,
-    lineHeight: 30,
-  },
-  statLabel: {
-    color: p.muted,
-    fontSize: 11,
-    fontFamily: FontFamilies.regular,
-    letterSpacing: 1.4,
-    textTransform: "uppercase",
-    lineHeight: 14,
-    paddingBottom: 1,
-  },
+    hairline: {
+      marginHorizontal: 20,
+      height: StyleSheet.hairlineWidth,
+      backgroundColor: p.hairlineStrong,
+    },
 
-  hairline: {
-    marginHorizontal: 20,
-    height: StyleSheet.hairlineWidth,
-    backgroundColor: p.hairlineStrong,
-  },
+    scrollContent: { paddingHorizontal: 20, paddingTop: 18, paddingBottom: 24 },
+    list: { gap: 12 },
 
-  scrollContent: { paddingHorizontal: 20, paddingTop: 18, paddingBottom: 24 },
-  list: { gap: 12 },
-
-  center: { paddingTop: 60, alignItems: "center" },
-
-  empty: { paddingTop: 70, alignItems: "center" },
-  emptyGlyph: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: p.hairlineStrong,
-    backgroundColor: p.inkRaised,
-    marginBottom: 18,
-  },
-  emptyTitle: {
-    color: p.bone,
-    fontSize: 18,
-    fontFamily: FontFamilies.displayMedium,
-    letterSpacing: -0.3,
-    marginBottom: 7,
-  },
-  emptyBody: {
-    color: p.muted,
-    fontSize: 13,
-    fontFamily: FontFamilies.regular,
-    textAlign: "center",
-    lineHeight: 19,
-  },
-
-  ctaWrap: { paddingHorizontal: 20, paddingTop: 10, paddingBottom: 14 },
-  cta: {
-    height: 56,
-    borderRadius: 16,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 14,
-    backgroundColor: p.inkRaised,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: p.accentBorder,
-  },
-  ctaText: {
-    color: p.bone,
-    fontSize: 12,
-    fontFamily: FontFamilies.displayMedium,
-    letterSpacing: 2.4,
-    textTransform: "uppercase",
-  },
-  ctaGlyph: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: p.accentBorder,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
+    center: { paddingTop: 60, alignItems: "center" },
+    empty: { paddingTop: 70, alignItems: "center" },
+  });
