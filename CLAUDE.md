@@ -30,13 +30,16 @@ src/features/
     components/
     screens/
   workouts/                   # Core workout feature, split by sub-domain
-    plan/                     # Workout plans (PlanCard at root)
+    plan/                     # Workout plans
       screens/                # WorkoutsScreen (plan list), PlanDetailScreen, CreatePlanScreen
-      hooks/                  # usePlans, useCreatePlan, useTodaysWorkouts
+      hooks/                  # usePlans, useCreatePlan, useTodaysWorkouts, use*Screen
+      components/             # PlanCard, PlanWorkoutCard, PlanDetailMasthead/Nav, WorkoutsMasthead, WorkoutDayChips, CreatePlanButton
+      core/                   # Pure plan logic (planTotals)
     workout/                  # Single workouts
       screens/                # WorkoutDetailScreen, CreateWorkoutScreen, WorkoutTemplatesScreen
-      hooks/                  # useWorkouts, useCreateWorkout(+Form), useEditWorkoutExercises, useUpdateWorkoutDays
-      components/             # DayPicker, ExerciseEditorRow, ExercisePickerModal, DayChipsEditor, ExerciseRow, WorkoutDetailHeader
+      hooks/                  # useWorkouts, useCreateWorkout, useEditWorkoutExercises, useUpdateWorkoutDays, use*Screen
+      components/             # DayPicker, ExerciseEditorRow/Row/MuscleGroup, ExercisePickerModal, DayChipsEditor, WorkoutDetailHeader/Masthead, WorkoutEditActions, WorkoutDaysField, CreateWorkoutExercises, Template*
+      core/                   # Pure workout logic (exerciseGroups, templateSplits)
     session/                  # Active workout session (sessionView types at root)
       screens/                # WorkoutSessionScreen
       hooks/                  # useWorkoutSession(+Screen), useStartSession, useRestTimer, useSessionGuard, useExerciseHistory
@@ -44,6 +47,7 @@ src/features/
       core/                   # Pure session logic (no React)
       services/               # sessionLocalService, liveActivity, restNotifications
     context/ActivePlanContext.tsx  # Shared across sub-domains
+    components/               # Shared across sub-domains (EmptyState, CreateHeader, NameField)
     services/                 # Shared SQLite (*LocalService) + Supabase (*SupabaseService) reads/writes
     types/                    # Shared domain types
   outbox/                     # Offline-first write queue + Supabase sync (cross-feature)
@@ -68,6 +72,13 @@ All `app/` route files are single-line re-exports:
 export { default } from "@/src/features/workouts/screens/WorkoutsIndexScreen";
 ```
 All logic and UI lives in `src/features/`. The `app/` directory defines routing only.
+
+### Key Pattern: Screens Are Composition Only
+
+A screen imports one `use<Screen>Screen()` hook and renders components. It holds no
+route-param reads, no lookups, no `useRouter()` calls, and no second component
+declaration — those live in `hooks/` and `components/` respectively. See AGENTS.md
+("Screens hold no logic", "Components").
 
 ### Navigation Structure
 

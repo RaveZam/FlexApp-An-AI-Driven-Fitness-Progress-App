@@ -12,13 +12,29 @@ CLAUDE.md describes *what* the project is.
   That ordering is implementation detail — hide it behind one method.
 - Don't add interface (files, methods, params) without hiding complexity.
 
+## Screens hold no logic
+
+A screen file is imports + JSX. Every piece of React glue it would otherwise
+hold — route params, lookups against a list, derived flags, navigation
+callbacks — goes into a `use<Screen>Screen()` hook next to it.
+
+- **Extract the hook even at a single call site.** One consumer is the normal
+  case for a screen hook; that's not a reason to leave the glue inline. The
+  win is that the screen reads as layout and the logic is testable on its own.
+- The hook returns a flat object of what the screen renders and the callbacks
+  it fires (`{ plan, isActive, toggleActive, openWorkout }`).
+- `useRouter()` belongs in the hook, not the screen — a screen should not build
+  route objects inline.
+- This overrides the general "don't extract until reused" instinct below:
+  that rule is about inventing *shared abstractions*, not about moving code
+  into the layer it belongs in.
+
 ## Architecture Principles
 
 - No abstraction layers that don't reduce real duplication.
 - No design patterns by name (no "factory", "strategy", "observer") unless obvious.
 - No TypeScript generics gymnastics. If the type is complex, simplify the data.
 - Prefer co-location: keep logic near where it's used, not in a shared folder.
-- Don't extract a hook unless it's reused in 2+ places.
 - Avoid HOCs. Prefer composition via props.
 - RPC over client-side data transforms — push SQL logic to Supabase functions.
 - SQLite queries stay in the data layer, never inline in components.
@@ -44,6 +60,30 @@ Only what's left — useState, useEffect, memo, refs, cleanup — stays in the h
 - A feature may import shared layers and its own files freely.
 - Cross-feature use goes through the feature's public entry point only (see Imports), never a deep internal path.
 - No circular imports between features. If two features need the same thing, it belongs in a shared layer or its own feature (like `outbox`).
+
+## Components
+
+- **One component per file. Never two.** If a file declares a second component —
+  even a five-line chip or row used once right below it — that component gets its
+  own file in the feature's `components/`. This is not negotiable on size.
+- Name the file after what it renders (`PlanWorkoutCard.tsx`, `PlanEmptyState.tsx`),
+  not after where it sits in the tree.
+- A component owns its own `makeStyles(p)`. Don't share one style sheet across files.
+- `components/` is flat. Only nest a per-screen subfolder if one screen produces so
+  many pieces that the flat list stops being scannable.
+
+## Passing data down
+
+Props are the default. A parent that owns the data hands it to its children.
+
+- **Prop drilling a level or two is fine**, and it's the right call when the value
+  comes from spread-out state — a context, a focus-refetching hook, a list item's
+  own slice. Passing it down once beats every child re-deriving it.
+- Don't make each component call the feature hook itself just to avoid a prop.
+  With a hook like `usePlans` that refetches on focus, a second caller means a
+  second fetch — that's a behavior change wearing a refactor's clothes.
+- Pull data in a child only when it genuinely owns that concern (a modal fetching
+  its own detail record), not to shorten a prop list.
 
 ## Boundaries & DTOs
 
@@ -95,12 +135,16 @@ before a DAO call; the DAO already did.
 
 - Prefer flat over nested. Max 2 levels of nesting.
 - Functions do ONE thing. If you need to explain it with "and", split it.
-- No abstractions until you need them 3 times (rule of three).
+- No abstractions until you need them 3 times (rule of three). This governs new
+  shared *abstractions* — it never justifies leaving code in the wrong layer.
+  Pure logic goes to `core/` and screen glue goes to a hook on the first use.
 - Name variables for what they ARE, not what they do. `userId` not `getUserId`.
 - No barrel exports, no index.ts re-exports unless asked (exception: feature public entry, see Imports).
 - Inline comments only for WHY, never for WHAT.
 - Prefer explicit over clever. No one-liners that need decoding.
-- Default to flat file structure. Don't create folders for <3 files.
+- Default to flat file structure. Don't create folders for <3 files — except the
+  layer folders (`core/`, `services/`, `hooks/`, `components/`, `screens/`), which
+  exist from their first file so the layering stays readable.
 - No utility files/helpers until there's actual duplication.
 
 ## Supabase / Data
