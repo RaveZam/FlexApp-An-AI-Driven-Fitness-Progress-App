@@ -46,6 +46,34 @@ export function insertPlanLocal(plan: WorkoutPlan): void {
   });
 }
 
+export function renamePlanLocal(planId: string, name: string): void {
+  const db = getDb();
+  const now = new Date().toISOString();
+  db.withTransactionSync(() => {
+    plansDao.updatePlanName(planId, name, now);
+    enqueueOutbox({
+      entityType: "workout_plan",
+      entityId: planId,
+      operation: "update",
+      payload: { name, updated_at: now },
+    });
+  });
+}
+
+export function deletePlanLocal(planId: string): void {
+  const db = getDb();
+  db.withTransactionSync(() => {
+    workoutsDao.deleteWorkoutsByPlan(planId);
+    plansDao.deletePlan(planId);
+    enqueueOutbox({
+      entityType: "workout_plan",
+      entityId: planId,
+      operation: "delete",
+      payload: {},
+    });
+  });
+}
+
 export function listWorkouts(userId: string): Workout[] {
   return hydrateWorkouts(workoutsDao.listWorkoutsByUser(userId));
 }

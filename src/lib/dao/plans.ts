@@ -51,3 +51,20 @@ export function upsertPlan(plan: PlanRow): void {
     [plan.id, plan.userId, plan.name, plan.createdAt, plan.updatedAt]
   );
 }
+
+export function updatePlanName(
+  planId: string | null,
+  name: string,
+  updatedAt: string
+): void {
+  if (!planId) return;
+  getDb().runSync(
+    "UPDATE user_workout_plans SET name = ?, updated_at = ? WHERE id = ?",
+    [name, updatedAt, planId]
+  );
+}
+
+export function deletePlan(planId: string | null): void {
+  if (!planId) return;
+  getDb().runSync("DELETE FROM user_workout_plans WHERE id = ?", [planId]);
+}

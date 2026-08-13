@@ -1,13 +1,15 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback } from "react";
 import { useActivePlan } from "../../context/ActivePlanContext";
+import { useEditPlan } from "./useEditPlan";
 import { usePlans } from "./usePlans";
 
 export function usePlanDetailScreen() {
   const router = useRouter();
   const { planId } = useLocalSearchParams<{ planId: string }>();
-  const { plans } = usePlans();
+  const { plans, refresh } = usePlans();
   const { activePlanId, setActivePlan } = useActivePlan();
+  const { renamePlan, deletePlan } = useEditPlan(planId);
 
   const plan = plans.find((plan) => plan.id === planId);
   const isActive = activePlanId === planId;
@@ -22,5 +24,26 @@ export function usePlanDetailScreen() {
     [router]
   );
 
-  return { planId, plan, isActive, toggleActive, openWorkout };
+  const renamePlanAndRefresh = useCallback(
+    (name: string) => {
+      renamePlan(name);
+      refresh();
+    },
+    [renamePlan, refresh]
+  );
+
+  const deletePlanAndGoBack = useCallback(() => {
+    deletePlan();
+    router.back();
+  }, [deletePlan, router]);
+
+  return {
+    planId,
+    plan,
+    isActive,
+    toggleActive,
+    openWorkout,
+    renamePlan: renamePlanAndRefresh,
+    deletePlan: deletePlanAndGoBack,
+  };
 }

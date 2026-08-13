@@ -21,6 +21,32 @@ async function dispatchRow(row: OutboxRow): Promise<void> {
         .upsert(plan, { onConflict: "id" });
       if (error) throw error;
     }
+
+    if (row.operation === "update") {
+      const { name, updated_at } = payload as {
+        name: string;
+        updated_at: string;
+      };
+      const { error } = await supabase
+        .from("user_workout_plans")
+        .update({ name, updated_at })
+        .eq("id", row.entity_id);
+      if (error) throw error;
+    }
+
+    if (row.operation === "delete") {
+      const { error: workoutsError } = await supabase
+        .from("user_workouts")
+        .delete()
+        .eq("plan_id", row.entity_id);
+      if (workoutsError) throw workoutsError;
+
+      const { error } = await supabase
+        .from("user_workout_plans")
+        .delete()
+        .eq("id", row.entity_id);
+      if (error) throw error;
+    }
   }
 
   if (row.entity_type === "workout") {

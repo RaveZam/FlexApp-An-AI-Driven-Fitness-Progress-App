@@ -119,3 +119,8 @@ export function touchWorkoutUpdatedAt(
     workoutId,
   ]);
 }
+
+export function deleteWorkoutsByPlan(planId: string | null): void {
+  if (!planId) return;
+  getDb().runSync("DELETE FROM user_workouts WHERE plan_id = ?", [planId]);
+}
