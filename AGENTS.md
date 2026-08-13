@@ -152,6 +152,19 @@ before a DAO call; the DAO already did.
 - Always use RPCs for aggregations or multi-table reads. No chained client-side queries.
 - Never expose Supabase client outside the data layer.
 - RLS is the auth boundary — don't duplicate it in application logic.
+- **One remote-read path only.** `runDownloadSync` (`src/features/outbox`) is the sole place that pulls from
+  Supabase into SQLite. Feature hooks/services read SQLite only — never `supabase.from(...).select(...)` from
+  a hook or component. Two independent pull paths race and the loser can clobber a local edit that hasn't
+  synced yet; this happened once with `usePlans`/`useWorkouts` fetching Supabase on every screen focus.
+  If a screen needs fresher data, teach `runDownloadSync` about it, don't add a second fetch.
+- A local cache table that `runDownloadSync` populates needs a matching DAO **read** function. A write-only
+  cache (upsert with no list/get) is dead weight — something is still calling Supabase directly instead of
+  reading it, which is the bug above in disguise.
+- **Outbox payload carries the full snapshot.** `enqueueOutbox`'s `payload` must contain everything
+  `runOutboxSync()`'s dispatcher needs to write to Supabase. The dispatcher must not re-query SQLite to
+  fill in gaps — that split write path is a second source of truth and drifts silently.
+- Every write service does the DAO write and `enqueueOutbox` together inside one `db.withTransactionSync(...)`.
+  Never call them as two separate statements — a crash between them silently drops the sync.
 
 ## What NOT to do
 

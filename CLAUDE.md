@@ -48,7 +48,7 @@ src/features/
       services/               # sessionLocalService, liveActivity, restNotifications
     context/ActivePlanContext.tsx  # Shared across sub-domains
     components/               # Shared across sub-domains (EmptyState, CreateHeader, NameField)
-    services/                 # Shared SQLite (*LocalService) + Supabase (*SupabaseService) reads/writes
+    services/                 # SQLite-only (*LocalService): reads + writes (DAO write + enqueueOutbox together)
     types/                    # Shared domain types
   outbox/                     # Offline-first write queue + Supabase sync (cross-feature)
     services/outbox.ts        # enqueueOutbox()
@@ -97,8 +97,8 @@ Workouts has a nested Stack: `index → PlanDetails → CreatePlanScreen → Wor
 
 ### Data Fetching & Writes
 
-- **Reads**: hooks in `src/features/workouts/hooks/` call services in `services/` (SQLite for local-first data, Supabase for catalog/remote).
-- **Writes**: mutations write to SQLite immediately, then `enqueueOutbox(...)` queues a row for `runOutboxSync()` to push to Supabase. The outbox lives in its own feature (`src/features/outbox`) so other features can use it.
+- **Reads**: hooks call services in `services/`, which read SQLite only. There is exactly one path that pulls from Supabase into SQLite — `runDownloadSync()` (`src/features/outbox/services/download.ts`), triggered on login (`authGate`) and app foreground (`useSyncScheduler`). A feature hook or component never calls `supabase.from(...)` for a read; if data needs to be fresher, that means teaching `runDownloadSync` about it, not adding a second fetch.
+- **Writes**: mutations write to SQLite and call `enqueueOutbox(...)` together, inside one `services/` function wrapped in `db.withTransactionSync(...)`. The outbox lives in its own feature (`src/features/outbox`) so other features can use it. The enqueued `payload` must carry every field `runOutboxSync()`'s dispatcher needs to push to Supabase — the dispatcher must not re-query SQLite to fill in what the payload left out.
 
 ### Key Technologies
 
