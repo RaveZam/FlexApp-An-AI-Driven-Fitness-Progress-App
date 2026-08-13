@@ -14,7 +14,10 @@ export function getPreferences(userId: string): UserPreferences | null {
 }
 
 export function getRestTimerSeconds(userId: string): number {
-  return preferencesDao.getPreferencesForUser(userId)?.restTimerSeconds ?? DEFAULT_REST_TIMER_SECONDS;
+  return (
+    preferencesDao.getPreferencesForUser(userId)?.restTimerSeconds ??
+    DEFAULT_REST_TIMER_SECONDS
+  );
 }
 
 export function setActivePlan(userId: string, planId: string | null): void {
@@ -31,7 +34,7 @@ export function setActivePlan(userId: string, planId: string | null): void {
 export function setRestTimerSeconds(userId: string, seconds: number): void {
   const clamped = Math.min(
     MAX_REST_TIMER_SECONDS,
-    Math.max(MIN_REST_TIMER_SECONDS, Math.round(seconds))
+    Math.max(MIN_REST_TIMER_SECONDS, Math.round(seconds)),
   );
   const now = new Date().toISOString();
   preferencesDao.upsertRestTimerSecondsForUser(userId, clamped, now);

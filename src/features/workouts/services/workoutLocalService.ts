@@ -7,7 +7,9 @@ import { getDb } from "@/src/lib/db";
 import type { Exercise, Workout, WorkoutPlan } from "../types";
 
 function hydrateWorkouts(workoutRows: workoutsDao.WorkoutRow[]): Workout[] {
-  const daysByWorkout = workoutDaysDao.listWorkoutDaysByWorkoutIds(workoutRows.map((w) => w.id));
+  const daysByWorkout = workoutDaysDao.listWorkoutDaysByWorkoutIds(
+    workoutRows.map((w) => w.id),
+  );
   return workoutRows.map((w) => ({
     ...w,
     daysOfWeek: daysByWorkout.get(w.id) ?? [],
@@ -50,7 +52,8 @@ export function upsertPlans(plans: WorkoutPlan[]): void {
       plansDao.upsertPlan(p);
       for (const w of p.workouts) {
         const existingUpdatedAt = workoutsDao.getWorkoutUpdatedAt(w.id);
-        const remoteIsNewer = !existingUpdatedAt || w.updatedAt >= existingUpdatedAt;
+        const remoteIsNewer =
+          !existingUpdatedAt || w.updatedAt >= existingUpdatedAt;
 
         workoutsDao.upsertWorkout(w);
         if (remoteIsNewer) {
@@ -73,7 +76,8 @@ export function upsertWorkouts(workouts: Workout[]): void {
   db.withTransactionSync(() => {
     for (const w of workouts) {
       const existingUpdatedAt = workoutsDao.getWorkoutUpdatedAt(w.id);
-      const remoteIsNewer = !existingUpdatedAt || w.updatedAt >= existingUpdatedAt;
+      const remoteIsNewer =
+        !existingUpdatedAt || w.updatedAt >= existingUpdatedAt;
 
       workoutsDao.upsertWorkout(w);
       if (remoteIsNewer) {
@@ -86,7 +90,10 @@ export function upsertWorkouts(workouts: Workout[]): void {
   });
 }
 
-export function updateWorkoutDays(workoutId: string, daysOfWeek: number[]): void {
+export function updateWorkoutDays(
+  workoutId: string,
+  daysOfWeek: number[],
+): void {
   const db = getDb();
   const now = new Date().toISOString();
   db.withTransactionSync(() => {
@@ -143,11 +150,15 @@ export function removeExerciseFromWorkout(exerciseId: string): void {
 export function updateExerciseTargets(
   exerciseId: string,
   targetSets: number,
-  targetReps: number
+  targetReps: number,
 ): void {
   const db = getDb();
   db.withTransactionSync(() => {
-    workoutExercisesDao.updateWorkoutExerciseTargets(exerciseId, targetSets, targetReps);
+    workoutExercisesDao.updateWorkoutExerciseTargets(
+      exerciseId,
+      targetSets,
+      targetReps,
+    );
     enqueueOutbox({
       entityType: "workout_exercise",
       entityId: exerciseId,
@@ -161,7 +172,11 @@ export function insertWorkoutLocal(workout: Workout): void {
   const db = getDb();
   db.withTransactionSync(() => {
     workoutsDao.insertWorkout(workout);
-    workoutDaysDao.replaceWorkoutDays(workout.id, workout.daysOfWeek, workout.createdAt);
+    workoutDaysDao.replaceWorkoutDays(
+      workout.id,
+      workout.daysOfWeek,
+      workout.createdAt,
+    );
     for (const e of workout.exercises) {
       workoutExercisesDao.insertWorkoutExercise(e);
     }

@@ -45,7 +45,8 @@ export function useCreateWorkout() {
 
       return workout;
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Failed to create workout";
+      const msg =
+        err instanceof Error ? err.message : "Failed to create workout";
       setError(msg);
       throw err;
     } finally {
