@@ -30,8 +30,7 @@ export function usePlateauTracker(): { plateaus: PlateauWithTip[] } {
       return;
     }
     const exercises = toExerciseProgress(
-      listRecentTopSetsByUser(userId),
-      DETECTION_LIMIT,
+      listRecentTopSetsByUser(userId, DETECTION_LIMIT),
     );
     setPlateaus(detectPlateaus(exercises));
   }, [userId]);

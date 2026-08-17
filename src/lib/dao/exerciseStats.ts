@@ -192,18 +192,13 @@ export type UserExerciseTopSetRow = {
   weight: number;
   actualReps: number | null;
 };
-
-// Same per-session top-set selection as listRecentTopSetsByCatalogId
-// (heaviest completed set, tie-broken by reps) but across every exercise the
-// user has logged rather than one catalog id, so callers building a
-// dashboard don't have to reimplement that selection logic in JS.
-//
-// Only counts finished workouts with an actual logged weight above zero —
-// this feeds a historical PR/trend dashboard, not a live in-workout view, so
-// an in-progress session or a zero-weight placeholder set shouldn't appear
-// as a data point.
+// Gets each exercise's own last `sessionLimit` sessions (top set per
+// session, finished workouts only) — the cap is per exercise, not a shared
+// session window, so an exercise trained less often than others still gets
+// its own recent history instead of being starved by it.
 export function listRecentTopSetsByUser(
   userId: string | null,
+  sessionLimit: number,
 ): UserExerciseTopSetRow[] {
   if (!userId) return [];
 
@@ -215,35 +210,44 @@ export function listRecentTopSetsByUser(
     weight: number;
     actual_reps: number | null;
   }>(
-    `SELECT se.name AS exercise_name,
-            c.muscle_group AS muscle_group,
-            ws.id AS session_id,
-            ws.started_at AS started_at,
-            ss.weight AS weight,
-            ${TOP_SET_REPS_SQL} AS actual_reps
-     FROM workout_sessions ws
-     JOIN session_exercises se ON se.session_id = ws.id
-     JOIN session_sets ss ON ss.session_exercise_id = se.id
-     LEFT JOIN exercises_catalog c ON c.id = se.catalog_exercise_id
-     WHERE ws.user_id = ?
-       AND ss.completed = 1
-       AND ss.weight IS NOT NULL
-       AND ss.weight > 0
-       AND ws.status = 'completed'
-     ORDER BY se.name, ss.weight DESC, actual_reps DESC`,
-    [userId],
+    `WITH top_sets AS (
+       SELECT se.name AS exercise_name,
+              NULLIF(TRIM(LOWER(c.muscle_group)), '') AS muscle_group,
+              ws.id AS session_id,
+              ws.started_at AS started_at,
+              ss.weight AS weight,
+              ${TOP_SET_REPS_SQL} AS actual_reps,
+              ROW_NUMBER() OVER (
+                PARTITION BY se.name, ws.id
+                ORDER BY ss.weight DESC, ${TOP_SET_REPS_SQL} DESC
+              ) AS set_rank
+       FROM workout_sessions ws
+       JOIN session_exercises se ON se.session_id = ws.id
+       JOIN session_sets ss ON ss.session_exercise_id = se.id
+       LEFT JOIN exercises_catalog c ON c.id = se.catalog_exercise_id
+       WHERE ws.user_id = ?
+         AND ss.completed = 1
+         AND ss.weight IS NOT NULL
+         AND ss.weight > 0
+         AND ws.status = 'completed'
+     ),
+     recent_sessions AS (
+       SELECT *,
+              ROW_NUMBER() OVER (
+                PARTITION BY exercise_name
+                ORDER BY started_at DESC
+              ) AS session_rank
+       FROM top_sets
+       WHERE set_rank = 1
+     )
+     SELECT exercise_name, muscle_group, session_id, started_at, weight, actual_reps
+     FROM recent_sessions
+     WHERE session_rank <= ?
+     ORDER BY exercise_name, started_at ASC`,
+    [userId, sessionLimit],
   );
 
-  // Dedup key needs the exercise name too — topRowPerSession alone only
-  // dedupes by session, which would collapse different exercises logged in
-  // the same session into one row.
-  const seen = new Map<string, (typeof rows)[number]>();
-  for (const r of rows) {
-    const key = `${r.exercise_name}|${r.session_id}`;
-    if (!seen.has(key)) seen.set(key, r);
-  }
-
-  return [...seen.values()].map((r) => ({
+  return rows.map((r) => ({
     exerciseName: r.exercise_name,
     muscleGroup: r.muscle_group,
     sessionId: r.session_id,
