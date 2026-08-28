@@ -12,6 +12,10 @@ import Animated, {
 } from "react-native-reanimated";
 import Svg, { Circle } from "react-native-svg";
 import { endRestActivity, startRestActivity } from "../services/liveActivity";
+import {
+  cancelRestDoneAlert,
+  scheduleRestDoneAlert,
+} from "../services/restNotifications";
 
 const RADIUS = 110;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
@@ -42,10 +46,32 @@ export default function RestTimerModal({ visible, onClose, restSeconds = 90 }: P
   // where JS timers are suspended and would otherwise drift.
 
   const endsAtRef = useRef(0);
+  // Whether the end-of-rest alert has already reached the user, by any route —
+  // the in-app buzz or the OS notification. Keeps a single rest from alerting
+  // twice when the interval catches up to a deadline that already passed.
+  const alertedRef = useRef(false);
+  // Whether a local notification is pending for this rest. When it isn't
+  // (denied permission, unsupported platform), the app owes the buzz itself.
+  const osAlertRef = useRef(false);
+
+  // The in-app alert, guarded so one rest buzzes at most once.
+  const buzz = () => {
+    if (alertedRef.current) return;
+    alertedRef.current = true;
+    Vibration.vibrate(REST_DONE_PATTERN);
+  };
 
   useEffect(() => {
     if (!visible) return;
     endsAtRef.current = Date.now() + restTime * 1000;
+    alertedRef.current = false;
+    osAlertRef.current = false;
+
+    // Hand the deadline to the OS up front. JS is suspended in the background,
+    // so the alert can't be decided at zero — it has to be scheduled at start.
+    scheduleRestDoneAlert(endsAtRef.current).then((scheduled) => {
+      osAlertRef.current = scheduled;
+    });
 
     // Hand the same absolute end time to the iOS Live Activity so the Dynamic
     // Island / Lock Screen counts down in lockstep with the on-screen ring,
@@ -67,6 +93,13 @@ export default function RestTimerModal({ visible, onClose, restSeconds = 90 }: P
         duration: remainingMs,
         easing: Easing.linear,
       });
+
+      // Rest ran out while we were away. If a notification was pending the OS
+      // already buzzed; if not, this resume is the first chance to.
+      if (remainingMs <= 0 && restTime > 0) {
+        if (osAlertRef.current) alertedRef.current = true;
+        else buzz();
+      }
     };
 
     sync();
@@ -77,15 +110,18 @@ export default function RestTimerModal({ visible, onClose, restSeconds = 90 }: P
       if (remainingMs <= 0 && intervalRef.current) {
         clearInterval(intervalRef.current);
         // Fires only on a natural countdown-to-zero — never on mount (first tick
-        // is 1s in) and never on Skip (skip clears the interval first). In true
-        // background JS is suspended, so the OS notification handles the alert.
-        Vibration.vibrate(REST_DONE_PATTERN);
+        // is 1s in) and never on Skip (skip clears the interval first). The
+        // foreground notification is suppressed, so this is the alert on screen.
+        buzz();
       }
     }, 1000);
 
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
       appStateSub.remove();
+      // Skip, finish or unmount all land here — drop the pending OS alert so it
+      // can't fire for a rest the user already left.
+      cancelRestDoneAlert();
       // Tear down the Live Activity on skip, natural finish, or unmount — all of
       // which flip `visible` off (or drop the component) and run this cleanup.
       endRestActivity();
