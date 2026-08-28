@@ -5,7 +5,7 @@ import ActionButton from "@/components/ui/ActionButton";
 import BlurOverlay from "@/components/ui/BlurOverlay";
 import LoadingOverlay from "@/components/ui/LoadingOverlay";
 import {
-  PlateauCard,
+  // PlateauCard,
   ProgressiveOverload,
   ScheduleBar,
   TodaysWorkoutSection,
@@ -102,7 +102,7 @@ export default function Index() {
           <View style={{ gap: 14 }}>
             {/* <HomePageChartGraph />x */}
             <ProgressiveOverload />
-            <PlateauCard />
+            {/* <PlateauCard /> */}
             {/* <WeeklyVolume /> */}
           </View>
 
