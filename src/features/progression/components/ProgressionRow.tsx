@@ -96,7 +96,7 @@ export function ProgressionRow({ exercise, delay, onPress }: Props) {
                   key={point.sessionId}
                   index={i}
                   heightPx={heights[i]}
-                  restingOpacity={0.42 + (i / Math.max(1, points.length - 1)) * 0.45}
+                  positionRatio={i / Math.max(1, points.length - 1)}
                   isBest={i === bestIndex}
                   isLatest={i === points.length - 1}
                 />
@@ -125,8 +125,8 @@ export function ProgressionRow({ exercise, delay, onPress }: Props) {
                       cx={c.x}
                       cy={c.y}
                       r={i === bestIndex ? 2.2 : 1.4}
-                      fill={i === bestIndex ? p.accent : p.ink}
-                      stroke={p.accent}
+                      fill={i === bestIndex ? p.accentLime : p.ink}
+                      stroke={i === bestIndex ? p.accentLime : p.accent}
                       strokeWidth={i === bestIndex ? 0 : 1}
                     />
                   ))}

@@ -1,5 +1,4 @@
-import { usePalette, type Palette } from "@/src/theme";
-import { LinearGradient } from "expo-linear-gradient";
+import { loadLadder, usePalette, type Palette } from "@/src/theme";
 import { useEffect, useMemo } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import ReAnimated, {
@@ -17,17 +16,41 @@ export const BAR_GAP = 7;
 type Props = {
   index: number;
   heightPx: number;
-  restingOpacity: number;
+  /** 0 = oldest session in view, 1 = newest. Drives the resting rung. */
+  positionRatio: number;
   isBest: boolean;
   isLatest: boolean;
   isSelected?: boolean;
   onPress?: () => void;
 };
 
+// Blend two #rrggbb colors. t=0 -> a, t=1 -> b.
+function mixHex(a: string, b: string, t: number): string {
+  const from = [1, 3, 5].map((i) => parseInt(a.slice(i, i + 2), 16));
+  const to = [1, 3, 5].map((i) => parseInt(b.slice(i, i + 2), 16));
+  const hex = from
+    .map((v, i) =>
+      Math.round(v + (to[i] - v) * t)
+        .toString(16)
+        .padStart(2, "0"),
+    )
+    .join("");
+  return `#${hex}`;
+}
+
+// Resting bars climb the bottom three rungs of the load ladder by recency.
+// The top two rungs (bright, lime) are held back for the latest session and a PR.
+function restingColor(p: Palette, ratio: number): string {
+  const rungs = loadLadder(p).slice(0, 3);
+  const span = Math.max(0, Math.min(1, ratio)) * (rungs.length - 1);
+  const lo = Math.min(rungs.length - 2, Math.floor(span));
+  return mixHex(rungs[lo], rungs[lo + 1], span - lo);
+}
+
 export function ProgressionBar({
   index,
   heightPx,
-  restingOpacity,
+  positionRatio,
   isBest,
   isLatest,
   isSelected,
@@ -35,11 +58,20 @@ export function ProgressionBar({
 }: Props) {
   const p = usePalette();
   const styles = useMemo(() => makeStyles(p), [p]);
+
+  // Hue carries recency now, so bars sit at full opacity; a PR gets the top
+  // rung, the latest (or tapped) session the one below it.
+  const fill = isBest
+    ? p.accentLime
+    : isLatest || isSelected
+      ? p.accentBright
+      : restingColor(p, positionRatio);
+
   const grow = useSharedValue(0);
   useEffect(() => {
     grow.value = withDelay(
       140 + index * 55,
-      withTiming(1, { duration: 420, easing: Easing.out(Easing.cubic) })
+      withTiming(1, { duration: 420, easing: Easing.out(Easing.cubic) }),
     );
   }, [grow, index]);
 
@@ -48,26 +80,17 @@ export function ProgressionBar({
   const bar = (
     <View style={styles.column}>
       {/* Cap dot marks the most recent session at a glance. */}
-      <View style={[styles.cap, isLatest ? styles.capActive : styles.capHidden]} />
+      <View
+        style={[styles.cap, { backgroundColor: isLatest ? fill : "transparent" }]}
+      />
       <ReAnimated.View
         style={[
           styles.bar,
-          { opacity: isBest || isSelected ? 1 : restingOpacity },
+          { backgroundColor: fill },
           isSelected && styles.barSelected,
           growStyle,
         ]}
-      >
-        <LinearGradient
-          colors={
-            isBest || isSelected
-              ? [p.accent, p.accentDeep]
-              : [p.accent, p.accentBorderSoft]
-          }
-          start={{ x: 0, y: 0 }}
-          end={{ x: 0, y: 1 }}
-          style={StyleSheet.absoluteFill}
-        />
-      </ReAnimated.View>
+      />
     </View>
   );
 
@@ -94,8 +117,6 @@ const makeStyles = (p: Palette) =>
       borderRadius: 2,
       marginBottom: 4,
     },
-    capActive: { backgroundColor: p.accent },
-    capHidden: { backgroundColor: "transparent" },
     bar: {
       width: BAR_WIDTH,
       borderTopLeftRadius: 3,
