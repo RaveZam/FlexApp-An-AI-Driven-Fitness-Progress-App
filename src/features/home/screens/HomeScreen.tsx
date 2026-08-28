@@ -125,13 +125,6 @@ export default function Index() {
                   ? "Workout Finished"
                   : "Start Workout"
             }
-            icon={
-              activeSession
-                ? "play-skip-forward"
-                : showFinished
-                  ? "checkmark-done"
-                  : "play"
-            }
             disabled={isRestDay || showFinished}
           />
         </Animated.View>
