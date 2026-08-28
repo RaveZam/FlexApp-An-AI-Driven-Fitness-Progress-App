@@ -5,7 +5,18 @@ export type Palette = {
   bone: string;
   muted: string;
   mutedSoft: string;
+  /**
+   * The load ladder — one green hue family climbing in brightness.
+   * Brightness encodes recency and intensity: pine is the oldest/faintest
+   * session, lime is reserved for a personal best. Never reach past `accent`
+   * for decoration; the top two stops have to be earned by the data.
+   */
+  accentPine: string;
+  accentForest: string;
   accent: string;
+  accentBright: string;
+  accentLime: string;
+
   accentDeep: string;
   accentSoft: string;
   accentBorder: string;
@@ -18,43 +29,62 @@ export type Palette = {
   onAccent: string;
 };
 
+/** The ladder in order, so charts can index into it by position. */
+export function loadLadder(p: Palette): string[] {
+  return [p.accentPine, p.accentForest, p.accent, p.accentBright, p.accentLime];
+}
+
 export const Palettes: { light: Palette; dark: Palette } = {
   dark: {
-    ink: "#060606",
-    inkRaised: "#0c0c0c",
-    inkSunken: "#0a0a0a",
-    bone: "#f5f3ef",
-    muted: "#6b6b6b",
-    mutedSoft: "#3a3a3a",
-    accent: "#34d399",
-    accentDeep: "#059669",
-    accentSoft: "rgba(52,211,153,0.08)",
-    accentBorder: "rgba(52,211,153,0.45)",
-    accentBorderSoft: "rgba(52,211,153,0.25)",
-    danger: "#f87171",
-    dangerSoft: "rgba(248,113,113,0.08)",
-    dangerBorder: "rgba(248,113,113,0.45)",
-    hairline: "rgba(245,243,239,0.07)",
-    hairlineStrong: "rgba(245,243,239,0.14)",
-    onAccent: "#060606",
+    // Warm charcoal with a faint green bias — panels read as the accent's
+    // own family instead of sitting on neutral black.
+    ink: "#0E100E",
+    inkRaised: "#191C19",
+    inkSunken: "#131613",
+    bone: "#F2F5F1",
+    muted: "#8A918A",
+    mutedSoft: "#4A504A",
+
+    accentPine: "#14532D",
+    accentForest: "#1E7A4A",
+    accent: "#56D07A",
+    accentBright: "#7FE39B",
+    accentLime: "#9BEE6A",
+
+    accentDeep: "#1E7A4A",
+    accentSoft: "rgba(86,208,122,0.10)",
+    accentBorder: "rgba(86,208,122,0.42)",
+    accentBorderSoft: "rgba(86,208,122,0.20)",
+    danger: "#F0806B",
+    dangerSoft: "rgba(240,128,107,0.10)",
+    dangerBorder: "rgba(240,128,107,0.40)",
+    hairline: "rgba(242,245,241,0.06)",
+    hairlineStrong: "rgba(242,245,241,0.12)",
+    onAccent: "#0E100E",
   },
   light: {
-    ink: "#F5F3EF",
+    ink: "#F4F6F2",
     inkRaised: "#FFFFFF",
-    inkSunken: "#ECEAE4",
-    bone: "#1A1917",
-    muted: "#6E6B64",
-    mutedSoft: "#B4B0A8",
-    accent: "#059669",
-    accentDeep: "#047857",
-    accentSoft: "rgba(5,150,105,0.10)",
-    accentBorder: "rgba(5,150,105,0.35)",
-    accentBorderSoft: "rgba(5,150,105,0.20)",
-    danger: "#DC2626",
-    dangerSoft: "rgba(220,38,38,0.10)",
-    dangerBorder: "rgba(220,38,38,0.35)",
-    hairline: "rgba(26,25,23,0.08)",
-    hairlineStrong: "rgba(26,25,23,0.14)",
+    inkSunken: "#E9EDE7",
+    bone: "#141813",
+    muted: "#67705F",
+    mutedSoft: "#AFB6A9",
+
+    accentPine: "#0F3D22",
+    accentForest: "#17663D",
+    accent: "#1E8B4E",
+    accentBright: "#37B36B",
+    accentLime: "#5FA31C",
+
+    accentDeep: "#0F3D22",
+    accentSoft: "rgba(30,139,78,0.10)",
+    accentBorder: "rgba(30,139,78,0.34)",
+    accentBorderSoft: "rgba(30,139,78,0.18)",
+    danger: "#C24A2E",
+    dangerSoft: "rgba(194,74,46,0.10)",
+    dangerBorder: "rgba(194,74,46,0.34)",
+    hairline: "rgba(20,24,19,0.07)",
+    hairlineStrong: "rgba(20,24,19,0.13)",
     onAccent: "#FFFFFF",
   },
 };

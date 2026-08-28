@@ -1,4 +1,4 @@
-export { Palettes, type Palette } from "@/src/theme/palettes";
+export { loadLadder, Palettes, type Palette } from "@/src/theme/palettes";
 export {
   ThemeProvider,
   useTheme,
