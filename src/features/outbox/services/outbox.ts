@@ -10,16 +10,22 @@ export function enqueueOutbox(params: {
   payload: object;
 }): void {
   const db = getDb();
+  const id = generateUUID();
+  const createdAt = new Date().toISOString();
   db.runSync(
     `INSERT INTO outbox (id, entity_type, entity_id, operation, payload, created_at, synced_at)
      VALUES (?, ?, ?, ?, ?, ?, NULL)`,
     [
-      generateUUID(),
+      id,
       params.entityType,
       params.entityId,
       params.operation,
       JSON.stringify(params.payload),
-      new Date().toISOString(),
+      createdAt,
     ],
+  );
+  console.log(
+    `[outbox] enqueued ${params.entityType}/${params.entityId} (${params.operation}) id=${id} at=${createdAt}`,
+    params.payload,
   );
 }

@@ -12,6 +12,10 @@ type OutboxRow = {
 
 async function dispatchRow(row: OutboxRow): Promise<void> {
   const payload = JSON.parse(row.payload);
+  console.log(
+    `[outbox] dispatch ${row.entity_type}/${row.entity_id} (${row.operation}) id=${row.id}`,
+    payload,
+  );
 
   if (row.entity_type === "workout_plan") {
     if (row.operation === "create") {
@@ -322,27 +326,64 @@ function markSynced(id: string): void {
 
 export async function runOutboxSync(): Promise<void> {
   const hasNetwork = await isWifiConnected();
-  if (!hasNetwork) return;
+  if (!hasNetwork) {
+    console.log("[outbox] sync skipped — no wifi");
+    return;
+  }
 
   const {
     data: { session },
   } = await supabase.auth.getSession();
-  if (!session) return;
+  if (!session) {
+    console.log("[outbox] sync skipped — no session");
+    return;
+  }
 
   const pending = getPendingRows();
-  if (pending.length === 0) return;
+  if (pending.length === 0) {
+    console.log("[outbox] sync — nothing pending");
+    return;
+  }
 
+  console.log(
+    `[outbox] sync — ${pending.length} pending:`,
+    pending.map((r) => `${r.entity_type}/${r.operation}#${r.id}`),
+  );
+
+  let synced = 0;
+  let failed = 0;
   for (const row of pending) {
     try {
       await dispatchRow(row);
       markSynced(row.id);
+      synced += 1;
+      console.log(
+        `[outbox] synced ${row.entity_type}/${row.entity_id} (${row.operation}) id=${row.id}`,
+      );
     } catch (err) {
+      failed += 1;
       // leave the row pending so it retries; surface why for offline debugging
+      const e = err as {
+        message?: string;
+        code?: string;
+        details?: string;
+        hint?: string;
+      };
       console.warn(
-        `Outbox sync failed for ${row.entity_type}/${row.entity_id} (${row.operation}): ${
-          err instanceof Error ? err.message : String(err)
-        }`,
+        `[outbox] sync FAILED ${row.entity_type}/${row.entity_id} (${row.operation}) id=${row.id}`,
+        {
+          message: e?.message ?? String(err),
+          code: e?.code,
+          details: e?.details,
+          hint: e?.hint,
+          payload: JSON.parse(row.payload),
+        },
       );
     }
   }
+  console.log(
+    `[outbox] sync done — ${synced} synced, ${failed} failed, ${
+      pending.length - synced - failed
+    } untouched`,
+  );
 }
