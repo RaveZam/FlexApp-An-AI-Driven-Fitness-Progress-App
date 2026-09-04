@@ -72,6 +72,32 @@ Only what's left — useState, useEffect, memo, refs, cleanup — stays in the h
 - `components/` is flat. Only nest a per-screen subfolder if one screen produces so
   many pieces that the flat list stops being scannable.
 
+## UI implementation
+
+The design language itself (the load ladder, the spine, no cards) is in CLAUDE.md.
+These are the mechanics for building to it.
+
+- Color comes from `usePalette()`. No raw hex in a feature file — if a color is missing,
+  add the token to **both** schemes in `src/theme/palettes.ts`.
+- Every component owns its own sheet and memoizes it:
+  `const makeStyles = (p: Palette) => StyleSheet.create({...})`, then
+  `const styles = useMemo(() => makeStyles(p), [p])`.
+- **Never pass a function to a `Pressable`'s `style`** — NativeWind v4 drops the function
+  form, so `({ pressed }) => ...` silently does nothing. Press feedback is a Reanimated
+  shared value driving opacity on an `Animated.createAnimatedComponent(Pressable)`;
+  `components/ui/ActionButton.tsx` is the pattern.
+- Prefer opacity cross-fades for state changes. Reach for movement only when the motion
+  is the information (a bar growing to its value).
+- Gate every animation on `useReducedMotion()`. The reduced path sets the end value
+  directly — it never skips the state change.
+- Drive animations from `useEffect`, not from a shared-value write during render.
+- Interactive elements carry `accessibilityRole` and a label naming the thing, not the
+  control: `Actions for Push A`, not `More`.
+- A layout constant two or more components must agree on (a gutter x, a chart height)
+  lives in one small module beside them and gets imported. A spine drawn at two different
+  x values is a broken line, not a style difference — this is the exception to "no
+  utility files".
+
 ## Passing data down
 
 Props are the default. A parent that owns the data hands it to its children.

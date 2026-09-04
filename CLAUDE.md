@@ -111,6 +111,38 @@ Workouts has a nested Stack: `index → PlanDetails → CreatePlanScreen → Wor
 | Icons | Expo Vector Icons + Expo Symbols |
 | Storage | AsyncStorage + Expo SQLite |
 
+### Visual Language
+
+`src/theme/palettes.ts` is the only source of color. Both schemes are always filled in.
+
+The accent is a **load ladder** — `accentPine → accentForest → accent → accentBright →
+accentLime`, one green hue family climbing in brightness. Brightness encodes *load and
+recency*, never decoration. The top two rungs have to be earned by the data (a personal
+best, the latest session, the heaviest fifth of the log); nothing reaches past `accent`
+just to look brighter. `loadLadder(p)` returns the ladder in order so charts index into
+it, and `loadRung(value, peak)` maps a figure onto it.
+
+Type is two families from `constants/theme.ts`: **Outfit** (`display*`) for figures,
+month names, and headline moments — its light weights at large sizes are the app's quiet
+register; **Inter** for names, body, and the uppercase letter-spaced eyebrows and labels.
+Numbers that stack in a column get `fontVariant: ["tabular-nums"]`.
+
+**`src/features/history/` is the reference implementation** of where the app is heading —
+a ledger, not a dashboard. New surfaces should look like it:
+
+- **No cards.** No `inkRaised` panels, no borders, no radii. The page is type, hairline
+  rules, and data marks on flat `ink`. Structure comes from alignment, not containers.
+- **The spine.** One hairline runs the length of the list in a fixed left gutter
+  (`components/spine.ts`). Entries hang off it as nodes whose size *and* ladder rung are
+  their volume; months cut the line with a notch instead of getting a header band.
+- **The list is the chart.** Reading the log top to bottom is reading the data — the
+  heavy days are visibly bigger and brighter. No separate chart restating the rows.
+- **Structure encodes information.** A month marker carries that month's own session
+  count and volume. A node carries load *and* status (hollow = open or cancelled).
+  Nothing is present only to divide or decorate.
+- **One orchestrated motion moment per screen** — the skyline drawing itself on load.
+  Everything else fades in. No per-row entrance staggers.
+
 ### Environment Variables
 
 ```
