@@ -28,7 +28,7 @@
         <key>CFBundleURLSchemes</key>
         <array>
           <string>flexapp</string>
-          <string>com.anonymous.flexapp</string>
+          <string>com.runielleraven.flexapp</string>
         </array>
       </dict>
       <dict>

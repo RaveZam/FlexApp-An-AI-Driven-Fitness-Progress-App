@@ -1,4 +1,4 @@
-package com.anonymous.flexapp
+package com.runielleraven.flexapp
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build

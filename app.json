@@ -11,7 +11,7 @@
     "jsEngine": "hermes",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.flexapp",
+      "bundleIdentifier": "com.runielleraven.flexapp",
       "appleTeamId": "HS46RRJMRK",
       "infoPlist": {
         "NSSupportsLiveActivities": true
@@ -23,7 +23,7 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.anonymous.flexapp"
+      "package": "com.runielleraven.flexapp"
     },
     "web": {
       "bundler": "metro",
