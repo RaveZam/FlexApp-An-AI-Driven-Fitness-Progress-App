@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { router, usePathname } from "expo-router";
 import { readAuthGate } from "@/src/features/auth/services/authGate";
 import {
@@ -13,9 +13,6 @@ export type AuthGuardState = {
 
 export function useAuthGuard(): AuthGuardState {
   const pathname = usePathname();
-  // useRef so the "already downloaded" flag survives re-renders without
-  // retriggering the effect.
-  const downloaded = useRef(false);
 
   const [state, setState] = useState<AuthGuardState>({
     checking: true,
@@ -25,7 +22,7 @@ export function useAuthGuard(): AuthGuardState {
   useEffect(() => {
     let mounted = true;
 
-    readAuthGate(pathname, downloaded)
+    readAuthGate(pathname)
       .then((gate) => {
         if (!mounted) return;
         setState({ checking: false, allowed: isAuthAllowed(gate) });
