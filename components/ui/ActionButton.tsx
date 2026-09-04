@@ -59,10 +59,11 @@ const makeStyles = (p: Palette, scheme: "light" | "dark") =>
       borderRadius: 14,
       alignItems: "center",
       justifyContent: "center",
-      // The deepest rung reads as a solid block in both schemes and takes a
-      // near-white label either way. Only the label branches: `bone` is the
-      // light pole in dark mode, `ink` is the light pole in light mode.
-      backgroundColor: p.accentPine,
+      // The light palette's accent is a mid-tone that clears 4.5:1 against
+      // neither text pole, so light mode fills with the deep rung instead.
+      // `ink` is the background-side color in both schemes, which makes it
+      // the correct label color against either fill.
+      backgroundColor: scheme === "dark" ? p.accent : p.accentDeep,
     },
     buttonDisabled: {
       backgroundColor: p.inkRaised,
@@ -70,7 +71,7 @@ const makeStyles = (p: Palette, scheme: "light" | "dark") =>
       borderColor: p.hairlineStrong,
     },
     text: {
-      color: scheme === "dark" ? p.bone : p.ink,
+      color: p.ink,
       fontSize: 11,
       fontFamily: FontFamilies.displayRegular,
       letterSpacing: 3,
